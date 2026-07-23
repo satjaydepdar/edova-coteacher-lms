@@ -11,6 +11,7 @@ Implements exactly the contract edova-web expects from VITE_API_URL:
     DELETE /api/curriculums/{cur_id}/subjects/{subject_id}
     GET    /api/curriculum-subjects/{subject_id}/syllabus
     PUT    /api/curriculum-subjects/{subject_id}/syllabus (atomic tree replace)
+    GET    /api/curriculum-subjects/{subject_id}/resources (manifest resources, matched to real chapters)
 
   Lesson-plan library (LessonPlanner.tsx)
     GET    /api/lesson-plans
@@ -380,6 +381,78 @@ def get_syllabus(subject_id: str):
         if not subj:
             raise HTTPException(status_code=404, detail="subject not found")
         return syllabus_response(conn, subj)
+
+
+# ---------- learning-resources catalog (Settings > Resource Library / Teaching > Learning Resources) ----------
+#
+# The third-brain pipeline (and the app's own /uploads/complete -> _okf_catalog
+# above) already fully automates cataloguing: every ingested/uploaded file
+# lands in okf-bundle/nodes/, gets shelved to S3, and manifest.json is
+# rewritten immediately. What's been missing is a way to read that manifest
+# back out matched to REAL Master Data chapters, instead of the app
+# maintaining its own separate, hand-typed Class/Unit/Chapter/Subtopic copy.
+#
+# The manifest only carries a subject slug ("math"/"science") + a
+# domain-qualified chapter_id ("math-ch5", "biology-ch1", "physics-ch3") —
+# never a numeric chapter number, and math/science line up differently:
+# math-chN == syllabus_chapters.number N directly, but science's chapter_id
+# is domain-local (biology/chemistry/physics each restart at ch1) while
+# syllabus_chapters.number is the NCERT book's global 1-11 numbering.
+# generate_metadata.py's own docstring flags this exact mismatch
+# ("physics-ch3 is book chapter 11"). Confirmed against the seeded syllabus
+# (ncert_rag/clerk/api.py SEED_SYLLABUS): chemistry 1-4 already match,
+# biology is +4, physics is +8 — a fixed per-domain offset, not a fuzzy
+# lookup, so a small explicit table is the safe, verifiable choice here
+# (this is CBSE Class 10 2026-27 specific; revisit if that syllabus changes).
+_SCIENCE_DOMAIN_OFFSET = {"chemistry": 0, "biology": 4, "physics": 8}
+
+
+def _global_chapter_ref(chapter_id: str) -> Optional[tuple[str, int]]:
+    """'math-ch5' -> ('Mathematics', 5); 'biology-ch1' -> ('Science', 5);
+    'physics-ch3' -> ('Science', 11). None if chapter_id doesn't match the
+    domain-chN shape the third-brain pipeline always produces."""
+    m = re.match(r"^(math|biology|chemistry|physics)-ch(\d+)$", chapter_id or "")
+    if not m:
+        return None
+    domain, local = m.group(1), int(m.group(2))
+    if domain == "math":
+        return "Mathematics", local
+    return "Science", _SCIENCE_DOMAIN_OFFSET[domain] + local
+
+
+def _read_manifest() -> list[dict]:
+    manifest_path = THIRD_BRAIN / "okf-bundle" / "manifest" / "manifest.json"
+    if not manifest_path.exists():
+        return []
+    try:
+        return json.loads(manifest_path.read_text(encoding="utf-8")).get("resources", [])
+    except (json.JSONDecodeError, OSError):
+        return []
+
+
+@app.get("/api/curriculum-subjects/{subject_id}/resources")
+def get_subject_resources(subject_id: str):
+    """Catalogued files (third-brain pipeline + teacher uploads, same
+    manifest) for this subject, each annotated with the real global chapter
+    number so the frontend can group them under its already-loaded Master
+    Data chapter tree — no separate resource taxonomy needed."""
+    with db() as conn:
+        subj = conn.execute("SELECT * FROM subjects WHERE id=?", (subject_id,)).fetchone()
+        if not subj:
+            raise HTTPException(status_code=404, detail="subject not found")
+        subject_name = subj["subject_name"]
+    out = []
+    for r in _read_manifest():
+        ref = _global_chapter_ref(r.get("chapter_id", ""))
+        if not ref or ref[0] != subject_name:
+            continue
+        out.append({
+            "id": r["id"], "title": r["title"], "type": r["type"],
+            "doc_type": r.get("doc_type"), "chapter_number": ref[1],
+            "s3_key": r.get("s3_key"), "preview_s3_key": r.get("previewS3Key"),
+            "status": r.get("status", "ready"),
+        })
+    return out
 
 
 class ChapterIn(BaseModel):
