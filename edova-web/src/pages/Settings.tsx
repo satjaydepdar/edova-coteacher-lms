@@ -34,10 +34,6 @@ import type {
   CurriculumUnit,
   Exam,
   MasterTimetableRow,
-  ResourceClass,
-  ResourceUnit,
-  ResourceChapter,
-  ResourceSubtopic,
 } from "@/lib/types"
 import {
   Dialog,
@@ -137,10 +133,6 @@ type ModalType =
   | "masterTimetable"
   | "exam"
   | "calendar"
-  | "resourceClass"
-  | "resourceUnit"
-  | "resourceChapter"
-  | "resourceSubtopic"
 
 interface ModalForm {
   // curriculum
@@ -177,15 +169,6 @@ interface ModalForm {
   teacherId?: string
   // calendar
   label?: string
-  // resource library
-  resourceClassName?: string
-  resourceClassId?: string
-  resourceUnitName?: string
-  resourceUnitId?: string
-  resourceChapterNumber?: number | string
-  resourceChapterName?: string
-  resourceChapterId?: string
-  resourceSubtopicName?: string
 }
 
 interface ModalState {
@@ -216,17 +199,6 @@ export default function Settings() {
   const masterTimetable = useSchoolStore((s) => s.masterTimetable)
   const setMasterTimetable = useSchoolStore((s) => s.setMasterTimetable)
   const showFlash = useSchoolStore((s) => s.showFlash)
-
-  // Learning Resources taxonomy — feeds the Learning Resources page's filters
-  // and topic list live (Settings > Resource Library).
-  const resourceClasses = useSchoolStore((s) => s.resourceClasses)
-  const setResourceClasses = useSchoolStore((s) => s.setResourceClasses)
-  const resourceUnits = useSchoolStore((s) => s.resourceUnits)
-  const setResourceUnits = useSchoolStore((s) => s.setResourceUnits)
-  const resourceChapters = useSchoolStore((s) => s.resourceChapters)
-  const setResourceChapters = useSchoolStore((s) => s.setResourceChapters)
-  const resourceSubtopics = useSchoolStore((s) => s.resourceSubtopics)
-  const setResourceSubtopics = useSchoolStore((s) => s.setResourceSubtopics)
 
   // Exams + calendar stay local (no shared store slice yet) — start empty;
   // real entries are created via + Add Exam / + Add Entry.
@@ -394,10 +366,6 @@ export default function Settings() {
       masterTimetable: { sectionId, academicYear, day: "Monday", period: 1, subject: masterSubjectsOptions[0], ...subjectMeta(masterSubjectsOptions[0]) },
       exam: { title: "", classId: "c1", date: "", type: "Quiz", weight: "", duration: 45, coverageUnitIds: [], revisionAllocated: 0, revisionUsed: 0, teacherId: TEACHERS[0].id },
       calendar: { date: "", label: "", type: "Holiday" },
-      resourceClass: { resourceClassName: "" },
-      resourceUnit: { resourceClassId: resourceClasses[0]?.id ?? "", resourceUnitName: "" },
-      resourceChapter: { resourceUnitId: resourceUnits[0]?.id ?? "", resourceChapterNumber: "", resourceChapterName: "" },
-      resourceSubtopic: { resourceChapterId: resourceChapters[0]?.id ?? "", resourceSubtopicName: "" },
     }
     setModal({ type, mode: "add", editingId: null, form: blank[type] })
   }
@@ -409,18 +377,6 @@ export default function Settings() {
     } else if (type === "masterTimetable") {
       const r = masterTimetable.find((x) => x.id === id)
       if (r) form = { ...r }
-    } else if (type === "resourceClass") {
-      const r = resourceClasses.find((x) => x.id === id)
-      if (r) form = { resourceClassName: r.name }
-    } else if (type === "resourceUnit") {
-      const r = resourceUnits.find((x) => x.id === id)
-      if (r) form = { resourceClassId: r.classId, resourceUnitName: r.name }
-    } else if (type === "resourceChapter") {
-      const r = resourceChapters.find((x) => x.id === id)
-      if (r) form = { resourceUnitId: r.unitId, resourceChapterNumber: r.number, resourceChapterName: r.name }
-    } else if (type === "resourceSubtopic") {
-      const r = resourceSubtopics.find((x) => x.id === id)
-      if (r) form = { resourceChapterId: r.chapterId, resourceSubtopicName: r.name }
     } else if (type === "exam") {
       const r = exams.find((x) => x.id === id)
       if (r) form = { ...r, coverageUnitIds: [...(r.coverageUnitIds || [])] }
@@ -491,37 +447,6 @@ export default function Settings() {
         type: (f.type as AcademicCalendarItem["type"]) || "Holiday",
       }
       setCalendar((prev) => (modal.editingId ? prev.map((r) => (r.id === modal.editingId ? rec : r)) : [...prev, rec]))
-    } else if (modal.type === "resourceClass") {
-      const rec: ResourceClass = {
-        id: modal.editingId ?? `rc_${Date.now()}`,
-        name: f.resourceClassName || "Untitled Class",
-      }
-      setResourceClasses(modal.editingId ? resourceClasses.map((r) => (r.id === modal.editingId ? rec : r)) : [...resourceClasses, rec])
-    } else if (modal.type === "resourceUnit") {
-      const rec: ResourceUnit = {
-        id: modal.editingId ?? `ru_${Date.now()}`,
-        classId: f.resourceClassId || resourceClasses[0]?.id || "",
-        name: f.resourceUnitName || "Untitled Unit",
-      }
-      setResourceUnits(modal.editingId ? resourceUnits.map((r) => (r.id === modal.editingId ? rec : r)) : [...resourceUnits, rec])
-    } else if (modal.type === "resourceChapter") {
-      const rec: ResourceChapter = {
-        id: modal.editingId ?? `rch_${Date.now()}`,
-        unitId: f.resourceUnitId || resourceUnits[0]?.id || "",
-        number: Number(f.resourceChapterNumber) || 0,
-        name: f.resourceChapterName || "Untitled Chapter",
-      }
-      setResourceChapters(modal.editingId ? resourceChapters.map((r) => (r.id === modal.editingId ? rec : r)) : [...resourceChapters, rec])
-    } else {
-      const rec: ResourceSubtopic = {
-        id: modal.editingId ?? `rst_${Date.now()}`,
-        chapterId: f.resourceChapterId || resourceChapters[0]?.id || "",
-        name: f.resourceSubtopicName || "Untitled Subtopic",
-        resources: modal.editingId
-          ? (resourceSubtopics.find((r) => r.id === modal.editingId)?.resources ?? [])
-          : [],
-      }
-      setResourceSubtopics(modal.editingId ? resourceSubtopics.map((r) => (r.id === modal.editingId ? rec : r)) : [...resourceSubtopics, rec])
     }
     const flashKey =
       modal.type === "curriculum"
@@ -530,9 +455,7 @@ export default function Settings() {
           ? "timetable"
           : modal.type === "exam"
             ? "exam"
-            : modal.type === "calendar"
-              ? "calendar"
-              : "resource"
+            : "calendar"
     showFlash(flashKey, modal.mode === "add" ? "Added — changes apply across Lesson Planner, Syllabus Map, and Calendar." : "Saved.")
     setModal(null)
   }
@@ -1548,65 +1471,6 @@ export default function Settings() {
                 </div>
               )}
 
-              {modal.type === "resourceClass" && (
-                <div>
-                  <div style={modalLabel}>Class Name</div>
-                  <input value={modal.form.resourceClassName ?? ""} onChange={(e) => setField("resourceClassName", e.target.value)} placeholder="e.g. Class 10" style={{ ...modalInput, marginBottom: 4 }} />
-                </div>
-              )}
-
-              {modal.type === "resourceUnit" && (
-                <div>
-                  <div style={modalLabel}>Class</div>
-                  <select value={modal.form.resourceClassId} onChange={(e) => setField("resourceClassId", e.target.value)} style={modalInput}>
-                    {resourceClasses.map((c) => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                  </select>
-                  <div style={modalLabel}>Unit Name</div>
-                  <input value={modal.form.resourceUnitName ?? ""} onChange={(e) => setField("resourceUnitName", e.target.value)} placeholder="e.g. Algebra" style={{ ...modalInput, marginBottom: 4 }} />
-                </div>
-              )}
-
-              {modal.type === "resourceChapter" && (
-                <div>
-                  <div style={modalLabel}>Unit</div>
-                  <select value={modal.form.resourceUnitId} onChange={(e) => setField("resourceUnitId", e.target.value)} style={modalInput}>
-                    {resourceUnits.map((u) => {
-                      const cls = resourceClasses.find((c) => c.id === u.classId)
-                      return (
-                        <option key={u.id} value={u.id}>{u.name}{cls ? ` — ${cls.name}` : ""}</option>
-                      )
-                    })}
-                  </select>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 12 }}>
-                    <div>
-                      <div style={modalLabel}>Chapter #</div>
-                      <input type="number" min={1} value={modal.form.resourceChapterNumber ?? ""} onChange={(e) => setField("resourceChapterNumber", e.target.value)} style={modalInput} />
-                    </div>
-                    <div>
-                      <div style={modalLabel}>Chapter Name</div>
-                      <input value={modal.form.resourceChapterName ?? ""} onChange={(e) => setField("resourceChapterName", e.target.value)} placeholder="e.g. Quadratic Equations" style={modalInput} />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {modal.type === "resourceSubtopic" && (
-                <div>
-                  <div style={modalLabel}>Chapter</div>
-                  <select value={modal.form.resourceChapterId} onChange={(e) => setField("resourceChapterId", e.target.value)} style={modalInput}>
-                    {resourceChapters.map((c) => {
-                      const unit = resourceUnits.find((u) => u.id === c.unitId)
-                      return (
-                        <option key={c.id} value={c.id}>Ch. {c.number}: {c.name}{unit ? ` — ${unit.name}` : ""}</option>
-                      )
-                    })}
-                  </select>
-                  <div style={modalLabel}>Subtopic Name</div>
-                  <input value={modal.form.resourceSubtopicName ?? ""} onChange={(e) => setField("resourceSubtopicName", e.target.value)} placeholder="e.g. Nature of Roots" style={{ ...modalInput, marginBottom: 4 }} />
-                </div>
-              )}
             </div>
             <DialogFooter className="border-t border-[#F1F5F9] pt-4">
               <Button variant="outline" onClick={() => setModal(null)}>Cancel</Button>
@@ -1670,10 +1534,6 @@ function modalTitle(modal: ModalState): string {
     masterTimetable: "Timetable Slot",
     exam: "Exam",
     calendar: "Calendar Entry",
-    resourceClass: "Class",
-    resourceUnit: "Unit",
-    resourceChapter: "Chapter",
-    resourceSubtopic: "Subtopic",
   }
   return `${verb} ${noun[modal.type]}`
 }

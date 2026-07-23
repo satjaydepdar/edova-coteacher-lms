@@ -278,32 +278,6 @@ export interface OkfCurriculumLibrary {
   subjects: OkfSubject[]
 }
 
-// Learning Resources taxonomy — Settings > Resource Library. Independent of
-// the school-wide CLASSES roster (attendance/gradebook/etc.); this is the
-// Class/Section/Unit/Chapter/Subtopic hierarchy that drives the Learning
-// Resources filters and topic list, fully editable by the teacher.
-export interface ResourceClass {
-  id: string
-  name: string
-}
-export interface ResourceUnit {
-  id: string
-  classId: string
-  name: string
-}
-export interface ResourceChapter {
-  id: string
-  unitId: string
-  number: number
-  name: string
-}
-export interface ResourceSubtopic {
-  id: string
-  chapterId: string
-  name: string
-  resources: OkfResource[]
-}
-
 export interface OkfQuestion {
   id: string
   type: string

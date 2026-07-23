@@ -5,10 +5,6 @@ import {
   ANNOUNCEMENTS,
   MASTER_TIMETABLE,
   ASSESSMENT_BANK_SEED,
-  RESOURCE_CLASSES_SEED,
-  RESOURCE_UNITS_SEED,
-  RESOURCE_CHAPTERS_SEED,
-  RESOURCE_SUBTOPICS_SEED,
   CLASSES,
 } from "@/data/seed"
 import type {
@@ -17,15 +13,7 @@ import type {
   Announcement,
   MasterTimetableRow,
   AssessmentBankItem,
-  OkfResource,
-  ResourceClass,
-  ResourceUnit,
-  ResourceChapter,
-  ResourceSubtopic,
 } from "@/lib/types"
-
-// Learning Resources taxonomy starts empty — real classes/units/chapters/
-// subtopics are created in Settings > Resource Library.
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8001"
 
@@ -170,30 +158,11 @@ interface SchoolState {
   addAssessmentBankItem: (item: AssessmentBankItem) => void
 
   // OKF Library assignment — Learning Resources page (Developer Handoff Notes).
-  // Assignment is tracked per resourceClassId since the same OKF resource can
-  // be Ready for one class and already Assigned for another.
+  // Assignment is tracked per class label (e.g. "Class 10") since the same
+  // resource can be Ready for one class and already Assigned for another.
   okfAssignedByClass: Record<string, string[]>
   assignOkfResources: (classId: string, resourceIds: string[]) => void
   undoOkfAssign: (classId: string, resourceIds: string[]) => void
-
-  // Learning Resources taxonomy (Settings > Resource Library). Editing these
-  // is the single source of truth for the Learning Resources filters/list.
-  resourceClasses: ResourceClass[]
-  resourceUnits: ResourceUnit[]
-  resourceChapters: ResourceChapter[]
-  resourceSubtopics: ResourceSubtopic[]
-  setResourceClasses: (v: ResourceClass[]) => void
-  setResourceUnits: (v: ResourceUnit[]) => void
-  setResourceChapters: (v: ResourceChapter[]) => void
-  setResourceSubtopics: (v: ResourceSubtopic[]) => void
-
-  // A resource a teacher uploads directly into a subtopic (Flow 2). Pushed
-  // onto that subtopic's resources with status:"processing", then flipped to
-  // "ready" after the (simulated, or real S3 conversion) pipeline finishes.
-  addOkfUpload: (subtopicId: string, resource: OkfResource) => void
-  markOkfUploadReady: (subtopicId: string, resourceId: string, meta: string,
-    extra?: Partial<OkfResource>) => void
-  markOkfUploadFailed: (subtopicId: string, resourceId: string) => void
 }
 
 export const useSchoolStore = create<SchoolState>()((set, get) => ({
@@ -356,50 +325,4 @@ export const useSchoolStore = create<SchoolState>()((set, get) => ({
       const remaining = existing.filter((id) => !resourceIds.includes(id))
       return { okfAssignedByClass: { ...s.okfAssignedByClass, [classId]: remaining } }
     }),
-
-  // Seeded from the OKF libraries (seed.ts) so filters/list work out of the
-  // box; Settings > Resource Library edits this same slice.
-  resourceClasses: RESOURCE_CLASSES_SEED,
-  resourceUnits: RESOURCE_UNITS_SEED,
-  resourceChapters: RESOURCE_CHAPTERS_SEED,
-  resourceSubtopics: RESOURCE_SUBTOPICS_SEED,
-  setResourceClasses: (v) => set({ resourceClasses: v }),
-  setResourceUnits: (v) => set({ resourceUnits: v }),
-  setResourceChapters: (v) => set({ resourceChapters: v }),
-  setResourceSubtopics: (v) => set({ resourceSubtopics: v }),
-
-  addOkfUpload: (subtopicId, resource) =>
-    set((s) => ({
-      resourceSubtopics: s.resourceSubtopics.map((st) =>
-        st.id === subtopicId
-          ? { ...st, resources: [...st.resources, resource] }
-          : st
-      ),
-    })),
-  markOkfUploadReady: (subtopicId, resourceId, meta, extra) =>
-    set((s) => ({
-      resourceSubtopics: s.resourceSubtopics.map((st) =>
-        st.id !== subtopicId
-          ? st
-          : {
-              ...st,
-              resources: st.resources.map((r) =>
-                r.id === resourceId ? { ...r, status: "ready", meta, ...extra } : r
-              ),
-            }
-      ),
-    })),
-  markOkfUploadFailed: (subtopicId, resourceId) =>
-    set((s) => ({
-      resourceSubtopics: s.resourceSubtopics.map((st) =>
-        st.id !== subtopicId
-          ? st
-          : {
-              ...st,
-              resources: st.resources.map((r) =>
-                r.id === resourceId ? { ...r, status: "failed" } : r
-              ),
-            }
-      ),
-    })),
 }))

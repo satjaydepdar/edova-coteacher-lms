@@ -27,10 +27,6 @@ import type {
   ParentMessage,
   Report,
   Resource,
-  ResourceChapter,
-  ResourceClass,
-  ResourceSubtopic,
-  ResourceUnit,
   SavedLessonPlan,
   Section,
   StandardOption,
@@ -439,46 +435,6 @@ export const OKF_CURRICULUM_LIBRARY: OkfCurriculumLibrary = {
       }],
     },
   ],
-}
-
-// Default Resource Library taxonomy (Settings > Resource Library), derived
-// from OKF_LIBRARY (math, with seeded resources) + SCIENCE10_CHAPTERS (real
-// CBSE science syllabus). Seeds the school store so the Learning Resources
-// filters/list work out of the box; Settings > Resource Library edits the
-// same store slice. Chapter/subtopic ids are kept identical to the OKF seed
-// ids ("ch01", "sci10-ch05-t01", …) so Syllabus Map's "View in OKF Library"
-// deep-link (?expandChapter=<okfChapterId>) resolves against this taxonomy.
-export const RESOURCE_CLASSES_SEED: ResourceClass[] = [
-  { id: "rc-class10", name: "Class 10" },
-]
-export const RESOURCE_UNITS_SEED: ResourceUnit[] = []
-export const RESOURCE_CHAPTERS_SEED: ResourceChapter[] = []
-export const RESOURCE_SUBTOPICS_SEED: ResourceSubtopic[] = []
-{
-  const classId = RESOURCE_CLASSES_SEED[0].id
-  const unitIdByName = new Map<string, string>()
-  const seedFromChapters = (chapters: OkfLibraryChapter[], fallbackUnit: string) => {
-    chapters.forEach((ch) => {
-      const unitName = ch.unit ?? fallbackUnit
-      let unitId = unitIdByName.get(unitName)
-      if (!unitId) {
-        unitId = `ru-${unitIdByName.size + 1}`
-        unitIdByName.set(unitName, unitId)
-        RESOURCE_UNITS_SEED.push({ id: unitId, classId, name: unitName })
-      }
-      RESOURCE_CHAPTERS_SEED.push({ id: ch.id, unitId, number: ch.number, name: ch.title })
-      ch.topics.forEach((t) =>
-        RESOURCE_SUBTOPICS_SEED.push({
-          id: t.id,
-          chapterId: ch.id,
-          name: t.title,
-          resources: t.resources,
-        })
-      )
-    })
-  }
-  seedFromChapters(OKF_LIBRARY.chapters, "Mathematics")
-  seedFromChapters(SCIENCE10_CHAPTERS, "Science")
 }
 
 export const OKF_QUESTION_BANK: { chapters: OkfQuestionChapter[] } = {
