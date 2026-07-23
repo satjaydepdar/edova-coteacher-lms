@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-22T13:25:00.989038+00:00",
+  "generated_at": "2026-07-23T06:39:21.338643+00:00",
   "bucket": "innuxai-edova-coteacher",
   "prefix": "Class-10/Semester-01",
-  "count": 21,
+  "count": 22,
   "resources": [
     {
       "id": "math_math-ch1_chapter_content_dc88ce76",
@@ -50,6 +50,18 @@
       "doc_type": "chapter_content",
       "s3_key": "Class-10/Semester-01/Math/Chapter-04/chapter-4-quadratic-equations.pdf",
       "previewS3Key": "Class-10/Semester-01/Math/Chapter-04/chapter-4-quadratic-equations.pdf",
+      "status": "ready"
+    },
+    {
+      "id": "math_math-ch4_chapter_content_dea48ae5",
+      "title": "Quadratic Equations \u2014 test-worksheet",
+      "type": "Worksheet",
+      "subject": "math",
+      "chapter_id": "math-ch4",
+      "chapter_name": "Quadratic Equations",
+      "doc_type": "chapter_content",
+      "s3_key": "Class-10/Semester-01/Math/Chapter-04/test-worksheet.txt",
+      "previewS3Key": "Class-10/Semester-01/Math/Chapter-04/test-worksheet.txt",
       "status": "ready"
     },
     {

@@ -4,6 +4,7 @@ import { useSchoolStore } from "@/store/school-store"
 import { FlashBanner } from "@/components/common/FlashBanner"
 import Curriculum from "@/pages/Curriculum"
 import MasterData from "@/pages/MasterData"
+import ResourceLibrary from "@/pages/ResourceLibrary"
 import {
   ACADEMIC_YEARS,
   APP_TODAY,
@@ -131,7 +132,6 @@ function cellShell(hasConflict: boolean): CSSProperties {
 
 type SettingsTab = "timetable" | "curriculum" | "masterdata" | "syllabus" | "exam" | "calendar" | "resources"
 type SubView = "class" | "teacher" | "summary"
-type ResourceView = "classes" | "units" | "chapters" | "subtopics"
 type ModalType =
   | "curriculum"
   | "masterTimetable"
@@ -207,7 +207,6 @@ export default function Settings() {
 
   const [tab, setTab] = useState<SettingsTab>("masterdata")
   const [subView, setSubView] = useState<SubView>("class")
-  const [resourceView, setResourceView] = useState<ResourceView>("classes")
 
   // Curriculum + master timetable live in the shared store so edits here
   // persist and propagate to Syllabus Map (app.js schoolConfig.*).
@@ -543,33 +542,6 @@ export default function Settings() {
     showFlash("curriculum", "Syllabus unit deleted.")
   }
 
-  // Resource Library deletes cascade down the Class > Unit > Chapter >
-  // Subtopic chain so a deleted parent never leaves orphaned children behind.
-  function deleteResourceClass(id: string) {
-    const unitIds = resourceUnits.filter((u) => u.classId === id).map((u) => u.id)
-    const chapterIds = resourceChapters.filter((c) => unitIds.includes(c.unitId)).map((c) => c.id)
-    setResourceSubtopics(resourceSubtopics.filter((st) => !chapterIds.includes(st.chapterId)))
-    setResourceChapters(resourceChapters.filter((c) => !chapterIds.includes(c.id)))
-    setResourceUnits(resourceUnits.filter((u) => !unitIds.includes(u.id)))
-    setResourceClasses(resourceClasses.filter((c) => c.id !== id))
-    showFlash("resource", "Class deleted.")
-  }
-  function deleteResourceUnit(id: string) {
-    const chapterIds = resourceChapters.filter((c) => c.unitId === id).map((c) => c.id)
-    setResourceSubtopics(resourceSubtopics.filter((st) => !chapterIds.includes(st.chapterId)))
-    setResourceChapters(resourceChapters.filter((c) => !chapterIds.includes(c.id)))
-    setResourceUnits(resourceUnits.filter((u) => u.id !== id))
-    showFlash("resource", "Unit deleted.")
-  }
-  function deleteResourceChapter(id: string) {
-    setResourceSubtopics(resourceSubtopics.filter((st) => st.chapterId !== id))
-    setResourceChapters(resourceChapters.filter((c) => c.id !== id))
-    showFlash("resource", "Chapter deleted.")
-  }
-  function deleteResourceSubtopic(id: string) {
-    setResourceSubtopics(resourceSubtopics.filter((st) => st.id !== id))
-    showFlash("resource", "Subtopic deleted.")
-  }
   function deleteMasterRow(id: string) {
     setMasterTimetable(masterTimetable.filter((r) => r.id !== id))
     showFlash("timetable", "Slot deleted.")
@@ -1305,130 +1277,7 @@ export default function Settings() {
       )}
 
       {/* ===================== RESOURCE LIBRARY ===================== */}
-      {tab === "resources" && (
-        <div className="rounded-[12px] border border-card-border bg-cream p-5 shadow-card">
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 17, fontWeight: 700, color: "#111827", marginBottom: 4 }}>Resource Library</div>
-            <div style={{ fontSize: 13.5, color: "#6B7280" }}>
-              Manage the Class / Unit / Chapter / Subtopic taxonomy that drives the Learning Resources filters and topic list.
-            </div>
-          </div>
-
-          <FlashBanner flashKey="resource" />
-
-          <div style={{ display: "flex", gap: 4, background: "#F1F5F9", borderRadius: 10, padding: 4, width: "fit-content", marginBottom: 20 }}>
-            {([
-              ["classes", "Class"],
-              ["units", "Unit"],
-              ["chapters", "Chapter"],
-              ["subtopics", "Subtopic"],
-            ] as [ResourceView, string][]).map(([key, label]) => (
-              <div key={key} onClick={() => setResourceView(key)} style={subViewTabStyle(resourceView === key)}>{label}</div>
-            ))}
-          </div>
-
-          {resourceView === "classes" && (
-            <div>
-              <div style={{ marginBottom: 12 }}>
-                <button style={primaryBtn} onClick={() => openAdd("resourceClass")}>+ Add Class</button>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "3fr 1fr" }}>
-                {th("Class")}
-                {th("Actions", { textAlign: "right" })}
-                {resourceClasses.map((r) => (
-                  <FragmentKey key={r.id}>
-                    <div style={{ ...bodyCell, fontSize: 15.5, fontWeight: 600, color: "#111827" }}>{r.name}</div>
-                    <div style={{ ...bodyCell, justifyContent: "flex-end", whiteSpace: "nowrap" }}>
-                      {editLink(() => openEdit("resourceClass", r.id))}
-                      {deleteLink(() => deleteResourceClass(r.id))}
-                    </div>
-                  </FragmentKey>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {resourceView === "units" && (
-            <div>
-              <div style={{ marginBottom: 12 }}>
-                <button style={primaryBtn} onClick={() => openAdd("resourceUnit")}>+ Add Unit</button>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1.4fr 1fr" }}>
-                {th("Unit")}
-                {th("Class")}
-                {th("Actions", { textAlign: "right" })}
-                {resourceUnits.map((r) => (
-                  <FragmentKey key={r.id}>
-                    <div style={{ ...bodyCell, fontSize: 15.5, fontWeight: 600, color: "#111827" }}>{r.name}</div>
-                    <div style={bodyCell}>{resourceClasses.find((c) => c.id === r.classId)?.name ?? "—"}</div>
-                    <div style={{ ...bodyCell, justifyContent: "flex-end", whiteSpace: "nowrap" }}>
-                      {editLink(() => openEdit("resourceUnit", r.id))}
-                      {deleteLink(() => deleteResourceUnit(r.id))}
-                    </div>
-                  </FragmentKey>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {resourceView === "chapters" && (
-            <div>
-              <div style={{ marginBottom: 12 }}>
-                <button style={primaryBtn} onClick={() => openAdd("resourceChapter")}>+ Add Chapter</button>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "0.5fr 1.6fr 1.8fr 1fr" }}>
-                {th("#")}
-                {th("Chapter")}
-                {th("Unit")}
-                {th("Actions", { textAlign: "right" })}
-                {resourceChapters.map((r) => {
-                  const unit = resourceUnits.find((u) => u.id === r.unitId)
-                  const cls = unit ? resourceClasses.find((c) => c.id === unit.classId) : undefined
-                  return (
-                    <FragmentKey key={r.id}>
-                      <div style={bodyCell}>{r.number}</div>
-                      <div style={{ ...bodyCell, fontSize: 15.5, fontWeight: 600, color: "#111827" }}>{r.name}</div>
-                      <div style={bodyCell}>{unit ? `${unit.name}${cls ? ` — ${cls.name}` : ""}` : "—"}</div>
-                      <div style={{ ...bodyCell, justifyContent: "flex-end", whiteSpace: "nowrap" }}>
-                        {editLink(() => openEdit("resourceChapter", r.id))}
-                        {deleteLink(() => deleteResourceChapter(r.id))}
-                      </div>
-                    </FragmentKey>
-                  )
-                })}
-              </div>
-            </div>
-          )}
-
-          {resourceView === "subtopics" && (
-            <div>
-              <div style={{ marginBottom: 12 }}>
-                <button style={primaryBtn} onClick={() => openAdd("resourceSubtopic")}>+ Add Subtopic</button>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1.8fr 1.8fr 0.8fr 1fr" }}>
-                {th("Subtopic")}
-                {th("Chapter")}
-                {th("Resources")}
-                {th("Actions", { textAlign: "right" })}
-                {resourceSubtopics.map((r) => {
-                  const chapter = resourceChapters.find((c) => c.id === r.chapterId)
-                  return (
-                    <FragmentKey key={r.id}>
-                      <div style={{ ...bodyCell, fontSize: 15.5, fontWeight: 600, color: "#111827" }}>{r.name}</div>
-                      <div style={bodyCell}>{chapter ? `Ch. ${chapter.number}: ${chapter.name}` : "—"}</div>
-                      <div style={bodyCell}>{r.resources.length}</div>
-                      <div style={{ ...bodyCell, justifyContent: "flex-end", whiteSpace: "nowrap" }}>
-                        {editLink(() => openEdit("resourceSubtopic", r.id))}
-                        {deleteLink(() => deleteResourceSubtopic(r.id))}
-                      </div>
-                    </FragmentKey>
-                  )
-                })}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+      {tab === "resources" && <ResourceLibrary />}
 
       {/* ===================== ADD / EDIT MODAL ===================== */}
       <Dialog open={!!modal} onOpenChange={(o) => !o && setModal(null)}>
