@@ -404,19 +404,29 @@ def get_syllabus(subject_id: str):
 # biology is +4, physics is +8 — a fixed per-domain offset, not a fuzzy
 # lookup, so a small explicit table is the safe, verifiable choice here
 # (this is CBSE Class 10 2026-27 specific; revisit if that syllabus changes).
+#
+# New uploads made through THIS app (_okf_catalog below) never produce a
+# domain-qualified id, though — _okf_subject() maps any science-ish subject
+# string straight to the bare "science" slug, so ingest.py's
+# qualify_chapter_id gives "science-ch9", already carrying the GLOBAL chapter
+# number (the teacher picks the chapter from the real syllabus UI, which only
+# knows global numbers) — not a domain-local one. Both id shapes have to be
+# accepted here.
 _SCIENCE_DOMAIN_OFFSET = {"chemistry": 0, "biology": 4, "physics": 8}
+_GLOBAL_SUBJECT_SLUG = {"math": "Mathematics", "science": "Science"}
 
 
 def _global_chapter_ref(chapter_id: str) -> Optional[tuple[str, int]]:
-    """'math-ch5' -> ('Mathematics', 5); 'biology-ch1' -> ('Science', 5);
-    'physics-ch3' -> ('Science', 11). None if chapter_id doesn't match the
-    domain-chN shape the third-brain pipeline always produces."""
-    m = re.match(r"^(math|biology|chemistry|physics)-ch(\d+)$", chapter_id or "")
+    """'math-ch5' -> ('Mathematics', 5); 'science-ch9' -> ('Science', 9)
+    (already-global, from an app upload); 'biology-ch1' -> ('Science', 5);
+    'physics-ch3' -> ('Science', 11) (domain-local, from the pipeline seed).
+    None if chapter_id doesn't match any known shape."""
+    m = re.match(r"^(math|science|biology|chemistry|physics)-ch(\d+)$", chapter_id or "")
     if not m:
         return None
     domain, local = m.group(1), int(m.group(2))
-    if domain == "math":
-        return "Mathematics", local
+    if domain in _GLOBAL_SUBJECT_SLUG:
+        return _GLOBAL_SUBJECT_SLUG[domain], local
     return "Science", _SCIENCE_DOMAIN_OFFSET[domain] + local
 
 
