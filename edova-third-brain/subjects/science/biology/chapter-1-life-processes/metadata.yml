@@ -1,0 +1,153 @@
+---
+title: "Life Processes"
+chapter_number: 1
+subject: "Science"
+domain: biology
+class: 10
+board: "CBSE / NCERT"
+language: "English"
+created: '2026-07-17'
+last_updated: '2026-07-17'
+page_range:
+  start: 80
+  end: 99
+
+summary: >
+  This chapter examines the essential life processes — nutrition, respiration,
+  transportation, and excretion — that maintain order within living organisms.
+  It explains autotrophic and heterotrophic nutrition, photosynthesis, human
+  digestion, aerobic and anaerobic respiration, and the human respiratory
+  system. It then describes circulation in human beings and transport in
+  plants through xylem and phloem. Finally it covers excretion in human
+  beings via nephrons and the varied waste-removal strategies of plants.
+
+sections:
+  - "5.1 WHAT ARE LIFE PROCESSES?"
+  - "5.2 NUTRITION"
+  - "5.2.1 Autotrophic Nutrition"
+  - "5.2.2 Heterotrophic Nutrition"
+  - "5.2.3 How do Organisms obtain their Nutrition?"
+  - "5.2.4 Nutrition in Human Beings"
+  - "5.3 RESPIRATION"
+  - "5.4 TRANSPORTATION"
+  - "5.4.1 Transportation in Human Beings"
+  - "5.4.2 Transportation in Plants"
+  - "5.5 EXCRETION"
+  - "5.5.1 Excretion in Human Beings"
+  - "5.5.2 Excretion in Plants"
+
+activities:
+  - "Activity 5.1: Destarching a variegated-leaf plant and testing a leaf with iodine to show chlorophyll is essential for photosynthesis"
+  - "Activity 5.2: Using potassium hydroxide to absorb carbon dioxide in a bell-jar set-up to show CO2 is necessary for photosynthesis"
+  - "Activity 5.3: Testing the action of saliva on starch solution using dilute iodine in two test tubes"
+  - "Activity 5.4: Comparing how quickly lime water turns milky with exhaled air versus air from a syringe or pichkari"
+  - "Activity 5.5: Adding yeast to fruit juice or sugar solution and testing the gas produced with lime water to study fermentation"
+  - "Activity 5.6: Observing mouth and gill-slit movements of fish in an aquarium and comparing breathing rates with humans"
+  - "Activity 5.7: Visiting a health centre and a veterinary clinic to compare normal haemoglobin levels in humans and animals"
+  - "Activity 5.8: Comparing water loss from a covered potted plant and a stick in sunlight to demonstrate transpiration"
+
+tables: []
+
+key_concepts:
+  - concept: "Life Processes"
+    section: "5.1 WHAT ARE LIFE PROCESSES?"
+    summary: "The essential processes which together perform the maintenance job of living organisms are called life processes, including nutrition, respiration, transportation, and excretion of harmful wastes."
+
+  - concept: "Autotrophic and Heterotrophic Nutrition"
+    section: "5.2 NUTRITION"
+    summary: "Autotrophs like green plants make food from inorganic carbon dioxide and water, while heterotrophs such as animals depend on complex substances made by other organisms."
+
+  - concept: "Photosynthesis"
+    section: "5.2.1 Autotrophic Nutrition"
+    summary: "The vital process by which autotrophs convert inorganic carbon dioxide and water into carbohydrate molecules using sunlight and chlorophyll, storing the excess carbohydrate as starch."
+
+  - concept: "Stomata and Guard Cells"
+    section: "5.2.1 Autotrophic Nutrition"
+    summary: "Tiny pores present on leaf surfaces through which massive gaseous exchange occurs; the guard cells open or close this pore by swelling or shrinking respectively."
+
+  - concept: "Heterotrophic Nutrition Strategies"
+    section: "5.2.2 Heterotrophic Nutrition"
+    summary: "Organisms may break down food outside the body like fungi, ingest whole material and digest it internally, or live parasitically on hosts without killing them."
+
+  - concept: "Nutrition in Amoeba"
+    section: "5.2.3 How do Organisms obtain their Nutrition?"
+    summary: "Amoeba takes in food using temporary finger-like extensions of its cell surface, forming a food-vacuole, where complex substances break down and diffuse into the cytoplasm."
+
+  - concept: "Human Alimentary Canal"
+    section: "5.2.4 Nutrition in Human Beings"
+    summary: "A long tube extending from the mouth to the anus, with specialised regions including the stomach, small intestine, and large intestine processing and absorbing food."
+
+  - concept: "Salivary Amylase and Enzymes"
+    section: "5.2.4 Nutrition in Human Beings"
+    summary: "Saliva secreted by salivary glands contains the enzyme salivary amylase which breaks down complex starch into simple sugars while food is chewed and mixed thoroughly."
+
+  - concept: "Stomach Digestion and Gastric Glands"
+    section: "5.2.4 Nutrition in Human Beings"
+    summary: "The gastric glands release hydrochloric acid, pepsin, and mucus; the acid creates an acidic medium facilitating pepsin action, while mucus protects the inner stomach lining."
+
+  - concept: "Small Intestine Digestion and Absorption"
+    section: "5.2.4 Nutrition in Human Beings"
+    summary: "Bile juice emulsifies fats and makes acidic food alkaline; pancreatic and intestinal enzymes complete the digestion; finger-like villi absorb the digested food into the blood."
+
+  - concept: "Aerobic and Anaerobic Respiration"
+    section: "5.3 RESPIRATION"
+    summary: "Glucose first breaks into pyruvate in the cytoplasm; with oxygen, mitochondria fully oxidise it, while without oxygen, yeast produces ethanol and muscles produce lactic acid."
+
+  - concept: "ATP – Energy Currency of the Cell"
+    section: "5.3 RESPIRATION"
+    summary: "Energy released during respiration is used to synthesise ATP from ADP and inorganic phosphate; breaking its terminal phosphate linkage releases energy to drive cellular reactions."
+
+  - concept: "Alveoli and Breathing Mechanism"
+    section: "5.3 RESPIRATION"
+    summary: "Balloon-like alveoli richly supplied with blood vessels provide a large surface for the gas exchange as ribs lift upward and the diaphragm flattens during inhalation."
+
+  - concept: "Haemoglobin and Gas Transport"
+    section: "5.3 RESPIRATION"
+    summary: "The respiratory pigment present in red blood corpuscles having a very high affinity for oxygen, enabling efficient transport of oxygen from lungs to body tissues."
+
+  - concept: "Human Heart and Double Circulation"
+    section: "5.4.1 Transportation in Human Beings"
+    summary: "The four-chambered human heart keeps oxygenated and deoxygenated blood completely separate; the blood passes through the heart twice during each complete cycle through the body."
+
+  - concept: "Blood Vessels – Arteries, Veins and Capillaries"
+    section: "5.4.1 Transportation in Human Beings"
+    summary: "Thick elastic arteries carry blood away from the heart under high pressure, thin-walled veins return it using valves, and one-cell-thick capillaries allow rapid material exchange."
+
+  - concept: "Platelets and Lymph"
+    section: "5.4.1 Transportation in Human Beings"
+    summary: "Platelet cells circulate and plug leaks by clotting the blood at injury points; lymph drains excess tissue fluid and carries absorbed fat into the blood."
+
+  - concept: "Xylem and Transpiration"
+    section: "5.4.2 Transportation in Plants"
+    summary: "Xylem vessels move water and minerals upward from roots; evaporation of water from stomata creates a transpiration suction pull that becomes the major driving force."
+
+  - concept: "Phloem and Translocation"
+    section: "5.4.2 Transportation in Plants"
+    summary: "Phloem transports soluble photosynthesis products, amino acids, and other vital substances from the leaves to storage and growing organs using energy derived from ATP molecules."
+
+  - concept: "Human Excretory System"
+    section: "5.5.1 Excretion in Human Beings"
+    summary: "The system includes a pair of kidneys, a pair of ureters, a urinary bladder storing urine, and a urethra through which urine is released outside."
+
+  - concept: "Nephrons and Urine Formation"
+    section: "5.5.1 Excretion in Human Beings"
+    summary: "Nephrons are the basic kidney filtration units where blood capillaries and Bowman's capsule filter nitrogenous wastes; glucose, amino acids, salts, and water are selectively reabsorbed."
+
+  - concept: "Excretion in Plants"
+    section: "5.5.2 Excretion in Plants"
+    summary: "Plants store waste products in cellular vacuoles, old xylem as resins and gums, shed them in falling leaves, or excrete substances into the surrounding soil."
+
+tags:
+  - "Biology"
+  - "Life Processes"
+  - "Nutrition"
+  - "Photosynthesis"
+  - "Respiration"
+  - "Digestion"
+  - "Circulation"
+  - "Heart"
+  - "Transportation"
+  - "Transpiration"
+  - "Excretion"
+  - "Nephron"
+...

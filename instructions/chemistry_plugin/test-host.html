@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edova Plugin Host Test Harness</title>
+  
+  <!-- Premium Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #0b0f19; color: #f3f4f6; min-height: 100vh; display: flex; flex-direction: column; overflow: hidden;">
+
+  <!-- Header -->
+  <header style="background: linear-gradient(135deg, #121829 0%, #080c14 100%); border-bottom: 1px solid #1f2a3c; padding: 1.25rem 2rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); z-index: 50;">
+    <div style="font-size: 1.35rem; font-weight: 800; letter-spacing: -0.025em; background: linear-gradient(to right, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 0.50rem;">
+      Edova Portal <span style="background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.2); padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.7rem; color: #60a5fa; letter-spacing: 0.05em; font-family: sans-serif; font-weight: 700; text-transform: uppercase;">Host Harness</span>
+    </div>
+    <div style="font-size: 0.85rem; color: #9ca3af; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+      Harness Status: <span id="status-badge" style="background-color: #f43f5e; color: white; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 800;">UNMOUNTED</span>
+    </div>
+  </header>
+
+  <!-- Main Layout Grid -->
+  <div style="flex-grow: 1; display: grid; grid-template-columns: 360px 1fr; height: calc(100vh - 69px); overflow: hidden;">
+    
+    <!-- Left Sidebar: Controls & Event Console -->
+    <div style="background-color: #111827; border-right: 1px solid #1f2a3c; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; overflow-y: auto; height: 100%;">
+      
+      <!-- Plugin Metadata -->
+      <div style="background-color: rgba(255, 255, 255, 0.02); border: 1px solid #1f2a3c; border-radius: 12px; padding: 1rem;">
+        <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #9ca3af; margin-bottom: 0.75rem;">Plugin Registry</div>
+        <div style="display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 1rem; font-size: 0.85rem;">
+          <span style="color: #9ca3af; font-weight: 500;">Module ID:</span> <span style="font-weight: 700; color: #a78bfa;">chemistry</span>
+          <span style="color: #9ca3af; font-weight: 500;">Subject:</span> <span style="font-weight: 700;">Chemistry Learning Hub</span>
+          <span style="color: #9ca3af; font-weight: 500;">Version:</span> <span style="font-weight: 700; color: #3b82f6;">1.0.0 (MFE)</span>
+        </div>
+      </div>
+
+      <!-- Lifecycle Management -->
+      <div style="background-color: rgba(255, 255, 255, 0.02); border: 1px solid #1f2a3c; border-radius: 12px; padding: 1rem;">
+        <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #9ca3af; margin-bottom: 0.75rem;">Lifecycle Actions</div>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <button id="btn-mount" style="font-family: inherit; font-size: 0.85rem; font-weight: 700; padding: 0.65rem 1rem; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background-color: #3b82f6; color: white; transition: background-color 0.2s;">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Mount Chemistry Plugin
+          </button>
+          <button id="btn-unmount" style="font-family: inherit; font-size: 0.85rem; font-weight: 700; padding: 0.65rem 1rem; border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background-color: rgba(244, 63, 94, 0.1); color: #f43f5e; transition: all 0.2s;">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            Unmount Chemistry Plugin
+          </button>
+        </div>
+      </div>
+
+      <!-- Start Routing -->
+      <div style="background-color: rgba(255, 255, 255, 0.02); border: 1px solid #1f2a3c; border-radius: 12px; padding: 1rem;">
+        <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #9ca3af; margin-bottom: 0.75rem;">Initial Route Config</div>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <button class="path-selector active-path" data-path="/" style="font-family: inherit; font-size: 0.8rem; font-weight: 600; padding: 0.5rem 0.75rem; border: 1px solid #3b82f6; border-radius: 6px; cursor: pointer; text-align: left; display: block; width: 100%; background-color: rgba(59, 130, 246, 0.15); color: #60a5fa;">🏠 Home Dashboard</button>
+          <button class="path-selector" data-path="/equations" style="font-family: inherit; font-size: 0.8rem; font-weight: 600; padding: 0.5rem 0.75rem; border: 1px solid #1f2a3c; border-radius: 6px; cursor: pointer; text-align: left; display: block; width: 100%; background-color: rgba(255,255,255,0.03); color: #f3f4f6;">🧪 Balancing Equations</button>
+          <button class="path-selector" data-path="/reactions" style="font-family: inherit; font-size: 0.8rem; font-weight: 600; padding: 0.5rem 0.75rem; border: 1px solid #1f2a3c; border-radius: 6px; cursor: pointer; text-align: left; display: block; width: 100%; background-color: rgba(255,255,255,0.03); color: #f3f4f6;">🔄 Reaction Matcher Quiz</button>
+          <button class="path-selector" data-path="/redox" style="font-family: inherit; font-size: 0.8rem; font-weight: 600; padding: 0.5rem 0.75rem; border: 1px solid #1f2a3c; border-radius: 6px; cursor: pointer; text-align: left; display: block; width: 100%; background-color: rgba(255,255,255,0.03); color: #f3f4f6;">⚡ Redox Balance Lab</button>
+        </div>
+      </div>
+
+      <!-- CSS Isolation Tester -->
+      <div style="background-color: rgba(255, 255, 255, 0.02); border: 1px solid #1f2a3c; border-radius: 12px; padding: 1rem;">
+        <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #9ca3af; margin-bottom: 0.75rem;">CSS Leakage Check</div>
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 0.8rem; color: #9ca3af;">Host Test Element:</span>
+          <button style="font-family: inherit; font-size: 0.75rem; font-weight: 700; padding: 0.4rem 0.8rem; border: none; border-radius: 6px; background-color: #1e3a8a; color: #93c5fd; cursor: default;">Host Button</button>
+        </div>
+        <p style="font-size: 0.7rem; color: #9ca3af; margin-top: 0.5rem; line-height: 1.35;">
+          This button's appearance (blue text on dark navy) should be completely unaffected by the plugin's styles or resets.
+        </p>
+      </div>
+
+      <!-- Console Logger -->
+      <div style="flex-grow: 1; display: flex; flex-direction: column; min-height: 180px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #9ca3af; margin-bottom: 0.5rem;">
+          <span>Event Stream</span>
+          <button id="btn-clear-logs" style="font-family: inherit; padding: 2px 8px; font-size: 0.65rem; font-weight: 700; background: none; border: 1px solid #1f2a3c; border-radius: 4px; color: #9ca3af; cursor: pointer;">Clear</button>
+        </div>
+        <div id="log-output" style="flex-grow: 1; background-color: #05070c; border: 1px solid #1f2a3c; border-radius: 8px; padding: 0.75rem; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #10b981; overflow-y: auto; height: 160px; max-height: 250px; line-height: 1.45;">
+          <div style="color: #60a5fa; border-left: 2px solid #3b82f6; padding-left: 0.5rem; margin-bottom: 0.5rem;">Harness initialized. Click "Mount Chemistry Plugin" to instantiate.</div>
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- Right Content Panel: Dynamic Plugin Sandbox -->
+    <div style="background-color: #0f172a; display: flex; flex-direction: column; height: 100%; overflow: hidden; position: relative;">
+      
+      <!-- Mount container - Full viewport, no restrictions so that it mimics full screen exactly -->
+      <div id="plugin-mount-frame" style="width: 100%; height: 100%; overflow: auto; display: flex; flex-direction: column; transition: all 0.3s ease;">
+        
+        <!-- Default Unmounted Welcome Card -->
+        <div id="unmounted-welcome" style="display: flex; flex-direction: column; align-items: center; justify-content: center; max-width: 500px; text-align: center; padding: 3rem; background-color: #1e293b; border: 1px solid #334155; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin: auto;">
+          <div style="width: 70px; height: 70px; background-color: rgba(96, 165, 250, 0.1); border: 2px solid rgba(96, 165, 250, 0.2); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; color: #60a5fa;">
+            <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+          </div>
+          <h1 style="font-size: 1.5rem; font-weight: 800; color: white; margin: 0 0 0.5rem 0; letter-spacing: -0.025em;">Chemistry Micro Frontend</h1>
+          <p style="font-size: 0.85rem; color: #94a3b8; line-height: 1.5; margin: 0 0 1.5rem 0;">
+            This panel simulates a platform host dynamically loading and mounting the isolated learning module as a self-contained plugin.
+          </p>
+          <button id="btn-quick-mount" style="font-family: inherit; font-size: 0.85rem; font-weight: 700; padding: 0.65rem 1.25rem; border: none; border-radius: 8px; background-color: #3b82f6; color: white; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem;">
+            Quick Mount Plugin
+          </button>
+        </div>
+
+      </div>
+      
+    </div>
+
+  </div>
+
+  <!-- Load the Micro Frontend Plugin dynamically -->
+  <script type="module">
+    let mountFn = null;
+    let unmountFn = null;
+    let selectedInitialPath = '/';
+    let isMounted = false;
+
+    const logOutput = document.getElementById('log-output');
+    const mountFrame = document.getElementById('plugin-mount-frame');
+    const statusBadge = document.getElementById('status-badge');
+    const welcomeCardHTML = mountFrame.innerHTML;
+
+    function log(message, type = 'normal') {
+      const line = document.createElement('div');
+      line.style.marginBottom = '0.5rem';
+      line.style.lineHeight = '1.45';
+      line.style.paddingLeft = '0.5rem';
+      
+      if (type === 'error') {
+        line.style.color = '#f43f5e';
+        line.style.borderLeft = '2px solid #f43f5e';
+      } else if (type === 'system') {
+        line.style.color = '#60a5fa';
+        line.style.borderLeft = '2px solid #3b82f6';
+      } else {
+        line.style.color = '#34d399';
+        line.style.borderLeft = '2px solid #10b981';
+      }
+      
+      const time = new Date().toLocaleTimeString();
+      line.textContent = `[${time}] ${message}`;
+      logOutput.appendChild(line);
+      logOutput.scrollTop = logOutput.scrollHeight;
+    }
+
+    function updateHarnessState(mounted) {
+      isMounted = mounted;
+      if (mounted) {
+        statusBadge.textContent = "MOUNTED";
+        statusBadge.style.backgroundColor = "#10b981";
+      } else {
+        statusBadge.textContent = "UNMOUNTED";
+        statusBadge.style.backgroundColor = "#f43f5e";
+      }
+    }
+
+    // Path selectors styling toggling
+    document.querySelectorAll('.path-selector').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.path-selector').forEach(b => {
+          b.style.borderColor = '#1f2a3c';
+          b.style.backgroundColor = 'rgba(255,255,255,0.03)';
+          b.style.color = '#f3f4f6';
+          b.classList.remove('active-path');
+        });
+        
+        const target = e.currentTarget;
+        target.style.borderColor = '#3b82f6';
+        target.style.backgroundColor = 'rgba(59, 130, 246, 0.15)';
+        target.style.color = '#60a5fa';
+        target.classList.add('active-path');
+        
+        selectedInitialPath = target.getAttribute('data-path');
+        log(`Initial route set to: ${selectedInitialPath}`, 'system');
+
+        // If already mounted, we re-mount to hot-switch the route simulation
+        if (isMounted) {
+          log('Re-mounting plugin to update route...', 'system');
+          triggerMount();
+        }
+      });
+    });
+
+    // Clear logs
+    document.getElementById('btn-clear-logs').addEventListener('click', () => {
+      logOutput.innerHTML = '';
+      log('Logs cleared.', 'system');
+    });
+
+    // Listen to generic window CustomEvents sent by the plugin
+    window.addEventListener('edova:onReady', (e) => {
+      log(`[CustomEvent: edova:onReady] Mounted. Data: ${JSON.stringify(e.detail)}`);
+    });
+    window.addEventListener('edova:onChapterStart', (e) => {
+      log(`[CustomEvent: edova:onChapterStart] Chapter opened: ${e.detail.chapter}`);
+    });
+    window.addEventListener('edova:onChapterComplete', (e) => {
+      log(`[CustomEvent: edova:onChapterComplete] Chapter completed! Data: ${JSON.stringify(e.detail)}`, 'system');
+    });
+    window.addEventListener('edova:onQuizComplete', (e) => {
+      log(`[CustomEvent: edova:onQuizComplete] Quiz completed! Data: ${JSON.stringify(e.detail)}`, 'system');
+    });
+    window.addEventListener('edova:onProgressUpdate', (e) => {
+      log(`[CustomEvent: edova:onProgressUpdate] Progress updated: ${JSON.stringify(e.detail)}`);
+    });
+    window.addEventListener('edova:onUnmount', (e) => {
+      log(`[CustomEvent: edova:onUnmount] Plugin cleaned up.`);
+    });
+
+    // Dynamic import of the plugin build
+    async function loadPlugin() {
+      if (mountFn && unmountFn) return true;
+      
+      log('Importing plugin entry points from dist/chemistry-plugin.es.js...', 'system');
+      try {
+        const module = await import('./dist/chemistry-plugin.es.js');
+        mountFn = module.mount;
+        unmountFn = module.unmount;
+        log('Plugin bundle loaded successfully.', 'system');
+        return true;
+      } catch (err) {
+        log(`Failed to load plugin bundle: ${err.message}`, 'error');
+        console.error(err);
+        return false;
+      }
+    }
+
+    async function triggerMount() {
+      const loaded = await loadPlugin();
+      if (!loaded) return;
+
+      log('Invoking mount(container, props)...', 'system');
+      mountFrame.innerHTML = '';
+      
+      // Invoke lifecycle mount
+      try {
+        mountFn(mountFrame, {
+          initialPath: selectedInitialPath,
+          studentId: 'STUDENT_998',
+          schoolId: 'SCHOOL_K12',
+          class: '10',
+          section: 'A',
+          language: 'en',
+          onReady: (data) => {
+            log(`[Callback: onReady] Received data: ${JSON.stringify(data)}`);
+          },
+          onChapterStart: (data) => {
+            log(`[Callback: onChapterStart] Opened: ${data.chapter}`);
+          },
+          onChapterComplete: (data) => {
+            log(`[Callback: onChapterComplete] Completed: ${JSON.stringify(data)}`, 'system');
+          },
+          onQuizComplete: (data) => {
+            log(`[Callback: onQuizComplete] Quiz Finished: ${JSON.stringify(data)}`, 'system');
+          },
+          onProgressUpdate: (data) => {
+            log(`[Callback: onProgressUpdate] Progress: ${JSON.stringify(data)}`);
+          },
+          onError: (err) => {
+            log(`[Callback: onError] Error in plugin: ${JSON.stringify(err)}`, 'error');
+          },
+          onUnmount: () => {
+            log(`[Callback: onUnmount] Cleanup callback completed.`);
+          }
+        });
+        updateHarnessState(true);
+      } catch (e) {
+        log(`Mount failed: ${e.message}`, 'error');
+      }
+    }
+
+    function triggerUnmount() {
+      if (!unmountFn || !isMounted) {
+        log('Plugin is not currently mounted.', 'error');
+        return;
+      }
+
+      log('Invoking unmount(container)...', 'system');
+      try {
+        unmountFn(mountFrame);
+        mountFrame.innerHTML = welcomeCardHTML;
+        
+        // Re-attach quick mount button listener since HTML was reset
+        document.getElementById('btn-quick-mount').addEventListener('click', triggerMount);
+        
+        updateHarnessState(false);
+      } catch (e) {
+        log(`Unmount failed: ${e.message}`, 'error');
+      }
+    }
+
+    // Attach button listeners
+    document.getElementById('btn-mount').addEventListener('click', triggerMount);
+    document.getElementById('btn-unmount').addEventListener('click', triggerUnmount);
+    document.getElementById('btn-quick-mount').addEventListener('click', triggerMount);
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Activity 11.2 — Circuit Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0F1B2B;
+    --panel:#152438;
+    --panel-2:#1B2E45;
+    --line:#2A415E;
+    --amber:#E8A33D;
+    --green:#4FD1A5;
+    --red:#E8574A;
+    --text:#EAF2F8;
+    --muted:#84A0B8;
+    --font-display:'Space Grotesk',sans-serif;
+    --font-body:'IBM Plex Sans',sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:var(--font-body);padding:28px 20px 60px;
+  }
+  .wrap{max-width:920px;margin:0 auto;}
+  .eyebrow{
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;
+    color:var(--amber);text-transform:uppercase;margin-bottom:6px;
+  }
+  h1{
+    font-family:var(--font-display);font-weight:700;font-size:28px;
+    margin:0 0 4px;
+  }
+  .sub{color:var(--muted);font-size:14px;margin-bottom:24px;max-width:60ch;}
+
+  .layout{display:grid;grid-template-columns:1.15fr 0.85fr;gap:18px;}
+  @media(max-width:760px){.layout{grid-template-columns:1fr;}}
+
+  .panel{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:18px 18px 20px;
+  }
+  .panel h2{
+    font-family:var(--font-display);font-size:15px;margin:0 0 12px;
+    color:var(--text);display:flex;align-items:center;gap:8px;
+  }
+  .panel h2 .n{
+    font-family:var(--font-mono);color:var(--amber);font-size:12px;
+  }
+
+  /* circuit */
+  svg{width:100%;height:auto;display:block;}
+  .wire{fill:none;stroke:#5A7690;stroke-width:3;}
+  .wire-live{stroke:var(--amber);}
+  .node{fill:#5A7690;}
+  .node-live{fill:var(--amber);}
+  .flow-dot{fill:var(--amber);opacity:0;}
+  .flow-dot.on{opacity:1;}
+  .gauge-face{fill:var(--panel-2);stroke:var(--line);stroke-width:2;}
+  .gauge-tick{stroke:var(--muted);stroke-width:1.5;}
+  .gauge-needle{stroke:var(--red);stroke-width:3;stroke-linecap:round;
+    transform-origin:150px 210px;transition:transform .6s cubic-bezier(.2,.8,.2,1);}
+  .gauge-label{font-family:var(--font-mono);font-size:10px;fill:var(--muted);}
+  .reading{font-family:var(--font-mono);font-size:20px;fill:var(--green);font-weight:600;}
+  .bulb-glass{fill:#22364d;stroke:#3c5a7a;stroke-width:2;transition:fill .4s, filter .4s;}
+  .bulb-glass.lit{fill:var(--amber);filter:drop-shadow(0 0 10px var(--amber));}
+  .filament{stroke:#8fa6bc;stroke-width:1.5;fill:none;transition:stroke .4s;}
+  .filament.lit{stroke:#3a2a0a;}
+  .key-plug{cursor:pointer;}
+
+  /* controls */
+  .components{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+  .comp-btn{
+    text-align:left;background:var(--panel-2);border:1px solid var(--line);
+    color:var(--text);border-radius:10px;padding:10px 12px;font-family:var(--font-body);
+    font-size:13.5px;cursor:pointer;transition:border-color .2s, background .2s;
+  }
+  .comp-btn:hover{border-color:var(--amber);}
+  .comp-btn.active{border-color:var(--amber);background:#26314a;}
+  .comp-btn .name{font-weight:600;}
+  .comp-btn .hint{display:block;color:var(--muted);font-size:11.5px;margin-top:2px;}
+
+  .key-row{display:flex;align-items:center;justify-content:space-between;
+    background:var(--panel-2);border:1px solid var(--line);border-radius:10px;
+    padding:10px 12px;margin-bottom:16px;}
+  .key-row span{font-size:13px;}
+  .toggle{
+    width:52px;height:28px;border-radius:999px;background:#2A415E;position:relative;
+    cursor:pointer;border:1px solid var(--line);flex:none;
+  }
+  .toggle .dot{
+    width:22px;height:22px;border-radius:50%;background:var(--muted);
+    position:absolute;top:2px;left:2px;transition:left .25s, background .25s;
+  }
+  .toggle.on{background:#2f5133;}
+  .toggle.on .dot{left:26px;background:var(--green);}
+
+  .log{border-top:1px dashed var(--line);padding-top:12px;margin-top:4px;}
+  .log-row{display:flex;justify-content:space-between;font-family:var(--font-mono);
+    font-size:12.5px;color:var(--muted);padding:4px 0;border-bottom:1px solid #1e3049;}
+  .log-row b{color:var(--text);font-weight:600;}
+  .empty{color:var(--muted);font-size:12.5px;font-style:italic;}
+
+  .quiz{margin-top:18px;}
+  .quiz p{font-size:13.5px;line-height:1.5;margin:0 0 10px;color:var(--text);}
+  .reveal-btn{
+    background:none;border:1px solid var(--amber);color:var(--amber);
+    border-radius:8px;padding:7px 12px;font-size:12.5px;cursor:pointer;font-family:var(--font-body);
+  }
+  .answer{
+    font-size:13px;line-height:1.5;color:var(--muted);margin-top:10px;
+    display:none;border-left:2px solid var(--green);padding-left:10px;
+  }
+  .answer.show{display:block;}
+
+  .safety{
+    margin-top:16px;font-size:12px;color:var(--red);background:#2a1616;
+    border:1px solid #4a2424;border-radius:8px;padding:8px 10px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Activity 11.2 · Simulator</div>
+  <h1>Why does the ammeter reading change?</h1>
+  <div class="sub">Pick a component for gap XY, plug in the key, and read the ammeter — just like the real circuit in Fig. 11.4. Then try the same steps on your actual apparatus.</div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2><span class="n">01</span> Circuit</h2>
+      <svg viewBox="0 0 480 300">
+        <!-- battery -->
+        <line class="wire" x1="20" y1="230" x2="20" y2="70"/>
+        <line class="wire" x1="20" y1="70" x2="60" y2="70"/>
+        <g id="battery" transform="translate(60,55)">
+          <line x1="0" y1="0" x2="0" y2="30" stroke="#5A7690" stroke-width="4"/>
+          <line x1="8" y1="6" x2="8" y2="24" stroke="#5A7690" stroke-width="2"/>
+          <line x1="16" y1="0" x2="16" y2="30" stroke="#5A7690" stroke-width="4"/>
+          <line x1="24" y1="6" x2="24" y2="24" stroke="#5A7690" stroke-width="2"/>
+          <line x1="32" y1="0" x2="32" y2="30" stroke="#5A7690" stroke-width="4"/>
+          <line x1="40" y1="6" x2="40" y2="24" stroke="#5A7690" stroke-width="2"/>
+          <line x1="48" y1="0" x2="48" y2="30" stroke="#5A7690" stroke-width="4"/>
+        </g>
+        <line class="wire" x1="108" y1="70" x2="150" y2="70"/>
+
+        <!-- key -->
+        <g class="key-plug" id="keyGroup" transform="translate(150,55)">
+          <circle cx="0" cy="15" r="5" fill="#5A7690"/>
+          <circle cx="40" cy="15" r="5" fill="#5A7690"/>
+          <line id="keyLever" x1="0" y1="15" x2="34" y2="4" stroke="var(--muted)" stroke-width="4" stroke-linecap="round"/>
+          <text x="8" y="40" class="gauge-label">plug key (tap to close)</text>
+        </g>
+        <line class="wire" x1="190" y1="70" x2="240" y2="70"/>
+
+        <!-- gap XY: component holder -->
+        <g id="gapGroup" transform="translate(240,50)">
+          <text x="0" y="-6" class="gauge-label">X</text>
+          <text x="140" y="-6" class="gauge-label">Y</text>
+          <rect x="0" y="10" width="150" height="20" rx="4" fill="none" stroke="#5A7690" stroke-width="2" stroke-dasharray="4 3"/>
+          <text id="compLabel" x="75" y="24" text-anchor="middle" class="gauge-label" fill="#9db3c6">select a component</text>
+          <!-- bulb icon (hidden unless bulb selected) -->
+          <g id="bulbIcon" transform="translate(60,-6)" opacity="0">
+            <circle id="bulbGlass" class="bulb-glass" cx="15" cy="15" r="13"/>
+            <path id="bulbFilament" class="filament" d="M9,20 L15,10 L21,20"/>
+          </g>
+        </g>
+        <line class="wire" x1="390" y1="70" x2="430" y2="70"/>
+
+        <!-- right side down to ammeter -->
+        <line class="wire" x1="430" y1="70" x2="430" y2="150"/>
+        <line class="wire" x1="20" y1="230" x2="150" y2="230"/>
+        <line class="wire" x1="150" y1="230" x2="150" y2="260"/>
+        <line class="wire" x1="430" y1="230" x2="430" y2="260"/>
+        <line class="wire" x1="150" y1="260" x2="430" y2="260"/>
+
+        <!-- ammeter -->
+        <g transform="translate(0,0)">
+          <circle class="gauge-face" cx="150" cy="180" r="40"/>
+          <text x="150" y="196" text-anchor="middle" class="gauge-label" fill="var(--muted)">A</text>
+          <g id="gaugeTicks"></g>
+          <line id="needle" class="gauge-needle" x1="150" y1="210" x2="150" y2="180"/>
+          <circle cx="150" cy="180" r="3" fill="var(--red)"/>
+        </g>
+        <line class="wire" x1="150" y1="140" x2="150" y2="70"/>
+        <line class="wire" x1="20" y1="230" x2="20" y2="230"/>
+
+        <text id="readingText" class="reading" x="105" y="130">0.00 A</text>
+
+        <!-- flow dots -->
+        <circle class="flow-dot" id="d1" r="3" cx="80" cy="70"/>
+        <circle class="flow-dot" id="d2" r="3" cx="300" cy="15"/>
+        <circle class="flow-dot" id="d3" r="3" cx="410" cy="70"/>
+        <circle class="flow-dot" id="d4" r="3" cx="430" cy="150"/>
+      </svg>
+    </div>
+
+    <div class="panel">
+      <h2><span class="n">02</span> Choose the component for XY</h2>
+      <div class="components" id="components">
+        <button class="comp-btn" data-comp="nichrome">
+          <span class="name">Nichrome wire</span>
+          <span class="hint">Long, thin resistance wire</span>
+        </button>
+        <button class="comp-btn" data-comp="torch">
+          <span class="name">Torch bulb</span>
+          <span class="hint">Thin filament, small bulb</span>
+        </button>
+        <button class="comp-btn" data-comp="tenw">
+          <span class="name">10 W bulb</span>
+          <span class="hint">Thicker filament, larger bulb</span>
+        </button>
+      </div>
+
+      <div class="key-row">
+        <span>Plug key (close circuit)</span>
+        <div class="toggle" id="keyToggle"><div class="dot"></div></div>
+      </div>
+
+      <div class="log">
+        <div id="logList"><div class="empty">No readings recorded yet.</div></div>
+      </div>
+
+      <div class="quiz">
+        <p><b>Think about it:</b> Are the ammeter readings different for the three components? What does that tell you about each one's resistance?</p>
+        <button class="reveal-btn" id="revealBtn">Show explanation</button>
+        <div class="answer" id="answerBox">
+          Yes — the same four cells push a different current through each component. A higher reading means the component opposed the current less (lower resistance); a lower reading means it opposed the current more (higher resistance). The torch bulb's thin filament resists current the most, the nichrome wire the least, and the 10 W bulb sits in between.
+        </div>
+      </div>
+
+      <div class="safety">⚠ Always remove the key from the plug right after noting the ammeter reading — this matches the real lab instruction and prevents the wire/filament from overheating.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const data = {
+  nichrome: {label:'Nichrome wire', current:1.20, isBulb:false},
+  torch:    {label:'Torch bulb',    current:0.20, isBulb:true, glow:0.35},
+  tenw:     {label:'10 W bulb',     current:0.60, isBulb:true, glow:0.85}
+};
+
+let selected = null;
+let keyOn = false;
+const logEntries = [];
+
+const compBtns = document.querySelectorAll('.comp-btn');
+const keyToggle = document.getElementById('keyToggle');
+const needle = document.getElementById('needle');
+const readingText = document.getElementById('readingText');
+const compLabel = document.getElementById('compLabel');
+const bulbIcon = document.getElementById('bulbIcon');
+const bulbGlass = document.getElementById('bulbGlass');
+const bulbFilament = document.getElementById('bulbFilament');
+const dots = ['d1','d2','d3','d4'].map(id=>document.getElementById(id));
+const logList = document.getElementById('logList');
+
+// build gauge ticks 0..2A
+const ticksG = document.getElementById('gaugeTicks');
+for(let i=0;i<=8;i++){
+  const angle = -120 + (i/8)*240; // -120 to 120 deg
+  const rad = angle*Math.PI/180;
+  const x1 = 150 + 34*Math.sin(rad), y1 = 180 - 34*Math.cos(rad);
+  const x2 = 150 + 40*Math.sin(rad), y2 = 180 - 40*Math.cos(rad);
+  const tick = document.createElementNS('http://www.w3.org/2000/svg','line');
+  tick.setAttribute('x1',x1); tick.setAttribute('y1',y1);
+  tick.setAttribute('x2',x2); tick.setAttribute('y2',y2);
+  tick.setAttribute('class','gauge-tick');
+  ticksG.appendChild(tick);
+}
+
+function currentToAngle(a){ // 0..2A -> -60..60 deg from vertical
+  const clamped = Math.min(a,2);
+  return -60 + (clamped/2)*120;
+}
+
+function selectComponent(key){
+  selected = key;
+  compBtns.forEach(b=>b.classList.toggle('active', b.dataset.comp===key));
+  compLabel.textContent = data[key].label;
+  compLabel.setAttribute('fill','#EAF2F8');
+  bulbIcon.setAttribute('opacity', data[key].isBulb ? '1':'0');
+  updateCircuit();
+}
+
+function updateCircuit(){
+  const closed = keyOn && selected;
+  const current = closed ? data[selected].current : 0;
+  needle.style.transform = `rotate(${currentToAngle(current)}deg)`;
+  readingText.textContent = current.toFixed(2)+' A';
+  dots.forEach(d=>d.classList.toggle('on', closed));
+  document.querySelectorAll('.wire').forEach(w=>w.classList.toggle('wire-live', closed));
+
+  const lit = closed && selected && data[selected].isBulb;
+  bulbGlass.classList.toggle('lit', lit);
+  bulbFilament.classList.toggle('lit', lit);
+  if(lit){
+    bulbGlass.style.opacity = 0.5 + data[selected].glow*0.5;
+  } else {
+    bulbGlass.style.opacity = 1;
+  }
+
+  if(closed){
+    logEntries.unshift({name:data[selected].label, val:current.toFixed(2)});
+    renderLog();
+  }
+}
+
+function renderLog(){
+  if(logEntries.length===0){
+    logList.innerHTML = '<div class="empty">No readings recorded yet.</div>';
+    return;
+  }
+  logList.innerHTML = logEntries.slice(0,6).map(e=>
+    `<div class="log-row"><span>${e.name}</span><b>${e.val} A</b></div>`
+  ).join('');
+}
+
+compBtns.forEach(b=>b.addEventListener('click', ()=>{
+  const wasOn = keyOn;
+  keyOn = false; keyToggle.classList.remove('on'); // safety: unplug when swapping component
+  selectComponent(b.dataset.comp);
+}));
+
+keyToggle.addEventListener('click', ()=>{
+  if(!selected) return;
+  keyOn = !keyOn;
+  keyToggle.classList.toggle('on', keyOn);
+  updateCircuit();
+});
+
+document.getElementById('keyGroup').addEventListener('click', ()=>{
+  if(!selected) return;
+  keyOn = !keyOn;
+  keyToggle.classList.toggle('on', keyOn);
+  updateCircuit();
+});
+
+document.getElementById('revealBtn').addEventListener('click', (e)=>{
+  document.getElementById('answerBox').classList.toggle('show');
+  e.target.textContent = document.getElementById('answerBox').classList.contains('show') ? 'Hide explanation' : 'Show explanation';
+});
+
+updateCircuit();
+</script>
+</body>
+</html>

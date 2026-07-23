@@ -1,0 +1,159 @@
+---
+title: "How do Organisms Reproduce?"
+chapter_number: 3
+subject: "Science"
+domain: biology
+class: 10
+board: "CBSE / NCERT"
+language: "English"
+created: '2026-07-17'
+last_updated: '2026-07-17'
+page_range:
+  start: 114
+  end: 127
+
+summary: >
+  This chapter explains why organisms reproduce and how DNA copying with
+  variations drives both reproduction and evolution. It surveys the asexual
+  modes used by single organisms, namely fission, fragmentation, regeneration,
+  budding, vegetative propagation and spore formation, before turning to
+  sexual reproduction. The significance of the sexual mode, reproduction in
+  flowering plants including pollination and fertilisation, and the human
+  male and female reproductive systems are covered in detail. The chapter
+  closes with puberty, menstruation, reproductive health, sexually
+  transmitted diseases and contraception.
+
+sections:
+  - "7.1 DO ORGANISMS CREATE EXACT COPIES OF THEMSELVES?"
+  - "7.1.1 The Importance of Variation"
+  - "7.2 MODES OF REPRODUCTION USED BY SINGLE ORGANISMS"
+  - "7.2.1 Fission"
+  - "7.2.2 Fragmentation"
+  - "7.2.3 Regeneration"
+  - "7.2.4 Budding"
+  - "7.2.5 Vegetative Propagation"
+  - "7.2.6 Spore Formation"
+  - "7.3 SEXUAL REPRODUCTION"
+  - "7.3.1 Why the Sexual Mode of Reproduction?"
+  - "7.3.2 Sexual Reproduction in Flowering Plants"
+  - "7.3.3 Reproduction in Human Beings"
+  - "7.3.3 (a) Male Reproductive System"
+  - "7.3.3 (b) Female Reproductive System"
+  - "7.3.3 (c) What happens when the Egg is not Fertilised?"
+  - "7.3.3 (d) Reproductive Health"
+
+activities:
+  - "Activity 7.1: Observing budding in yeast grown in sugar solution under a microscope"
+  - "Activity 7.2: Growing bread mould on a moist slice of bread and observing it with a magnifying glass"
+  - "Activity 7.3: Comparing permanent slides of Amoeba and Amoeba undergoing binary fission"
+  - "Activity 7.4: Observing Spirogyra filaments from green pond water under a microscope"
+  - "Activity 7.5: Testing which potato pieces, with or without buds, sprout fresh shoots and roots"
+  - "Activity 7.6: Testing which money-plant cuttings, with or without leaves, grow fresh leaves"
+  - "Activity 7.7: Germinating soaked Bengal gram seeds and identifying the parts of the embryo"
+
+tables: []
+
+key_concepts:
+  - concept: "DNA Copying in Reproduction"
+    section: "7.1 DO ORGANISMS CREATE EXACT COPIES OF THEMSELVES?"
+    summary: "Reproduction begins with the cell creating a copy of its DNA, accompanied by additional cellular apparatus, so that one cell divides into two new cells."
+
+  - concept: "Importance of Variation"
+    section: "7.1.1 The Importance of Variation"
+    summary: "Variations arising during DNA copying help populations survive changing niches because a few variant individuals may tolerate new conditions and continue the species over time."
+
+  - concept: "Fission (Binary and Multiple)"
+    section: "7.2.1 Fission"
+    summary: "Unicellular organisms divide into new individuals through binary fission splitting into two equal halves, or multiple fission producing many daughter cells simultaneously, as in Plasmodium."
+
+  - concept: "Fragmentation"
+    section: "7.2.2 Fragmentation"
+    summary: "Simple multicellular organisms like Spirogyra break into smaller pieces upon maturation, and each fragment grows into a complete new individual with identical overall body design."
+
+  - concept: "Regeneration"
+    section: "7.2.3 Regeneration"
+    summary: "Organisms such as Hydra and Planaria can regrow complete individuals from cut body pieces, using specialised cells that proliferate and differentiate into various body tissues."
+
+  - concept: "Budding"
+    section: "7.2.4 Budding"
+    summary: "In Hydra, repeated cell division at one site produces a bud that grows into a tiny individual, detaching from the parent as an independent organism."
+
+  - concept: "Vegetative Propagation"
+    section: "7.2.5 Vegetative Propagation"
+    summary: "Plant parts like roots, stems and leaves develop into new plants under appropriate conditions; this property enables layering, grafting and commercial agriculture of seedless varieties."
+
+  - concept: "Tissue Culture"
+    section: "7.2.5 Vegetative Propagation"
+    summary: "Cells separated from a plant's growing tip are placed in artificial medium, forming a callus that hormones differentiate into plantlets, yielding many disease-free plants quickly."
+
+  - concept: "Spore Formation"
+    section: "7.2.6 Spore Formation"
+    summary: "Rhizopus reproduces asexually through sporangia containing spores covered by thick protective walls; these spores germinate on contacting moist surfaces and grow into new mould individuals."
+
+  - concept: "Combining Variations through Sexual Reproduction"
+    section: "7.3.1 Why the Sexual Mode of Reproduction?"
+    summary: "Sexual reproduction combines DNA from two different individuals, generating novel combinations of accumulated variations that accelerate evolution and improve chances of species survival over time."
+
+  - concept: "Meiosis and Gametes"
+    section: "7.3.1 Why the Sexual Mode of Reproduction?"
+    summary: "Meiosis creates germ-cells with half the chromosomes and DNA of body cells, so fertilisation between two gametes restores the chromosome number in the new offspring."
+
+  - concept: "Reproductive Parts of a Flower"
+    section: "7.3.2 Sexual Reproduction in Flowering Plants"
+    summary: "Stamen is the male reproductive part producing pollen grains, while pistil, made of ovary, style and stigma, is the female reproductive part containing the ovules."
+
+  - concept: "Pollination"
+    section: "7.3.2 Sexual Reproduction in Flowering Plants"
+    summary: "Transfer of pollen from stamen to stigma is pollination; it is self-pollination within one flower and cross-pollination between flowers, aided by wind, water or animals."
+
+  - concept: "Fertilisation and Seed Formation in Plants"
+    section: "7.3.2 Sexual Reproduction in Flowering Plants"
+    summary: "A pollen tube carries the male germ-cell to the ovule where fertilisation forms a zygote; the ovule becomes a seed and ovary ripens into fruit."
+
+  - concept: "Puberty and Sexual Maturation"
+    section: "7.3.3 Reproduction in Human Beings"
+    summary: "During adolescence, reproductive tissues mature as body growth slows, producing changes like hair patterns, oily skin, breast development in girls and facial hair in boys."
+
+  - concept: "Male Reproductive System"
+    section: "7.3.3 (a) Male Reproductive System"
+    summary: "Testes located in the scrotum produce sperms and testosterone; sperms travel through vas deferens, receiving secretions from prostate and seminal vesicles, exiting via the urethra."
+
+  - concept: "Female Reproductive System"
+    section: "7.3.3 (b) Female Reproductive System"
+    summary: "Ovaries produce eggs and hormones; each month one egg travels through the fallopian tube toward the uterus, which opens into the vagina through the cervix."
+
+  - concept: "Implantation and Placenta"
+    section: "7.3.3 (b) Female Reproductive System"
+    summary: "The zygote divides into an embryo that implants in the thickened uterine lining, receiving nutrition and oxygen from the mother's blood through the specialised placenta."
+
+  - concept: "Menstruation"
+    section: "7.3.3 (c) What happens when the Egg is not Fertilised?"
+    summary: "When the released egg is not fertilised, the thickened spongy uterine lining breaks down and exits through the vagina as blood and mucous, roughly monthly."
+
+  - concept: "Reproductive Health and Sexually Transmitted Diseases"
+    section: "7.3.3 (d) Reproductive Health"
+    summary: "Sexual contact can transmit bacterial infections like gonorrhoea and syphilis and viral infections like warts and HIV-AIDS; condoms effectively help prevent many such disease transmissions."
+
+  - concept: "Contraception"
+    section: "7.3.3 (d) Reproductive Health"
+    summary: "Pregnancy can be avoided through mechanical barriers like condoms, hormonal pills preventing egg release, intrauterine devices like copper-T, or surgical blocking of the reproductive tubes."
+
+tags:
+  - "Biology"
+  - "Reproduction"
+  - "Asexual Reproduction"
+  - "Sexual Reproduction"
+  - "Fission"
+  - "Fragmentation"
+  - "Regeneration"
+  - "Budding"
+  - "Vegetative Propagation"
+  - "Spore Formation"
+  - "Pollination"
+  - "Fertilisation"
+  - "Human Reproductive System"
+  - "Puberty"
+  - "Menstruation"
+  - "Reproductive Health"
+  - "Contraception"
+...

@@ -1,0 +1,8 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://edova.dev/schemas/settings.schema.json",
+  "title": "Settings",
+  "type": "object",
+  "properties": {},
+  "additionalProperties": true
+}

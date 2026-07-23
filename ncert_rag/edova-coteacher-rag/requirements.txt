@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pydantic
+python-dotenv
+nest-asyncio
+pymupdf
+llama-parse
+langchain-google-genai
+langchain-text-splitters
+langchain-community
+sqlite-vecpython-multipart

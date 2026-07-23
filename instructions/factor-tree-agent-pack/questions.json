@@ -1,0 +1,35 @@
+{
+  "q1": {
+    "q": "What will be value of x?",
+    "options": [
+      "15005",
+      "13915",
+      "56920",
+      "17429"
+    ],
+    "correct": "13915",
+    "hint": "x = 5 \u00d7 2783"
+  },
+  "q2": {
+    "q": "What will be value of y?",
+    "options": [
+      "23",
+      "22",
+      "11",
+      "19"
+    ],
+    "correct": "11",
+    "hint": "y = 2783 \u00f7 253, 253\u00d711=2783"
+  },
+  "q3": {
+    "q": "What will be value of z?",
+    "options": [
+      "23",
+      "11",
+      "5",
+      "46"
+    ],
+    "correct": "23",
+    "hint": "z = 253 \u00f7 11"
+  }
+}

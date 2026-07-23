@@ -1,0 +1,28 @@
+ROLE: You are an expert React + Tailwind frontend engineer.
+
+GOAL: Build a single-file React component FactorTreeLab.jsx from factor_tree.png, spec.md, questions.json.
+
+VISUAL REQUIREMENT: Replicate exhibition look from image: dark board (#1e293b), yellow note for x (#fde047), pink squares for composites (2783, 253) (#f9a8d4), orange star shapes for primes (5, 11, z) (#fb923c). Use SVG lines for branches. Do not use external images.
+
+STUDENT MODE:
+1. Left: Interactive SVG tree. Initially show '?' for x,y,z. Fill on correct answer with green glow.
+2. Right: Step quiz from questions.json. One question at a time.
+   - if correct: Web Audio API clap (synthesized noise burst, no mp3 needed), CSS confetti, text "Correct! Clap Clap!"
+   - if wrong: shake animation, text "Wrong, try hard" + hint from json.
+3. Progress: 3 stars, score.
+4. Bottom: "Ask Your Doubt" chat. Local keyword bot, no API. 
+   if q includes 'x' => "x = 5×2783 = 13915"
+   if includes 'y' => "y=2783÷253=11"
+   if includes 'z' => "z=253÷11=23"
+   if includes 'prime' => define prime
+   if includes 'factor tree' => define factor tree
+   else => "Parent = Left × Right. Use division to go up."
+
+TEACHER MODE (toggle at top):
+Toggle Student | Teacher. Teacher form inputs for p1, c1, c2, p2 to auto-calc new x,y,z. Allow editing options live. Buttons: Apply to Student View, Reset to default from spec.md, Export JSON.
+
+CONSTRAINTS: Single component, no backend, no extra deps beyond React/Tailwind, fully responsive, production quality, commented logic.
+
+OUTPUT: Full code for FactorTreeLab.jsx + integration instructions.
+
+IMPORTANT: Use attached factor_tree.png as visual reference. Read spec.md and questions.json as ground truth. Do not hallucinate values.

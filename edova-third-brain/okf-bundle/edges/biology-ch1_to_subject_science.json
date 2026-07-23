@@ -1,0 +1,11 @@
+{
+  "edge_id": "biology-ch1_to_subject_science",
+  "type": "belongs_to",
+  "from": "biology-ch1",
+  "to": "subject_science",
+  "doc_ids": [
+    "science_biology-ch1_chapter_content_685ec722",
+    "science_biology-ch1_video_47497fa9",
+    "science_biology-ch1_video_8239d1b8"
+  ]
+}

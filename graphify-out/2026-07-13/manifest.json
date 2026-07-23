@@ -1,0 +1,3242 @@
+{
+  "_decomp/app.js": {
+    "mtime": 1783625871.9998765,
+    "ast_hash": "49cc8b7c54dcf0028a5e4f6de95a60ff",
+    "semantic_hash": ""
+  },
+  "_decomp/decomp.py": {
+    "mtime": 1783625817.8358517,
+    "ast_hash": "1118296043cbb4a7d3ce387c0488d0ba",
+    "semantic_hash": ""
+  },
+  "_decomp/mod_0.js": {
+    "mtime": 1783625817.918121,
+    "ast_hash": "6331d19bb878de364870d324a4a0f9e0",
+    "semantic_hash": ""
+  },
+  "_decomp/mod_1.js": {
+    "mtime": 1783625817.9191213,
+    "ast_hash": "acfedb41d7351e0fa41d2d1bff7b0550",
+    "semantic_hash": ""
+  },
+  "_decomp/mod_2.js": {
+    "mtime": 1783625817.921121,
+    "ast_hash": "dbcbb9a5ef20c7c97d67741224c27f8e",
+    "semantic_hash": ""
+  },
+  "_decomp/split.py": {
+    "mtime": 1783625871.9163065,
+    "ast_hash": "45596b17a78cd8056ec51be5aa24f0f7",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/okf.manifest.json": {
+    "mtime": 1783407455.939773,
+    "ast_hash": "95a7662fdad0b03f102e3fba5c3b61a4",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/tools/build_manifest.py": {
+    "mtime": 1783404582.343676,
+    "ast_hash": "688b6a481b9d27ba45bf346496123863",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/tools/validate_okf.py": {
+    "mtime": 1783185710.3750055,
+    "ast_hash": "23abb4b1fef6dbf448ad5cb03c2ae235",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/assets/concept-videos/quadratic_tutorial.py": {
+    "mtime": 1783370531.6852455,
+    "ast_hash": "c9ef2ced5b7cfb39fc9dfc231bd33be3",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/assets/concept-videos/root_of_equations.py": {
+    "mtime": 1783370531.7155764,
+    "ast_hash": "ad051c7472c81dfa9f3a517869bca0e6",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/assets/concept-videos/train_quadratic.py": {
+    "mtime": 1783370531.7376628,
+    "ast_hash": "2f397696c74c793d41c5477739a97bb5",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/concept-videos/quadratic_tutorial.py": {
+    "mtime": 1782619756.5706365,
+    "ast_hash": "c9ef2ced5b7cfb39fc9dfc231bd33be3",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/concept-videos/root_of_equations.py": {
+    "mtime": 1782632255.467861,
+    "ast_hash": "ad051c7472c81dfa9f3a517869bca0e6",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/concept-videos/train_quadratic.py": {
+    "mtime": 1782636610.3450792,
+    "ast_hash": "2f397696c74c793d41c5477739a97bb5",
+    "semantic_hash": ""
+  },
+  "edova-web/.oxlintrc.json": {
+    "mtime": 1783625624.4279525,
+    "ast_hash": "029f4905006c1fffd96bc863e2d98d3e",
+    "semantic_hash": ""
+  },
+  "edova-web/components.json": {
+    "mtime": 1783625882.3652825,
+    "ast_hash": "e5c09f0d1b54622057d0fb8d5a894b35",
+    "semantic_hash": ""
+  },
+  "edova-web/package.json": {
+    "mtime": 1783691255.5182369,
+    "ast_hash": "b473357a5e42c5a464020c69356407b8",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/chat/ChatWidget.tsx": {
+    "mtime": 1783671433.545702,
+    "ast_hash": "9b7890fbad924dc37e4b421e019dd512",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/common/FlashBanner.tsx": {
+    "mtime": 1783671793.2980628,
+    "ast_hash": "54e08039e4b710c599f3e080fa53996c",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/common/PageHeader.tsx": {
+    "mtime": 1783626736.4429758,
+    "ast_hash": "cca1a259f7ae5d81d1131739817b8b56",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/common/Placeholder.tsx": {
+    "mtime": 1783626750.552982,
+    "ast_hash": "8cb0eb803fdb1ef519ccdabd8d03f091",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/layout/AppLayout.tsx": {
+    "mtime": 1783626719.468488,
+    "ast_hash": "2c48d3e3ec1436693d32f7ef745e612f",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/layout/Sidebar.tsx": {
+    "mtime": 1783626576.0976446,
+    "ast_hash": "87d28b3a4ed7065c422943d1e3298e59",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/layout/Topbar.tsx": {
+    "mtime": 1783626600.9971309,
+    "ast_hash": "f7dca5cfa2d89589a1ada1ca5292c3a9",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/ui/avatar.tsx": {
+    "mtime": 1783626016.1756382,
+    "ast_hash": "93ce101f4790fe74f08d3a037bb2c63f",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/ui/badge.tsx": {
+    "mtime": 1783625947.7821524,
+    "ast_hash": "65be677e1f5a634cdaea656ef1868648",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/ui/button.tsx": {
+    "mtime": 1783625913.3816712,
+    "ast_hash": "d3592f075b6456995b96a160cb1e7a94",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/ui/card.tsx": {
+    "mtime": 1783625926.0647776,
+    "ast_hash": "32336ad6c24fdc9af7693fbd591b3912",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/ui/checkbox.tsx": {
+    "mtime": 1783626152.061015,
+    "ast_hash": "2f92b3853835cefb94191010c80d28a9",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/ui/dialog.tsx": {
+    "mtime": 1783626093.2499423,
+    "ast_hash": "2fb952fbdbb63c8a1f623556c987b04d",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/ui/dropdown-menu.tsx": {
+    "mtime": 1783626114.8731465,
+    "ast_hash": "f468ca7798d31fd87910d474531df285",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/ui/input.tsx": {
+    "mtime": 1783625957.0637293,
+    "ast_hash": "1b4bbd6b531e24d0026add502dc4374b",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/ui/label.tsx": {
+    "mtime": 1783625974.367236,
+    "ast_hash": "f17b6a5b7d03bfe6be8d73df355b1751",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/ui/progress.tsx": {
+    "mtime": 1783626034.977406,
+    "ast_hash": "1765a45a61675469475d7a2bc0025ff9",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/ui/scroll-area.tsx": {
+    "mtime": 1783626141.2437127,
+    "ast_hash": "ca83068cf8eff6d767d91e41252d242c",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/ui/select.tsx": {
+    "mtime": 1783626058.813778,
+    "ast_hash": "0638d23f30cbdb966c631079f00cb35d",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/ui/separator.tsx": {
+    "mtime": 1783625990.2459636,
+    "ast_hash": "a9cb92672c18cbcbd1e96e435f924e07",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/ui/sonner.tsx": {
+    "mtime": 1783626203.0555615,
+    "ast_hash": "13b9cbed8f9c7eeed878d91932f071c5",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/ui/switch.tsx": {
+    "mtime": 1783626162.5759315,
+    "ast_hash": "90388f281af0baa6a03a05aef7bea195",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/ui/tabs.tsx": {
+    "mtime": 1783626072.6239424,
+    "ast_hash": "451e6aaf3ce4fd3df3840f633ec2cdbf",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/ui/textarea.tsx": {
+    "mtime": 1783626172.1835208,
+    "ast_hash": "6a9814e2caf64624d9a762da49908600",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/ui/tooltip.tsx": {
+    "mtime": 1783626127.4875076,
+    "ast_hash": "92666e40b74c06970c8041f758cb8c22",
+    "semantic_hash": ""
+  },
+  "edova-web/src/data/seed.ts": {
+    "mtime": 1783841826.1321585,
+    "ast_hash": "d79d31be366018174a21c98b094dd094",
+    "semantic_hash": ""
+  },
+  "edova-web/src/lib/dates.ts": {
+    "mtime": 1783626859.5152314,
+    "ast_hash": "1cd762deb91f345a6b9ac0b7eaf21ca1",
+    "semantic_hash": ""
+  },
+  "edova-web/src/lib/nav.ts": {
+    "mtime": 1783691114.787979,
+    "ast_hash": "86a6796868f5be33d8c407a0cd792a01",
+    "semantic_hash": ""
+  },
+  "edova-web/src/lib/styles.ts": {
+    "mtime": 1783671327.7738137,
+    "ast_hash": "85f125dd788be17f9b7ac4ce0dd04cb8",
+    "semantic_hash": ""
+  },
+  "edova-web/src/lib/types.ts": {
+    "mtime": 1783841759.894312,
+    "ast_hash": "3c9ed363a1f42efe663eddaa2d6a854b",
+    "semantic_hash": ""
+  },
+  "edova-web/src/lib/utils.ts": {
+    "mtime": 1783625861.7740407,
+    "ast_hash": "5a6fd53fdcf2be529e9cc0b718fde352",
+    "semantic_hash": ""
+  },
+  "edova-web/src/main.tsx": {
+    "mtime": 1783626977.5550544,
+    "ast_hash": "b7d843df810dedbcb0dca11cce680072",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/Announcements.tsx": {
+    "mtime": 1783691157.9144926,
+    "ast_hash": "ddaf9fd84c65ef04ccd65be677ca90ec",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/AssessmentBuilder.tsx": {
+    "mtime": 1783691543.0477884,
+    "ast_hash": "9b06fe69e19ed1c84c845595c5258da5",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/AssessmentExams.tsx": {
+    "mtime": 1783738848.0192766,
+    "ast_hash": "9770eb47c34833cb3d91f3b6a3654293",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/Assignments.tsx": {
+    "mtime": 1783691486.867507,
+    "ast_hash": "e2ad6be8a757003167476456d0cd8c96",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/Calendar.tsx": {
+    "mtime": 1783626874.866929,
+    "ast_hash": "b4f1ba9b828fccfa58f3106e582a749f",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/ClassAnalytics.tsx": {
+    "mtime": 1783691211.8561656,
+    "ast_hash": "09907a067406e8632b51b76ba2e81074",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/CourseProgress.tsx": {
+    "mtime": 1783672107.7079203,
+    "ast_hash": "889c8aaf6788fa2334f4a2258bb317cc",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/Dashboard.tsx": {
+    "mtime": 1783672080.6816678,
+    "ast_hash": "b783fc80d4361b16915da011a2289626",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/Gradebook.tsx": {
+    "mtime": 1783627481.765711,
+    "ast_hash": "e6d702136be0b3077d75f3edf69ab497",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/HomeworkTracker.tsx": {
+    "mtime": 1783672100.789709,
+    "ast_hash": "77c9e502c07d2862f7e669af70c5a8fa",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/LearningResources.tsx": {
+    "mtime": 1783824462.497687,
+    "ast_hash": "089f9328d735f31af29c4d62d40297e1",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/LessonPlanner.tsx": {
+    "mtime": 1783691469.504681,
+    "ast_hash": "2c0384e23addec34c2374317155d0e0f",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/MyClasses.tsx": {
+    "mtime": 1783626886.5879898,
+    "ast_hash": "274d642b7e15ac9b9eabff5caa955d53",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/MySubjects.tsx": {
+    "mtime": 1783626929.3449137,
+    "ast_hash": "028a668827a6d7a71a2ae558ae4b5eb2",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/ParentCommunication.tsx": {
+    "mtime": 1783691235.4409697,
+    "ast_hash": "b32cb79e2b54092bc8e38d1c0257785f",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/Reports.tsx": {
+    "mtime": 1783691222.251416,
+    "ast_hash": "26f136385b00e02de742c4530cf8287d",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/Settings.tsx": {
+    "mtime": 1783758595.6332822,
+    "ast_hash": "d792ee0f06ef32a64d4e5fb2c1bfb081",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/StudentBehavior.tsx": {
+    "mtime": 1783627438.6220167,
+    "ast_hash": "4587898bbccbdc67e8ed3a130ca784a8",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/StudentProgress.tsx": {
+    "mtime": 1783627450.3561318,
+    "ast_hash": "13836e7973af6546ce41994939707658",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/SyllabusMap.tsx": {
+    "mtime": 1783691632.3091357,
+    "ast_hash": "0a90975def96b4675040fffe434a60ea",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/UpcomingTasks.tsx": {
+    "mtime": 1783627503.4924145,
+    "ast_hash": "f03006ef5c5c60fdaad4eb7b281a3a8b",
+    "semantic_hash": ""
+  },
+  "edova-web/src/router.tsx": {
+    "mtime": 1783691130.5632987,
+    "ast_hash": "467aa1728bf721b986868159268644e9",
+    "semantic_hash": ""
+  },
+  "edova-web/src/store/app-store.ts": {
+    "mtime": 1783626531.3537886,
+    "ast_hash": "57108ecae8c74aca494fbae88605ff04",
+    "semantic_hash": ""
+  },
+  "edova-web/src/store/school-store.ts": {
+    "mtime": 1783841853.7434683,
+    "ast_hash": "ff39be15ac7e37acf335c02b80913c4e",
+    "semantic_hash": ""
+  },
+  "edova-web/tsconfig.app.json": {
+    "mtime": 1783627017.3438993,
+    "ast_hash": "ed93b04acc55f7fdccad761179ed618e",
+    "semantic_hash": ""
+  },
+  "edova-web/tsconfig.json": {
+    "mtime": 1783625624.4504683,
+    "ast_hash": "a3d39fa780ebff65444de257f291ce6c",
+    "semantic_hash": ""
+  },
+  "edova-web/tsconfig.node.json": {
+    "mtime": 1783625624.454468,
+    "ast_hash": "f9cb81ddcea69ffdab672fc8c48dca66",
+    "semantic_hash": ""
+  },
+  "edova-web/vite.config.ts": {
+    "mtime": 1783625733.1145432,
+    "ast_hash": "4f7c27041993b0272139bb375b628beb",
+    "semantic_hash": ""
+  },
+  "ncert_rag/config/settings.py": {
+    "mtime": 1783709771.9729342,
+    "ast_hash": "7ea8d914d8c244d1b44e8b8c3edcdabc",
+    "semantic_hash": ""
+  },
+  "ncert_rag/embedding/__init__.py": {
+    "mtime": 1783137422.3008409,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "ncert_rag/extraction/__init__.py": {
+    "mtime": 1783137422.2391574,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "ncert_rag/ingestion/__init__.py": {
+    "mtime": 1783137422.4126494,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "ncert_rag/ingestion/pipeline.py": {
+    "mtime": 1783709803.0157442,
+    "ast_hash": "9751882c21eccb26e5c79026ca295a42",
+    "semantic_hash": ""
+  },
+  "ncert_rag/main.py": {
+    "mtime": 1783715282.8390598,
+    "ast_hash": "798d3a6b3d118c79e8f76b874d74cbc0",
+    "semantic_hash": ""
+  },
+  "ncert_rag/query/__init__.py": {
+    "mtime": 1783137422.4675379,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "ncert_rag/query/engine.py": {
+    "mtime": 1783708588.977828,
+    "ast_hash": "4c5045bcbffb7f3e1189ac21a91719eb",
+    "semantic_hash": ""
+  },
+  "ncert_rag/storage/__init__.py": {
+    "mtime": 1783137422.363595,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "ncert_rag/storage/pgvector_store.py": {
+    "mtime": 1783699030.6627655,
+    "ast_hash": "7fa0f6d7a1f061b88795427d5f943196",
+    "semantic_hash": ""
+  },
+  "ncert_rag/utils/__init__.py": {
+    "mtime": 1783137422.513843,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "ncert_rag/utils/pdf_utils.py": {
+    "mtime": 1783708704.4928656,
+    "ast_hash": "ff09a59d87b1c069364d55288c0268bc",
+    "semantic_hash": ""
+  },
+  "_decomp/doc.html": {
+    "mtime": 1783625871.992877,
+    "ast_hash": "33faefff3acc80a2f895684bbfa6ca8d",
+    "semantic_hash": ""
+  },
+  "_decomp/template.txt": {
+    "mtime": 1783625817.9311202,
+    "ast_hash": "35e82a459017a2825c188d727c54552c",
+    "semantic_hash": ""
+  },
+  "_decomp/xdc_template.html": {
+    "mtime": 1783625871.997877,
+    "ast_hash": "32246afbc9ea1092b0d58d9ad3801e38",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/README.md": {
+    "mtime": 1783623168.2336068,
+    "ast_hash": "87e133337af8ae2a98d8cf76057125c8",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/design-reference/Teacher Productivity Platform_mockup_v3.html": {
+    "mtime": 1783622591.2680726,
+    "ast_hash": "445143efa8329b78fed201e0a546911f",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/arithmetic-progressions/answer-key.md": {
+    "mtime": 1783339326.8884838,
+    "ast_hash": "f6729cd1eea9c0f5af32c1f3fd7387c7",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/arithmetic-progressions/arithmetic-progressions.md": {
+    "mtime": 1783362018.9829333,
+    "ast_hash": "96b914e5a57a163a80e85ab34f222ff0",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/arithmetic-progressions/index.md": {
+    "mtime": 1783362005.132272,
+    "ast_hash": "f5204ebc789ef4ef4ee3ae1610d02e0d",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/arithmetic-progressions/introduction-to-sequences.md": {
+    "mtime": 1783362014.954255,
+    "ast_hash": "58ddc36b1cc9a24838627a9232a6a6fe",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/arithmetic-progressions/log.md": {
+    "mtime": 1783366721.7422633,
+    "ast_hash": "c85c7110341a352cffc8756cd32e02f8",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/arithmetic-progressions/nth-term.md": {
+    "mtime": 1783362025.6140966,
+    "ast_hash": "7e36bac9b8067547eaefded931f004b4",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/arithmetic-progressions/question-bank.md": {
+    "mtime": 1783339320.8121717,
+    "ast_hash": "d9185f55d607a1e6e07ac5c5b085b2c5",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/arithmetic-progressions/sum-of-n-terms.md": {
+    "mtime": 1783362030.4139864,
+    "ast_hash": "3b31236ad8296b7f84ac3aa607df14e7",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/arithmetic-progressions/worksheets.md": {
+    "mtime": 1783339315.1418412,
+    "ast_hash": "a979dd6f46a3a034ca3740630bad5816",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/coordinate-geometry/answer-key.md": {
+    "mtime": 1783339508.956012,
+    "ast_hash": "d433c2dda79a059e881989654a19dc7e",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/coordinate-geometry/applications.md": {
+    "mtime": 1783339489.3286972,
+    "ast_hash": "5808ccd6e0cf8c564074ee5c717ceeb7",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/coordinate-geometry/distance-formula.md": {
+    "mtime": 1783339465.9453092,
+    "ast_hash": "a6f6df879e33e7040a6ef5b38021793e",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/coordinate-geometry/index.md": {
+    "mtime": 1783342201.4130034,
+    "ast_hash": "bc593894c5300a9720c02b5987fb78a7",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/coordinate-geometry/introduction.md": {
+    "mtime": 1783339458.725494,
+    "ast_hash": "e7207e8cd437d6d86f1c5c1a66ba7447",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/coordinate-geometry/log.md": {
+    "mtime": 1783342212.0869734,
+    "ast_hash": "a2be1da257a7baaa236ff9de983a1673",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/coordinate-geometry/midpoint-formula.md": {
+    "mtime": 1783339482.613371,
+    "ast_hash": "76ec9d77b63fb703c992f360a82b8443",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/coordinate-geometry/question-bank.md": {
+    "mtime": 1783339505.178381,
+    "ast_hash": "03e503015f2099830b3f98984154ce92",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/coordinate-geometry/section-formula.md": {
+    "mtime": 1783339473.6340134,
+    "ast_hash": "2cf46c1724c4b171d1bfe463ea688634",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/coordinate-geometry/worksheets.md": {
+    "mtime": 1783339496.3660238,
+    "ast_hash": "8885d0820fc8cf84174e9991b59acbe6",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/index.md": {
+    "mtime": 1783186559.668388,
+    "ast_hash": "d1766b0518f028929bac3e83c8cd7e1d",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/linear-equations/algebraic-methods.md": {
+    "mtime": 1783351452.4948707,
+    "ast_hash": "465c17ecd2ea6145b243df3eace07115",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/linear-equations/answer-key.md": {
+    "mtime": 1783351493.377896,
+    "ast_hash": "ea4a269e7d596c5fe694ddd170560b9e",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/linear-equations/graphical-method.md": {
+    "mtime": 1783351441.7581494,
+    "ast_hash": "eddde5bd584ce48170d022f54e29e47e",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/linear-equations/index.md": {
+    "mtime": 1783351415.5696383,
+    "ast_hash": "2667570f56c05039b87877b7d408a20d",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/linear-equations/introduction.md": {
+    "mtime": 1783351430.5918367,
+    "ast_hash": "e7f452e456d95567892c97315c7c0c73",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/linear-equations/log.md": {
+    "mtime": 1783359282.7387578,
+    "ast_hash": "f05f5f42813964b7071a5916935ff68b",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/linear-equations/question-bank.md": {
+    "mtime": 1783353927.587813,
+    "ast_hash": "ef2a86b53f256d043701b49794ac4282",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/linear-equations/reducible-equations.md": {
+    "mtime": 1783351461.8994267,
+    "ast_hash": "15c3394c4002b4df6b5b929025fad79d",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/linear-equations/worksheets.md": {
+    "mtime": 1783359263.4858825,
+    "ast_hash": "2a4539a70f764bfd213a2d45847d2908",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/polynomials/answer-key.md": {
+    "mtime": 1783344832.2457147,
+    "ast_hash": "2bdc16089386e36b55d2c19023cb5a26",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/polynomials/division-algorithm.md": {
+    "mtime": 1783343054.2875912,
+    "ast_hash": "7157a1c1e949f9c38bbb7f68733ca4d9",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/polynomials/geometrical-meaning-of-zeroes.md": {
+    "mtime": 1783342991.8022857,
+    "ast_hash": "6cee3b6ce31204264acde903d01fafb5",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/polynomials/index.md": {
+    "mtime": 1783345875.7664561,
+    "ast_hash": "60dd82c76a3a94dbb3958a29b93c5ea5",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/polynomials/introduction.md": {
+    "mtime": 1783342965.0037236,
+    "ast_hash": "8ef6d9b126c1629968fa2f149174e24f",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/polynomials/log.md": {
+    "mtime": 1783346488.8904734,
+    "ast_hash": "d4ed05ba8743e086be03875e872e5f36",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/polynomials/question-bank.md": {
+    "mtime": 1783344514.209445,
+    "ast_hash": "2e272c8361b9128681682bcbdb44585e",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/polynomials/relationship-zeroes-coefficients.md": {
+    "mtime": 1783343024.604206,
+    "ast_hash": "09325b7d0f65f95fb4f4b34e5114e171",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/polynomials/summary.md": {
+    "mtime": 1783343077.1890068,
+    "ast_hash": "ce69dd91b0f91db6664aefde60741056",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/polynomials/worksheets.md": {
+    "mtime": 1783345869.213372,
+    "ast_hash": "3734eddb8a43b0265ca0eb79c1b4aa46",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/quadratic-equations/answer-key.md": {
+    "mtime": 1783279684.7202868,
+    "ast_hash": "9cd17b476a654f3fcdceeaa66fed335a",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/quadratic-equations/index.md": {
+    "mtime": 1783341986.9960148,
+    "ast_hash": "8ab15eb202585aa56b1885789f9d6a92",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/quadratic-equations/introduction.md": {
+    "mtime": 1783279626.6831932,
+    "ast_hash": "d0477c62688af28e0e42031c2e9b2f50",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/quadratic-equations/log.md": {
+    "mtime": 1783407427.7602022,
+    "ast_hash": "b85a5b84c09fc5b6cfee71dde4c57684",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/quadratic-equations/nature-of-roots.md": {
+    "mtime": 1783279655.3684452,
+    "ast_hash": "7865bd18e07a271bd4a14488cd74219b",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/quadratic-equations/quadratic-equations.md": {
+    "mtime": 1783279635.1751263,
+    "ast_hash": "f3e5e480ce02b08152fa1b3ef0a82f5e",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/quadratic-equations/question-bank.md": {
+    "mtime": 1783279680.401409,
+    "ast_hash": "2b1985c6844a940e1a7abce9a788bd5a",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/quadratic-equations/solution-by-factorisation.md": {
+    "mtime": 1783279644.3635087,
+    "ast_hash": "c6027390255f9d3793368ad26bf98b12",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/quadratic-equations/summary.md": {
+    "mtime": 1783279662.6170056,
+    "ast_hash": "f1715e7d0abae194a9363b44e286616a",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/quadratic-equations/videos/index.md": {
+    "mtime": 1783407427.7797327,
+    "ast_hash": "8ee26bb5dd20b720aded026fd421cc52",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/quadratic-equations/videos/quadratic-polynomial.md": {
+    "mtime": 1783404334.3783598,
+    "ast_hash": "e27a5c4fb2d9048d9940ed3870baa46e",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/quadratic-equations/videos/quadratic-polynomials.md": {
+    "mtime": 1783186608.5486064,
+    "ast_hash": "13ed48156c916935feca4a7a7d76fd15",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/quadratic-equations/videos/train-problem-quadratic-equations.md": {
+    "mtime": 1783186611.1328664,
+    "ast_hash": "7c65209432fcb50f06cd62012797cced",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/quadratic-equations/worksheets.md": {
+    "mtime": 1783279671.9102488,
+    "ast_hash": "2aa01d97084b1e5a5d8c490a8e2e35f1",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/real-numbers/answer-key.md": {
+    "mtime": 1783341782.1837306,
+    "ast_hash": "165c5ead6700b7ca4dae94eab3fe789c",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/real-numbers/decimal-expansion.md": {
+    "mtime": 1783181521.312003,
+    "ast_hash": "179ba9d2da13048687723eed424ada98",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/real-numbers/euclids-division-lemma.md": {
+    "mtime": 1783181447.7760205,
+    "ast_hash": "5ee29e76316f6f3f24d77dcd33c03a81",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/real-numbers/fundamental-theorem-of-arithmetic.md": {
+    "mtime": 1783181512.791884,
+    "ast_hash": "77ba42d82fbd4e27c4c828292bbd7d93",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/real-numbers/hcf-and-lcm.md": {
+    "mtime": 1783181517.039048,
+    "ast_hash": "96c077d6d729248c2278f196a4f801e0",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/real-numbers/index.md": {
+    "mtime": 1783341958.0141335,
+    "ast_hash": "a95354de16e454dc316f64ad04bba3ee",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/real-numbers/log.md": {
+    "mtime": 1783342032.4987698,
+    "ast_hash": "5209aa1b647ff99196d856f6705bd1a5",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/real-numbers/question-bank.md": {
+    "mtime": 1783341780.9008925,
+    "ast_hash": "88e1170be487879ecc5ede5f10f02158",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/real-numbers/worksheets.md": {
+    "mtime": 1783341779.6450548,
+    "ast_hash": "2d222503c7b7330b66ab133e1f5c4683",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/triangles/answer-key.md": {
+    "mtime": 1783283753.9404545,
+    "ast_hash": "9f6db2923872bfa8c5eca2b589e39de4",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/triangles/criteria-for-similarity.md": {
+    "mtime": 1783283720.352457,
+    "ast_hash": "9012820ad5750e73662b7a5a34a7cd33",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/triangles/diagnostic-test.md": {
+    "mtime": 1783367911.3144207,
+    "ast_hash": "031317834d4b32b65d4bc1bb7a7249b5",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/triangles/formative-assessment.md": {
+    "mtime": 1783367906.2909966,
+    "ast_hash": "597d41283dee83a7b52ca13abe4193cb",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/triangles/index.md": {
+    "mtime": 1783367962.7817774,
+    "ast_hash": "e313f3b9157d85314c9eeff29dc5409d",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/triangles/introduction.md": {
+    "mtime": 1783283701.2063923,
+    "ast_hash": "314b06feca2cbc415487f085a7dcd150",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/triangles/lesson-1.md": {
+    "mtime": 1783367923.8359523,
+    "ast_hash": "d448663c369f643cf2c056445cd4eeee",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/triangles/lesson-2.md": {
+    "mtime": 1783367931.8922915,
+    "ast_hash": "4fe14dca467ef0cd4b5b1b01d9da5b8a",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/triangles/lesson-3.md": {
+    "mtime": 1783367939.0531433,
+    "ast_hash": "51bee56055e057d637c7d5cef0ce1416",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/triangles/log.md": {
+    "mtime": 1783368319.258634,
+    "ast_hash": "46eab75275fd620f0a8ab84590c5f782",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/triangles/question-bank.md": {
+    "mtime": 1783283750.1508858,
+    "ast_hash": "30c65ff2f62ce342d92601547ff654b7",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/triangles/rhs-similarity.md": {
+    "mtime": 1783283725.6835346,
+    "ast_hash": "7eeea35391a804b44b22447f4908419d",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/triangles/rubrics.md": {
+    "mtime": 1783367917.1490436,
+    "ast_hash": "499111365fd9a0dfc6a118dcf9729edc",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/triangles/similar-figures.md": {
+    "mtime": 1783283706.9439847,
+    "ast_hash": "bc09f4ae6c6cc5bd8a36066dc96865ea",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/triangles/similarity-of-triangles.md": {
+    "mtime": 1783283713.7606244,
+    "ast_hash": "e130c8b5caff627e7854feebebc806e4",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/triangles/summary.md": {
+    "mtime": 1783283734.337399,
+    "ast_hash": "c7ef0dd86cb6b6759c8f5a5db833159f",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/triangles/summative-assessment.md": {
+    "mtime": 1783367900.5952945,
+    "ast_hash": "b096b7c8d1e4a80d092e27c46335f906",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/triangles/worksheets.md": {
+    "mtime": 1783283743.4945455,
+    "ast_hash": "a83a2a88b2077e806e2fa3a3660f7b4d",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/index.md": {
+    "mtime": 1783339531.0977845,
+    "ast_hash": "d26e5e64b7a14ae0a38eff4915fbbc35",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/log.md": {
+    "mtime": 1783372615.2987273,
+    "ast_hash": "e0652c64935de47d1ce4f38d70b85199",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/references/cbse-syllabus.md": {
+    "mtime": 1783181034.9287283,
+    "ast_hash": "d51f4fb9d7945f93dac51b932e93e6c3",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/references/index.md": {
+    "mtime": 1783181033.4003587,
+    "ast_hash": "4aa2acf7eaf0bc95af8012a7ace4bb6f",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/references/ncert-class-10-maths.md": {
+    "mtime": 1783181034.1421368,
+    "ast_hash": "745aea94f4709d021c188dba7cfc6820",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-1-real-numbers/CBSE_Class10_Maths_Chapter1_Module1_Part3.md": {
+    "mtime": 1783162531.1448853,
+    "ast_hash": "38ac28082af7c40e8c731cc309f68278",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-1-real-numbers/CBSE_Class10_RealNumbers_Complete_Teacher_Resource.md": {
+    "mtime": 1783158647.7467117,
+    "ast_hash": "822ec96ef55714ea1fc14c7dedf45612",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-1-real-numbers/CBSE_Class10_RealNumbers_Module1_Part2.md": {
+    "mtime": 1783161947.5741036,
+    "ast_hash": "fd12853c710ae33916868f9f8c485b04",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-1-real-numbers/CBSE_Class_10_Real_Numbers_Blooms_Taxonomy_Mapping.md": {
+    "mtime": 1783158301.523298,
+    "ast_hash": "e48fffb986e68e5bade384177a874170",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-1-real-numbers/CBSE_Class_10_Real_Numbers_Teacher_Notes.md": {
+    "mtime": 1783153471.4229882,
+    "ast_hash": "d360739ad6fcfcd083598a2bb398c2e0",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-1-real-numbers/README.md": {
+    "mtime": 1783189748.136299,
+    "ast_hash": "c349c315c1842297335f8a7af6330d79",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-1-real-numbers/activities/art-integration.md": {
+    "mtime": 1783187950.1611862,
+    "ast_hash": "75d93145e78fecd9efa61d2f7d9376d1",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-1-real-numbers/activities/classroom-activities.md": {
+    "mtime": 1783187950.1571777,
+    "ast_hash": "d12f41100549d2788fcfc1024af2e61f",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-1-real-numbers/activities/experiential-learning.md": {
+    "mtime": 1783187950.1591852,
+    "ast_hash": "a0959f8cd60c3f48176eb131788b81ec",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-1-real-numbers/activities/ict-integration.md": {
+    "mtime": 1783187950.1621857,
+    "ast_hash": "87e18fd2f63a7179df89465ae2df6d5d",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-1-real-numbers/assessments/diagnostic-test.md": {
+    "mtime": 1783187950.1547744,
+    "ast_hash": "270dcacc78b6a9ab0811cf75579272cf",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-1-real-numbers/assessments/formative-assessment.md": {
+    "mtime": 1783187950.1533132,
+    "ast_hash": "f063516555c358725f2e09932d35e583",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-1-real-numbers/assessments/rubrics.md": {
+    "mtime": 1783187950.1557784,
+    "ast_hash": "62c2903f358afa26a3e5a74caf81f8f1",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-1-real-numbers/assessments/summative-assessment.md": {
+    "mtime": 1783187950.1547744,
+    "ast_hash": "7740c14ac17763a959c03ee8ebab8e17",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-1-real-numbers/index.md": {
+    "mtime": 1783189748.136299,
+    "ast_hash": "f2316cdb613ca0e3523011a7be53dab8",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-1-real-numbers/metadata.yaml": {
+    "mtime": 1783189748.138306,
+    "ast_hash": "36f08ccbb3b4ce307525e0db2f873199",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/README.md": {
+    "mtime": 1783345839.2165625,
+    "ast_hash": "2b5fd3f3e122bb69b2950e05b6d3f7e6",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/activities/art-integration.md": {
+    "mtime": 1783345277.4561734,
+    "ast_hash": "096be8b8cd4d17d813bb4f28a92f168b",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/activities/classroom-activities.md": {
+    "mtime": 1783345247.7158003,
+    "ast_hash": "6ce4e072bb44f805ac27648f2a22edc0",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/activities/experiential-learning.md": {
+    "mtime": 1783345264.1689062,
+    "ast_hash": "92960c0191940085c6ecc52bf93cd09a",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/activities/ict-integration.md": {
+    "mtime": 1783345290.1224458,
+    "ast_hash": "78f7638d9c826e7727e8830ffff407df",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/assessments/diagnostic-test.md": {
+    "mtime": 1783346358.5454443,
+    "ast_hash": "123d7858739305c4eaa30dcb365b615c",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/assessments/formative-assessment.md": {
+    "mtime": 1783346384.7438526,
+    "ast_hash": "a5423557f206461685842197388b62c2",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/assessments/rubrics.md": {
+    "mtime": 1783346441.5875058,
+    "ast_hash": "9b335dbcd9d7ee4ba857d6d697d49be8",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/assessments/summative-assessment.md": {
+    "mtime": 1783346426.9789388,
+    "ast_hash": "aa4cc3bbb90ac2cc7464233705984b8a",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/01-learning-objectives.md": {
+    "mtime": 1783343416.926374,
+    "ast_hash": "f2c647bce7c3937d522e64f3da89968a",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/02-prior-knowledge.md": {
+    "mtime": 1783343429.3467176,
+    "ast_hash": "c4f1668307a1cd93dbfbde9194e38e26",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/03-chapter-overview.md": {
+    "mtime": 1783343444.2437072,
+    "ast_hash": "fdba6bb0fd5f2e8e57eb54e7f753f35c",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/04-key-vocabulary.md": {
+    "mtime": 1783343455.759267,
+    "ast_hash": "bd377c0a166d90f57cb51afabd9cbacc",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/board-exam-preparation.md": {
+    "mtime": 1783343515.699322,
+    "ast_hash": "67b690abc0901bbbae25ccc680a7ccac",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/chapter-summary.md": {
+    "mtime": 1783343473.6453564,
+    "ast_hash": "508023e7834a7eed8461014b19dc9d02",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/classroom-activities.md": {
+    "mtime": 1783343506.8158927,
+    "ast_hash": "19cdf28581bd6aa1eec28ae225a5f295",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/concepts/division-algorithm.md": {
+    "mtime": 1783343573.7754517,
+    "ast_hash": "55fe1e736cfb2899a25b53e3c0589375",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/concepts/geometrical-meaning-of-zeroes.md": {
+    "mtime": 1783343557.162731,
+    "ast_hash": "179899e3de80e6c71ab05ec434a2257e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/concepts/introduction.md": {
+    "mtime": 1783343549.4181437,
+    "ast_hash": "cbaaa3dc7aa4042ff875b81fadd21c74",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/concepts/relationship-zeroes-coefficients.md": {
+    "mtime": 1783343566.2974248,
+    "ast_hash": "f58aeb8426b8a704a68b5dd174986efb",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/examples/easy.md": {
+    "mtime": 1783343588.0144231,
+    "ast_hash": "5c2d81c1376294b981128b7f6538adbb",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/examples/moderate.md": {
+    "mtime": 1783343597.0505464,
+    "ast_hash": "9abbd765009012322e6900cf5751aee0",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/formula-sheet.md": {
+    "mtime": 1783343486.3664596,
+    "ast_hash": "f7478ab76865d07d0615176d590b757e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/pedagogy/misconceptions.md": {
+    "mtime": 1783343616.6811976,
+    "ast_hash": "03b8cc1cbda37c1f59a3ff4ed5af01d1",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/pedagogy/teacher-notes.md": {
+    "mtime": 1783343607.7729197,
+    "ast_hash": "4a8e53f03a17fa16d7456c047de5d3a9",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/revision-notes.md": {
+    "mtime": 1783343497.859151,
+    "ast_hash": "fbc0d0212db7cbd23386b4e15390b9fd",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/teacher-reflection.md": {
+    "mtime": 1783343526.3978598,
+    "ast_hash": "37070d176737addcb7f3302a8b8e8a1d",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/handbook/visual-learning.md": {
+    "mtime": 1783343534.7072964,
+    "ast_hash": "cbea339439abca6081872c12c47ce58e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/index.md": {
+    "mtime": 1783345845.2731636,
+    "ast_hash": "147e9403e273d444522cc35c7e110fcc",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/lesson-plans/lesson-1.md": {
+    "mtime": 1783344013.1001492,
+    "ast_hash": "314764313b098876ab19df137840f43e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/lesson-plans/lesson-2.md": {
+    "mtime": 1783344029.100344,
+    "ast_hash": "e10f619484c64f19bc5040db1d0a8b97",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/lesson-plans/lesson-3.md": {
+    "mtime": 1783344048.9422593,
+    "ast_hash": "638eb85ccb6fc510c493aecf26f7ffd4",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/metadata.yaml": {
+    "mtime": 1783189748.138306,
+    "ast_hash": "36f08ccbb3b4ce307525e0db2f873199",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/question-bank/answer-key.md": {
+    "mtime": 1783344815.5418465,
+    "ast_hash": "08058c1186cb4c91b84662db46f943aa",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/question-bank/assertion-reason.md": {
+    "mtime": 1783344406.7049253,
+    "ast_hash": "343462a3dae1f39422f01d796e83d5bd",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/question-bank/case-study.md": {
+    "mtime": 1783344419.932109,
+    "ast_hash": "231badeebc5bfc0ddad554fc24375752",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/question-bank/challenge-problems.md": {
+    "mtime": 1783344455.6366594,
+    "ast_hash": "b21ccc64aeaec18293b61f0dcc80b860",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/question-bank/competency-based.md": {
+    "mtime": 1783344434.8307507,
+    "ast_hash": "de8cba12c29fcb85a49dd20220e4078e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/question-bank/long-answer.md": {
+    "mtime": 1783344387.77493,
+    "ast_hash": "937e5e97dabcd3913077dc54f2034b5c",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/question-bank/mcq.md": {
+    "mtime": 1783344344.4413018,
+    "ast_hash": "3909a2f58e727c1cc70117b6f6f8b961",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/question-bank/previous-year.md": {
+    "mtime": 1783344468.7652483,
+    "ast_hash": "e8f7427d7a589613cf0539b885f86026",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/question-bank/short-answer.md": {
+    "mtime": 1783344360.8893948,
+    "ast_hash": "ca49f89d74bec28a38f2a4f7017fc1cf",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/worksheets/worksheet-answer-key.md": {
+    "mtime": 1783345827.2520223,
+    "ast_hash": "9fa817c9992fb0d612b5fd18668e9506",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/worksheets/worksheet-basic.md": {
+    "mtime": 1783345724.7785969,
+    "ast_hash": "18e68afc5392dd54ba90651c6d5a639b",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/worksheets/worksheet-case-study.md": {
+    "mtime": 1783345815.3691456,
+    "ast_hash": "54b32b1219c448153115cc983cba0312",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/worksheets/worksheet-hots.md": {
+    "mtime": 1783345796.7081628,
+    "ast_hash": "dcf0e6eff02f09de950d660566eade4a",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/worksheets/worksheet-lesson-aligned.md": {
+    "mtime": 1783345773.596477,
+    "ast_hash": "22d3554ed002126029c7fa5c0f504b12",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/worksheets/worksheet-standard.md": {
+    "mtime": 1783345749.8292038,
+    "ast_hash": "b5988c86de94d38ed6f6623bbf0f74a7",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/README.md": {
+    "mtime": 1783189748.1488283,
+    "ast_hash": "abef9b9f13cb8ac1fb9b1c2ab55e3ba3",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/activities/art-integration.md": {
+    "mtime": 1783187950.1611862,
+    "ast_hash": "75d93145e78fecd9efa61d2f7d9376d1",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/activities/classroom-activities.md": {
+    "mtime": 1783187950.1571777,
+    "ast_hash": "d12f41100549d2788fcfc1024af2e61f",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/activities/experiential-learning.md": {
+    "mtime": 1783187950.1591852,
+    "ast_hash": "a0959f8cd60c3f48176eb131788b81ec",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/activities/ict-integration.md": {
+    "mtime": 1783187950.1621857,
+    "ast_hash": "87e18fd2f63a7179df89465ae2df6d5d",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/assessments/diagnostic-test.md": {
+    "mtime": 1783187950.1547744,
+    "ast_hash": "270dcacc78b6a9ab0811cf75579272cf",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/assessments/formative-assessment.md": {
+    "mtime": 1783187950.1533132,
+    "ast_hash": "f063516555c358725f2e09932d35e583",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/assessments/rubrics.md": {
+    "mtime": 1783187950.1557784,
+    "ast_hash": "62c2903f358afa26a3e5a74caf81f8f1",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/assessments/summative-assessment.md": {
+    "mtime": 1783187950.1547744,
+    "ast_hash": "7740c14ac17763a959c03ee8ebab8e17",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/01-learning-objectives.md": {
+    "mtime": 1783349814.4621341,
+    "ast_hash": "229534ac253e3c663468180b73f6bfb5",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/02-prior-knowledge.md": {
+    "mtime": 1783349831.0351508,
+    "ast_hash": "804c2d786a53bb0b391a85f2061214b3",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/03-chapter-overview.md": {
+    "mtime": 1783349851.8632267,
+    "ast_hash": "cc148f9f859f88de57e781cfbb9df90b",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/04-key-vocabulary.md": {
+    "mtime": 1783349868.5661333,
+    "ast_hash": "6e15bff8747060d187c9302d1390c5cd",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/board-exam-preparation.md": {
+    "mtime": 1783349892.8555577,
+    "ast_hash": "254d9b0bf6ceb3148c8d4cfdc3f7dc90",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/chapter-summary.md": {
+    "mtime": 1783349911.5937557,
+    "ast_hash": "3b5328f8a763af73d53397a00e5021cc",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/classroom-activities.md": {
+    "mtime": 1783349928.0193667,
+    "ast_hash": "f9e15878dd11d4963cb2b0cae5c49a0e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/concepts/cross-multiplication-method.md": {
+    "mtime": 1783350087.018481,
+    "ast_hash": "f199900de5d7587c555b88f7dbca59d2",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/concepts/elimination-method.md": {
+    "mtime": 1783350067.75115,
+    "ast_hash": "f4c2e07e641eb680379c08c4aca02d1b",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/concepts/graphical-method.md": {
+    "mtime": 1783350036.892904,
+    "ast_hash": "73ddfabf9faaf4d3202517aaa41a79b6",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/concepts/introduction.md": {
+    "mtime": 1783350020.1821733,
+    "ast_hash": "e31848c109c4c42d1845650750a17961",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/concepts/reducible-equations.md": {
+    "mtime": 1783350106.000697,
+    "ast_hash": "d841c0af470b81ea60440dfe2f4b8852",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/concepts/substitution-method.md": {
+    "mtime": 1783350051.8722854,
+    "ast_hash": "51469147e647a5861a050556f07a810b",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/examples/board-level.md": {
+    "mtime": 1783350253.562027,
+    "ast_hash": "a419d6f8314265c24f5a95b113aa7874",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/examples/case-study.md": {
+    "mtime": 1783350215.1123042,
+    "ast_hash": "ff3bc3d28439b3eaa51e6c2caa168df5",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/examples/competency-based.md": {
+    "mtime": 1783350201.7573912,
+    "ast_hash": "37364932c8f5e426b639e504afa813b0",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/examples/easy.md": {
+    "mtime": 1783350130.6008487,
+    "ast_hash": "2d43757b2c05b300a052cf5dce15efe1",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/examples/hots.md": {
+    "mtime": 1783350179.160726,
+    "ast_hash": "868d34ae5171a3365cb1690c84b5b697",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/examples/moderate.md": {
+    "mtime": 1783350151.4259357,
+    "ast_hash": "60d369cecd110f5740b24f09e4ab06ea",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/formula-sheet.md": {
+    "mtime": 1783349946.1812007,
+    "ast_hash": "1402ea7dfebacd0ca167bd3a246f0439",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/pedagogy/art-integration.md": {
+    "mtime": 1783350314.5806487,
+    "ast_hash": "fe1609641de6109fe8e38c2dbeb730c5",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/pedagogy/classroom-dialogue.md": {
+    "mtime": 1783350325.62129,
+    "ast_hash": "a8abe802f98f48abdc10b2a545979883",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/pedagogy/differentiation.md": {
+    "mtime": 1783350294.8523495,
+    "ast_hash": "875c61424efd80a5d51dc8f57eb4e59f",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/pedagogy/experiential-learning.md": {
+    "mtime": 1783350336.1052096,
+    "ast_hash": "3d1c8dfbcd936a3fbb169fb43ab8960c",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/pedagogy/ict-integration.md": {
+    "mtime": 1783350344.7395847,
+    "ast_hash": "d3dc5104beed8b98edfd4b99c354100d",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/pedagogy/inclusive-education.md": {
+    "mtime": 1783350304.914451,
+    "ast_hash": "9518cacde5341f6bc024daceb1fe333f",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/pedagogy/misconceptions.md": {
+    "mtime": 1783350284.732533,
+    "ast_hash": "a23cfed626c0b78b1072da0e91c78575",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/pedagogy/teacher-notes.md": {
+    "mtime": 1783350273.21362,
+    "ast_hash": "5c4ac4f6f3ef5bc4690b1ece74ce85ac",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/revision-notes.md": {
+    "mtime": 1783349965.2056947,
+    "ast_hash": "1096ffd5ec55fa7c3765ab8ecf4f97f9",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/teacher-reflection.md": {
+    "mtime": 1783349975.519947,
+    "ast_hash": "2a159534a53af10c074f266e5b072356",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/handbook/visual-learning.md": {
+    "mtime": 1783349994.0484805,
+    "ast_hash": "6b6ee3a0467314cb60290d27692f5985",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/index.md": {
+    "mtime": 1783358913.5965753,
+    "ast_hash": "f4e49644dea2f5847008f14041afb120",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/lesson-plans/lesson-1.md": {
+    "mtime": 1783352271.5279295,
+    "ast_hash": "42659f60c7ae16ca515de5d9dccbb38a",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/lesson-plans/lesson-2.md": {
+    "mtime": 1783352287.3597143,
+    "ast_hash": "028c9c35433cf26d65add28f2987964b",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/lesson-plans/lesson-3.md": {
+    "mtime": 1783352300.775519,
+    "ast_hash": "14a4582e987540b46369b1b6de4aa040",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/lesson-plans/lesson-4.md": {
+    "mtime": 1783352319.942924,
+    "ast_hash": "2900ba05cf84dca69e64fcfe46f97ea4",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/lesson-plans/lesson-5.md": {
+    "mtime": 1783352352.4857502,
+    "ast_hash": "367bda30eff4ce66cc0e3ca02723da76",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/metadata.yaml": {
+    "mtime": 1783358921.6647544,
+    "ast_hash": "a7d147b086da6310e346589fcd8443a3",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/question-bank/answer-key.md": {
+    "mtime": 1783353907.3831291,
+    "ast_hash": "c609eb58c888f60bb85ae881db6b6301",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/question-bank/assertion-reason.md": {
+    "mtime": 1783353841.153926,
+    "ast_hash": "b5ee6c89166c68285a57279686d78e61",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/question-bank/case-study.md": {
+    "mtime": 1783353821.100693,
+    "ast_hash": "ef32a84ba3baf2b3ae8ce75070a67e3e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/question-bank/challenge-problems.md": {
+    "mtime": 1783353878.653318,
+    "ast_hash": "5c80c58bc139f2834bfdc09c28fa295e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/question-bank/competency-based.md": {
+    "mtime": 1783353853.810219,
+    "ast_hash": "e7a249b063f49f955b2315da0b6aa035",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/question-bank/long-answer.md": {
+    "mtime": 1783353798.8162272,
+    "ast_hash": "a655c55f06c290bffe5847b7660385d2",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/question-bank/mcq.md": {
+    "mtime": 1783353745.2059736,
+    "ast_hash": "5a0e03e283a5213cacde0066e34aa48c",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/question-bank/previous-year.md": {
+    "mtime": 1783353898.2445676,
+    "ast_hash": "d3505510a64aca6cfd8934712e43e240",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/question-bank/short-answer.md": {
+    "mtime": 1783353765.0560725,
+    "ast_hash": "4fce7be6910b17c26446345879b21f47",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/worksheets/worksheet-answer-key.md": {
+    "mtime": 1783358476.7572796,
+    "ast_hash": "12577f19ea5409cd726e7f23a734b3a3",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/worksheets/worksheet-basic.md": {
+    "mtime": 1783358381.694665,
+    "ast_hash": "b865d880f0250aa6b3db44fca52c3e6f",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/worksheets/worksheet-case-study.md": {
+    "mtime": 1783358445.290045,
+    "ast_hash": "c67af2a23d556d40a2a8eba0f8a7251c",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/worksheets/worksheet-hots.md": {
+    "mtime": 1783358430.0194361,
+    "ast_hash": "0464a504ae6ad25181e842488f788504",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/worksheets/worksheet-lesson-aligned.md": {
+    "mtime": 1783358470.7749643,
+    "ast_hash": "752f708d5bb2fcd632ba0a5e7191628b",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/worksheets/worksheet-standard.md": {
+    "mtime": 1783358404.2338376,
+    "ast_hash": "a3af75a7c03feb81d3409783e1ad994f",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/README.md": {
+    "mtime": 1783273476.3661602,
+    "ast_hash": "d2e973367143ffd9961494040ee6a443",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/activities/art-integration.md": {
+    "mtime": 1783276526.7657788,
+    "ast_hash": "2d7fada8e028c55ae64e845193a19494",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/activities/classroom-activities.md": {
+    "mtime": 1783276513.568195,
+    "ast_hash": "37a20f1149853e0f6074f64d1c4c0839",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/activities/experiential-learning.md": {
+    "mtime": 1783276519.6904922,
+    "ast_hash": "5f15fd2181b23b38e053d7e1cd07c82f",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/activities/ict-integration.md": {
+    "mtime": 1783276535.1511247,
+    "ast_hash": "d2243a8766354d62bca87d5c1e07e6d9",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/assessments/diagnostic-test.md": {
+    "mtime": 1783276553.511317,
+    "ast_hash": "b422242fc50cda04764f626ac8fac794",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/assessments/formative-assessment.md": {
+    "mtime": 1783276573.8252497,
+    "ast_hash": "7adf5adac796e98c6b47a1e4db920c4f",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/assessments/rubrics.md": {
+    "mtime": 1783276604.2501082,
+    "ast_hash": "8dcd31c2d4fa40b02e5d65def71e47b4",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/assessments/summative-assessment.md": {
+    "mtime": 1783276596.3404837,
+    "ast_hash": "26e5ebf7a87b47e2b12e725f378d1039",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/assets/concept-videos/README.md": {
+    "mtime": 1783372549.7834876,
+    "ast_hash": "d0f89332278d2e5f113a6d66aa7309ae",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/glossary.md": {
+    "mtime": 1783276615.518227,
+    "ast_hash": "9699dceaa69b77592c6e203035e33821",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/01-learning-objectives.md": {
+    "mtime": 1783276046.517642,
+    "ast_hash": "512515e95b36c30dd71cb25eccc4b052",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/02-prior-knowledge.md": {
+    "mtime": 1783276054.1335664,
+    "ast_hash": "40cc8c2881f66eb6739f373ae1e90ac8",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/03-chapter-overview.md": {
+    "mtime": 1783276061.5907772,
+    "ast_hash": "2cd48dc8a7cf8f7f11955dbc7b5900dc",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/04-key-vocabulary.md": {
+    "mtime": 1783276070.9162755,
+    "ast_hash": "52c0b1f93e13fd8af94a2b61afc5a002",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/board-exam-preparation.md": {
+    "mtime": 1783276125.3564785,
+    "ast_hash": "e1d34e3f94bc4f6893d19a7b96053cd2",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/chapter-summary.md": {
+    "mtime": 1783276108.285384,
+    "ast_hash": "3bc25391e8b91b0e9109b49bf409080e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/classroom-activities.md": {
+    "mtime": 1783276098.7288146,
+    "ast_hash": "5313f0e58e3fbd687c79e870c6ce9dea",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/concepts/factorisation-method.md": {
+    "mtime": 1783275856.2772832,
+    "ast_hash": "8492e5dbd9e3d8f4808b2073b66324d8",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/concepts/introduction.md": {
+    "mtime": 1783275837.8208976,
+    "ast_hash": "502907f53b1956d7f39d5ca1f09e9f1a",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/concepts/nature-of-roots.md": {
+    "mtime": 1783275878.1630454,
+    "ast_hash": "0af9b125ce9386e3c0c457a9dfa753ee",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/concepts/quadratic-formula.md": {
+    "mtime": 1783275863.3236132,
+    "ast_hash": "c121cb1e3e37fd11e9665b0793159712",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/examples/board-level.md": {
+    "mtime": 1783276214.4326055,
+    "ast_hash": "1094606a57138380bd01a8c713b5d92e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/examples/case-study.md": {
+    "mtime": 1783276237.6804855,
+    "ast_hash": "56620c9f3042162f15d39ca8bf921ba2",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/examples/competency-based.md": {
+    "mtime": 1783276226.4049332,
+    "ast_hash": "8d4a7e8b3d5bef423a8fce87ad4d8487",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/examples/easy.md": {
+    "mtime": 1783276170.378489,
+    "ast_hash": "0a839e155a94903e75b1eeacc8a9c677",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/examples/hots.md": {
+    "mtime": 1783276197.4033375,
+    "ast_hash": "ee3e121b8e468e641965328fecc24082",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/examples/moderate.md": {
+    "mtime": 1783276182.1615174,
+    "ast_hash": "7abebd4e0ed9c7b080bcf32cc914dc5f",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/formula-sheet.md": {
+    "mtime": 1783276079.3105018,
+    "ast_hash": "e0d2972bcadb59712e0473cee75933e4",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/pedagogy/art-integration.md": {
+    "mtime": 1783274358.713206,
+    "ast_hash": "690dfb441be1733c166e8eddd7890f95",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/pedagogy/classroom-dialogue.md": {
+    "mtime": 1783274338.778958,
+    "ast_hash": "72d27560e3edf59b1807f0c6576e44bf",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/pedagogy/differentiation.md": {
+    "mtime": 1783276633.711916,
+    "ast_hash": "45d170498fdc45582ce44eaa158851bb",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/pedagogy/experiential-learning.md": {
+    "mtime": 1783274359.812185,
+    "ast_hash": "9840a24d2b8e4948b8f695952d798225",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/pedagogy/ict-integration.md": {
+    "mtime": 1783274339.0596893,
+    "ast_hash": "e980b21b5cedff23126e1285ab9b0edc",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/pedagogy/inclusive-education.md": {
+    "mtime": 1783276153.980567,
+    "ast_hash": "390bea7c5b5becec886edb16665da06d",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/pedagogy/misconceptions.md": {
+    "mtime": 1783274337.6703715,
+    "ast_hash": "4ed316de5b45be0fd1f6904a8dc63559",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/pedagogy/teacher-notes.md": {
+    "mtime": 1783276142.4858932,
+    "ast_hash": "2f48b24b888e0cd6c02a731cc1b7287f",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/revision-notes.md": {
+    "mtime": 1783276116.1829393,
+    "ast_hash": "81b7b25659acbbbe4f23332db0c0ecfd",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/teacher-reflection.md": {
+    "mtime": 1783276130.430772,
+    "ast_hash": "fb2231e71aab141c9c8bd58b03692cfd",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/handbook/visual-learning.md": {
+    "mtime": 1783276088.6812763,
+    "ast_hash": "b9faf6b21a2ea3ab4b2af78d98f46ab7",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/index.md": {
+    "mtime": 1783370573.7717018,
+    "ast_hash": "f3c73027e664036c29d9626363277bda",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/lesson-plans/lesson-1.md": {
+    "mtime": 1783276250.956282,
+    "ast_hash": "b934c9c77ba9a2d55a16bd6a25d62764",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/lesson-plans/lesson-2.md": {
+    "mtime": 1783276259.0277338,
+    "ast_hash": "cfd43c4200ad58f5fb89879066bf4fd8",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/lesson-plans/lesson-3.md": {
+    "mtime": 1783276267.87528,
+    "ast_hash": "2ae3568bed56898cc2a492755b199387",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/metadata.yaml": {
+    "mtime": 1783275778.1232457,
+    "ast_hash": "a2d7c49bdda801f07c00a4365e71e09d",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/question-bank/answer-key.md": {
+    "mtime": 1783276495.335036,
+    "ast_hash": "10b8476d0816da2a93128c5dafb73a55",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/question-bank/assertion-reason.md": {
+    "mtime": 1783276437.7551475,
+    "ast_hash": "b8e763d0bf9360ff4c227dabbdcdcc3e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/question-bank/case-study.md": {
+    "mtime": 1783276449.9203105,
+    "ast_hash": "e77141bb889e46f0503c3b0bac21c820",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/question-bank/challenge-problems.md": {
+    "mtime": 1783276490.072091,
+    "ast_hash": "e03439dcf0917ea98ccaee35300c22f1",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/question-bank/competency-based.md": {
+    "mtime": 1783276464.457415,
+    "ast_hash": "22d4dbad37b313105fdfbc038926bb04",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/question-bank/long-answer.md": {
+    "mtime": 1783276422.4907157,
+    "ast_hash": "33e95344d75350144f4458cf00e67222",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/question-bank/mcq.md": {
+    "mtime": 1783276389.153071,
+    "ast_hash": "b126ace218c4474ed04e4e503b21013e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/question-bank/previous-year.md": {
+    "mtime": 1783276476.8082206,
+    "ast_hash": "2b8f98c8ae20446cc955dd45cac9bc7a",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/question-bank/short-answer.md": {
+    "mtime": 1783276406.8685198,
+    "ast_hash": "08b13950b26daf45a292b9506e8e07aa",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/references.md": {
+    "mtime": 1783276618.8240187,
+    "ast_hash": "9451557e438e8a4182a96c13924c0fd8",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/worksheets/worksheet-answer-key.md": {
+    "mtime": 1783276371.219169,
+    "ast_hash": "045e1847a520ee03fb0d946b2f1c00e1",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/worksheets/worksheet-basic.md": {
+    "mtime": 1783277846.6512828,
+    "ast_hash": "0b5bdb41b8a1149b0f47614770949d16",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/worksheets/worksheet-case-study.md": {
+    "mtime": 1783276348.107765,
+    "ast_hash": "b914ba69f445e28a75b4b7529e2984f6",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/worksheets/worksheet-hots.md": {
+    "mtime": 1783276319.7712247,
+    "ast_hash": "3c748b252583bca037a2790ff39d4bbd",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/worksheets/worksheet-lesson-aligned.md": {
+    "mtime": 1783277857.1759522,
+    "ast_hash": "fb1835cfe4be06f80a462dfe687f21b1",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/worksheets/worksheet-standard.md": {
+    "mtime": 1783276304.4980555,
+    "ast_hash": "3c3d091cb45351919ede0d05e9113b03",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/README.md": {
+    "mtime": 1783189748.1688693,
+    "ast_hash": "eeca7d8cc5b58fc8a5102d6121445423",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/activities/art-integration.md": {
+    "mtime": 1783187950.1611862,
+    "ast_hash": "75d93145e78fecd9efa61d2f7d9376d1",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/activities/classroom-activities.md": {
+    "mtime": 1783187950.1571777,
+    "ast_hash": "d12f41100549d2788fcfc1024af2e61f",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/activities/experiential-learning.md": {
+    "mtime": 1783187950.1591852,
+    "ast_hash": "a0959f8cd60c3f48176eb131788b81ec",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/activities/ict-integration.md": {
+    "mtime": 1783187950.1621857,
+    "ast_hash": "87e18fd2f63a7179df89465ae2df6d5d",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/assessments/diagnostic-test.md": {
+    "mtime": 1783187950.1547744,
+    "ast_hash": "270dcacc78b6a9ab0811cf75579272cf",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/assessments/formative-assessment.md": {
+    "mtime": 1783187950.1533132,
+    "ast_hash": "f063516555c358725f2e09932d35e583",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/assessments/rubrics.md": {
+    "mtime": 1783187950.1557784,
+    "ast_hash": "62c2903f358afa26a3e5a74caf81f8f1",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/assessments/summative-assessment.md": {
+    "mtime": 1783187950.1547744,
+    "ast_hash": "7740c14ac17763a959c03ee8ebab8e17",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/01-learning-objectives.md": {
+    "mtime": 1783360004.458985,
+    "ast_hash": "5edf8d4761c9b7315874dd6efe309706",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/02-prior-knowledge.md": {
+    "mtime": 1783360014.0896494,
+    "ast_hash": "f39369392f6d755a30c84a24d21e874e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/03-chapter-overview.md": {
+    "mtime": 1783360032.4418495,
+    "ast_hash": "a8094f63b9ce3c62a8e516d01b5b89fc",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/04-key-vocabulary.md": {
+    "mtime": 1783360040.9992585,
+    "ast_hash": "29c03c741685058f0f797db09ab63a7a",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/board-exam-preparation.md": {
+    "mtime": 1783360056.060722,
+    "ast_hash": "22c4b7fd15e2798de69b9e4bc7a2994c",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/chapter-summary.md": {
+    "mtime": 1783360064.70991,
+    "ast_hash": "094b09a198d00a87be54336a0006a499",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/classroom-activities.md": {
+    "mtime": 1783360074.0525515,
+    "ast_hash": "f2e5a5912e1e27aceaba2a120362d1a6",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/concepts/arithmetic-progressions.md": {
+    "mtime": 1783361802.750612,
+    "ast_hash": "5adcf5ac5fd02f66e24a7b9c752dfbff",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/concepts/introduction.md": {
+    "mtime": 1783361793.6685512,
+    "ast_hash": "d17121da709a913bf8cfffb4b22535fa",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/concepts/nth-term.md": {
+    "mtime": 1783361813.2783651,
+    "ast_hash": "9358a75fd8b62d1864e46bb12549bf3a",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/concepts/sum-of-n-terms.md": {
+    "mtime": 1783361823.7711773,
+    "ast_hash": "75d447be898da6d744c150298502877d",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/examples/board-level.md": {
+    "mtime": 1783361872.823334,
+    "ast_hash": "273d41456ca13b968eaad1abd21fc0ee",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/examples/case-study.md": {
+    "mtime": 1783361881.1129866,
+    "ast_hash": "dcd008668a4bafa702fdb825fad4eece",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/examples/competency-based.md": {
+    "mtime": 1783361893.4170551,
+    "ast_hash": "8de865d3cc7ed71b92853efa7298b032",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/examples/easy.md": {
+    "mtime": 1783361836.2663927,
+    "ast_hash": "19f61ceaefeb18170705490f6f44e405",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/examples/hots.md": {
+    "mtime": 1783361859.3079154,
+    "ast_hash": "5c41562f931cec19384a93c9f7df330b",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/examples/moderate.md": {
+    "mtime": 1783361846.1951046,
+    "ast_hash": "4c24aaf3ccf7c6a1d1baa8a31cab074b",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/formula-sheet.md": {
+    "mtime": 1783360081.2381177,
+    "ast_hash": "caceb815796e1e41ef93be872d54e2f7",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/pedagogy/art-integration.md": {
+    "mtime": 1783361941.940582,
+    "ast_hash": "2f51317642bff10191494c3c0c5f582e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/pedagogy/classroom-dialogue.md": {
+    "mtime": 1783361931.5981164,
+    "ast_hash": "b01715ef28ea1ea3f9accb21420bbdd6",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/pedagogy/differentiation.md": {
+    "mtime": 1783361921.8661597,
+    "ast_hash": "110403e2ffaece80a7e64d3436b7dd12",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/pedagogy/experiential-learning.md": {
+    "mtime": 1783361937.9024756,
+    "ast_hash": "d24b6767f00c82e1d345e7a5ea62ff8c",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/pedagogy/ict-integration.md": {
+    "mtime": 1783361947.055599,
+    "ast_hash": "e4aefa057854ffad889e2fc5fc457c97",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/pedagogy/inclusive-education.md": {
+    "mtime": 1783361952.6989987,
+    "ast_hash": "ad6fdc9ddee00afdd61ce4d2f507166c",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/pedagogy/misconceptions.md": {
+    "mtime": 1783361905.2809255,
+    "ast_hash": "2a73d7fbc1bf299d27de3c2383a12638",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/pedagogy/teacher-notes.md": {
+    "mtime": 1783361915.520691,
+    "ast_hash": "7e12279ed12160c3fb71393117208f7e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/revision-notes.md": {
+    "mtime": 1783360095.2582433,
+    "ast_hash": "eb4405edf68f5ec69d4344e7b19c958c",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/teacher-reflection.md": {
+    "mtime": 1783360100.9734337,
+    "ast_hash": "ef348869d41d9122f7e9ac62c4dc2e97",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/handbook/visual-learning.md": {
+    "mtime": 1783360109.3208842,
+    "ast_hash": "0e94a7d097bfe858cdfd86616b2bd47c",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/index.md": {
+    "mtime": 1783361966.2390907,
+    "ast_hash": "6e21690718abe4889639b6066325f624",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/metadata.yaml": {
+    "mtime": 1783361972.4850674,
+    "ast_hash": "e6e8327efd97f37164c1459bc0a70931",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/README.md": {
+    "mtime": 1783283093.7954073,
+    "ast_hash": "1bb127a4a221b3947b137abbb38b30de",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/activities/art-integration.md": {
+    "mtime": 1783283094.3403826,
+    "ast_hash": "c5eb946d6ea4704debad475a5290a798",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/activities/classroom-activities.md": {
+    "mtime": 1783283094.3367186,
+    "ast_hash": "b148aa2bf3277013c60c3b1bd6a40960",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/activities/experiential-learning.md": {
+    "mtime": 1783283094.3377316,
+    "ast_hash": "cab470d1be116930456f86f356bdf069",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/activities/ict-integration.md": {
+    "mtime": 1783283094.341424,
+    "ast_hash": "71d07b78489f22f4fa29c176186ed24e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/assessments/diagnostic-test.md": {
+    "mtime": 1783283323.3428886,
+    "ast_hash": "3056f498b98cc077eba6170a2ffecf73",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/assessments/formative-assessment.md": {
+    "mtime": 1783283346.5078018,
+    "ast_hash": "0663a998dbe63d24d046cff334633339",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/assessments/rubrics.md": {
+    "mtime": 1783283094.3454204,
+    "ast_hash": "120461bf129b5736b470efe3603c83d7",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/assessments/summative-assessment.md": {
+    "mtime": 1783283368.2138598,
+    "ast_hash": "b6518d3bca99fb51ab977b2aba46911e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/glossary.md": {
+    "mtime": 1783283093.797397,
+    "ast_hash": "08343c861317249465944017751d7263",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/01-learning-objectives.md": {
+    "mtime": 1783283093.7999063,
+    "ast_hash": "d894c2d2ade3026095c26f7aad108f67",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/02-prior-knowledge.md": {
+    "mtime": 1783283093.8009193,
+    "ast_hash": "a46944fefb6edd2df0ba30a066f0977b",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/03-chapter-overview.md": {
+    "mtime": 1783283093.8019345,
+    "ast_hash": "966d0965f1f79992f869700160b4e75a",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/04-key-vocabulary.md": {
+    "mtime": 1783283093.8029346,
+    "ast_hash": "8e2e623a69e175a164b9310f1fc0e407",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/board-exam-preparation.md": {
+    "mtime": 1783283093.8040807,
+    "ast_hash": "18eb7f15c39c29fb17b94f8cfbcd883e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/chapter-summary.md": {
+    "mtime": 1783283093.8055713,
+    "ast_hash": "5b8fb303de3ead6abc056dfc0080bda4",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/classroom-activities.md": {
+    "mtime": 1783283093.8066604,
+    "ast_hash": "578552295f8457000d3124fe7ff755b7",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/concepts/basic-proportionality-theorem.md": {
+    "mtime": 1783283093.984244,
+    "ast_hash": "46e650cc81cae8bc18b172cd521ee3c8",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/concepts/criteria-for-similarity.md": {
+    "mtime": 1783283093.9853082,
+    "ast_hash": "f076bd0040e685aa4e27b0fecd51c069",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/concepts/introduction.md": {
+    "mtime": 1783283093.9786477,
+    "ast_hash": "1eac578f9f9bb02a9cd179dde22233ac",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/concepts/rhs-similarity.md": {
+    "mtime": 1783283093.98627,
+    "ast_hash": "0f2a9b450d65aca5aff2dc4278ec3547",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/concepts/similar-figures.md": {
+    "mtime": 1783283093.9802341,
+    "ast_hash": "1992bc6f9cf498fd59e6d797ad32a73a",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/concepts/similarity-of-triangles.md": {
+    "mtime": 1783283093.981241,
+    "ast_hash": "b3f4cd96897c1fdbc8605554536d7a59",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/examples/board-level.md": {
+    "mtime": 1783283093.9914913,
+    "ast_hash": "81e33b99fc219b643b4fe46679d3925e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/examples/case-study.md": {
+    "mtime": 1783283093.9944785,
+    "ast_hash": "b0b14c716a4a090b6d0ff2f375d0e550",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/examples/competency-based.md": {
+    "mtime": 1783283261.2113216,
+    "ast_hash": "8340e96814d127e7ae078e6d49b2512c",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/examples/easy.md": {
+    "mtime": 1783283093.987269,
+    "ast_hash": "b69a5d1e1e6d313b359e98116c43cd35",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/examples/hots.md": {
+    "mtime": 1783283093.9904473,
+    "ast_hash": "e1ba44fbc26e36d06fcf066ce3a230d7",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/examples/moderate.md": {
+    "mtime": 1783283093.9884164,
+    "ast_hash": "8e8e91de45e92b3676fcd973a3cf995b",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/formula-sheet.md": {
+    "mtime": 1783283093.8076832,
+    "ast_hash": "f91c86a228c5dcb24cdfbf999bb09000",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/pedagogy/art-integration.md": {
+    "mtime": 1783283094.153973,
+    "ast_hash": "08bb7f36ed0107b7ce2854620c83eabf",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/pedagogy/classroom-dialogue.md": {
+    "mtime": 1783283094.1483953,
+    "ast_hash": "25012ff8bc2273b13e403a5126798d71",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/pedagogy/differentiation.md": {
+    "mtime": 1783283094.149963,
+    "ast_hash": "bb64c5b374f87f96590ecdffe8a4bfb9",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/pedagogy/experiential-learning.md": {
+    "mtime": 1783283094.1559896,
+    "ast_hash": "d05049e49f1e83aa0b7adfe0e27a4034",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/pedagogy/ict-integration.md": {
+    "mtime": 1783283094.1520126,
+    "ast_hash": "e5dcff7939439b54bbfa0c806730861f",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/pedagogy/inclusive-education.md": {
+    "mtime": 1783283094.1509664,
+    "ast_hash": "1c1a2a804facb8efe74d5dcd41807bd9",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/pedagogy/misconceptions.md": {
+    "mtime": 1783283094.1444433,
+    "ast_hash": "c644fceed2b60bb0e31b8db26e721e96",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/pedagogy/teacher-notes.md": {
+    "mtime": 1783283094.142386,
+    "ast_hash": "52a99282423b03c6171eb71542a0ab84",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/revision-notes.md": {
+    "mtime": 1783283093.8089898,
+    "ast_hash": "33a252935c2597e9e8a48028c3f105b2",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/teacher-reflection.md": {
+    "mtime": 1783283093.8095016,
+    "ast_hash": "080ec75aa40856aaf3ce0a1829f9ec10",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/handbook/visual-learning.md": {
+    "mtime": 1783283093.8108983,
+    "ast_hash": "3b5599d4f9a9160a73415ae58e897729",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/index.md": {
+    "mtime": 1783283093.7963965,
+    "ast_hash": "39a19d5aab4725efa572ec643bc5e247",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/lesson-plans/lesson-1.md": {
+    "mtime": 1783283094.1580427,
+    "ast_hash": "6e18b1cdf7a1b707ca902d4554133c9a",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/lesson-plans/lesson-2.md": {
+    "mtime": 1783283094.1580427,
+    "ast_hash": "54dc05cb1efff2097bfd0441baf2aeee",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/lesson-plans/lesson-3.md": {
+    "mtime": 1783283094.159623,
+    "ast_hash": "b15bbe451e3e0492c5850c7bdfa4d6fc",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/metadata.yaml": {
+    "mtime": 1783283093.7934177,
+    "ast_hash": "d68ad2e35c32e623a2a682196d06864c",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/question-bank/answer-key.md": {
+    "mtime": 1783283094.3356993,
+    "ast_hash": "f6674410d108b32a00a12fb7b6ed4a85",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/question-bank/assertion-reason.md": {
+    "mtime": 1783283094.3296552,
+    "ast_hash": "fda6ab544590049c8aa1b73a29b676af",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/question-bank/case-study.md": {
+    "mtime": 1783283094.330679,
+    "ast_hash": "cfa7e202314642d7cc3acd6de86923a4",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/question-bank/challenge-problems.md": {
+    "mtime": 1783283094.334774,
+    "ast_hash": "4c1d53abac5803d4a15d1d86f6becfe0",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/question-bank/competency-based.md": {
+    "mtime": 1783283403.1423995,
+    "ast_hash": "c3cfb5e48e2d93b7055ca8b762ac5838",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/question-bank/long-answer.md": {
+    "mtime": 1783283094.3281205,
+    "ast_hash": "cf9aa67f253468da720409a382b54c0d",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/question-bank/mcq.md": {
+    "mtime": 1783283277.5507822,
+    "ast_hash": "7b4ce72d3ae249737df869f292ff71c5",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/question-bank/previous-year.md": {
+    "mtime": 1783283094.3326917,
+    "ast_hash": "0c68b99a6790feea22182f56e212fdbd",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/question-bank/short-answer.md": {
+    "mtime": 1783283306.5706515,
+    "ast_hash": "d46b0d2f0c757680f2843aafddce600b",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/references.md": {
+    "mtime": 1783283093.798394,
+    "ast_hash": "b06af087629f8a9c88ca6286e5d57a7d",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/worksheets/worksheet-answer-key.md": {
+    "mtime": 1783283094.1656768,
+    "ast_hash": "e3ac498eae46036ad9220799cccfee8d",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/worksheets/worksheet-basic.md": {
+    "mtime": 1783283213.2866497,
+    "ast_hash": "52d4f5cf757039a90b447418f7dea27b",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/worksheets/worksheet-case-study.md": {
+    "mtime": 1783283094.1646607,
+    "ast_hash": "cf9c4d8556016eddcf2e01c5ec6fbf9b",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/worksheets/worksheet-hots.md": {
+    "mtime": 1783283094.1636763,
+    "ast_hash": "ebfd7ce7cf110c8a2e989a700437afe7",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/worksheets/worksheet-lesson-aligned.md": {
+    "mtime": 1783283240.4745126,
+    "ast_hash": "5e318f407331d88084d58d65aa6a62da",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/worksheets/worksheet-standard.md": {
+    "mtime": 1783283223.6794336,
+    "ast_hash": "a95fa824afbbd18dbe4817d0be410e45",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/README.md": {
+    "mtime": 1783256036.5718124,
+    "ast_hash": "b9f5a40c594515956bdd65dda097cf36",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/activities/art-integration.md": {
+    "mtime": 1783267801.9157526,
+    "ast_hash": "c2babda456f62a7a4c9fb2835a0cb372",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/activities/classroom-activities.md": {
+    "mtime": 1783264122.1812127,
+    "ast_hash": "0acb2d4896534fa4521cf6ae39682562",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/activities/experiential-learning.md": {
+    "mtime": 1783264156.2134764,
+    "ast_hash": "f63245ac56256a0c516fa2042ec0b431",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/activities/ict-integration.md": {
+    "mtime": 1783272180.908842,
+    "ast_hash": "a0e97c4f2df8fd0fddc381a3378c5f5b",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/assessments/diagnostic-test.md": {
+    "mtime": 1783256036.5698133,
+    "ast_hash": "8ac10988453bb997ccc39cd26bd4a76b",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/assessments/formative-assessment.md": {
+    "mtime": 1783256036.5708132,
+    "ast_hash": "8676367db61e7bdd04e2a92011e1b688",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/assessments/rubrics.md": {
+    "mtime": 1783256036.5718124,
+    "ast_hash": "5121796c95d251611a4f2cedbabc4406",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/assessments/summative-assessment.md": {
+    "mtime": 1783256036.5708132,
+    "ast_hash": "554c9fd9f0ff76d58843f2f900d8c628",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/glossary.md": {
+    "mtime": 1783187950.1281166,
+    "ast_hash": "fa755457d4e89049a3a4a085a5f723ae",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/01-learning-objectives.md": {
+    "mtime": 1783220096.5973725,
+    "ast_hash": "f202a92a5b2a166d4777981ff9878de0",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/02-prior-knowledge.md": {
+    "mtime": 1783220096.626346,
+    "ast_hash": "0f546740a9bc500a1d976e1372b36683",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/03-chapter-overview.md": {
+    "mtime": 1783220096.64384,
+    "ast_hash": "53921b12f81131d860b400fb6d16b2ca",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/04-key-vocabulary.md": {
+    "mtime": 1783220096.658394,
+    "ast_hash": "f241154683877b7433cede82bcf558b3",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/board-exam-preparation.md": {
+    "mtime": 1783220096.7374356,
+    "ast_hash": "01b00958e7ae2ea18fab7fa3514eb099",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/chapter-summary.md": {
+    "mtime": 1783220096.7524872,
+    "ast_hash": "0945859d77abdb032af313b7f6ea40cd",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/classroom-activities.md": {
+    "mtime": 1783220096.6959698,
+    "ast_hash": "bf020ac76c035ae449f08582c6d9a72d",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/concepts/applications.md": {
+    "mtime": 1783220096.8361733,
+    "ast_hash": "76c4709f4f0a66376611d81128791717",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/concepts/distance-formula.md": {
+    "mtime": 1783220096.791077,
+    "ast_hash": "4ff7b8e37dd24a0eb724a7013b864f79",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/concepts/midpoint-formula.md": {
+    "mtime": 1783220096.8206513,
+    "ast_hash": "a3c8d6d18826d9e043f5542a4ab9e400",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/concepts/section-formula.md": {
+    "mtime": 1783220096.8056,
+    "ast_hash": "fef6edba3ac91d5820dd44f7ee1c67b4",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/examples/board-level.md": {
+    "mtime": 1783220096.9961796,
+    "ast_hash": "f9b1c3cacc8022d9c6f831f4730705b3",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/examples/case-study.md": {
+    "mtime": 1783220097.0219953,
+    "ast_hash": "f933c567b2643f343d0d266a57a5adaa",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/examples/competency-based.md": {
+    "mtime": 1783220097.0084822,
+    "ast_hash": "bec62771d2512b50f104ef210d857112",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/examples/easy.md": {
+    "mtime": 1783220096.9702835,
+    "ast_hash": "51dd2f18c9635772818f8e2f46dc4eb6",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/examples/hots.md": {
+    "mtime": 1783220097.0335262,
+    "ast_hash": "b6fd117277fb1a985066940beb958268",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/examples/moderate.md": {
+    "mtime": 1783220096.9836602,
+    "ast_hash": "1956c9d3831c17daec5529347b960e79",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/formula-sheet.md": {
+    "mtime": 1783220096.7219045,
+    "ast_hash": "48c80652b49fee18b2a3ee8b2ded271a",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/pedagogy/art-integration.md": {
+    "mtime": 1783220096.9392602,
+    "ast_hash": "b758673ba86f9594449dbed7fb4ed7cd",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/pedagogy/classroom-dialogue.md": {
+    "mtime": 1783220096.8725197,
+    "ast_hash": "3f703a01034c1249e55953899378a6d2",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/pedagogy/differentiation.md": {
+    "mtime": 1783220096.9003916,
+    "ast_hash": "709c1a52933cd6992114faa166dcdc23",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/pedagogy/experiential-learning.md": {
+    "mtime": 1783220096.9507766,
+    "ast_hash": "8adf18c9f161b0d3b674d617a4533af8",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/pedagogy/ict-integration.md": {
+    "mtime": 1783220096.9272258,
+    "ast_hash": "c5c0e4ebbe5d9b08f0334c1dce792483",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/pedagogy/inclusive-education.md": {
+    "mtime": 1783220096.9129057,
+    "ast_hash": "a64bc7e82bed9ca17454f48128f30b6c",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/pedagogy/misconceptions.md": {
+    "mtime": 1783220096.8863454,
+    "ast_hash": "6259dad562ae44f1b385a1c13749f84d",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/pedagogy/teacher-notes.md": {
+    "mtime": 1783220096.8581247,
+    "ast_hash": "1d782485267b1acca83376df91dbdc10",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/revision-notes.md": {
+    "mtime": 1783220096.7096071,
+    "ast_hash": "cf55709bee28f8bd6b8f2843bd902e00",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/teacher-reflection.md": {
+    "mtime": 1783220096.7720375,
+    "ast_hash": "3af0305da27eaa04ab591d9897d96dac",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/handbook/visual-learning.md": {
+    "mtime": 1783220096.6759253,
+    "ast_hash": "6b517bc2d5bc8159919a8f8ac04e0035",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/index.md": {
+    "mtime": 1783256061.3371477,
+    "ast_hash": "165926f0d6a85893b97c065fde72f974",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/lesson-plans/lesson-1.md": {
+    "mtime": 1783187950.1513085,
+    "ast_hash": "886f3ccfee669da1edb7004c11b3b544",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/lesson-plans/lesson-2.md": {
+    "mtime": 1783187950.152313,
+    "ast_hash": "6b852002d429fcdfb6400e970c641dae",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/lesson-plans/lesson-3.md": {
+    "mtime": 1783187950.1533132,
+    "ast_hash": "a2a19c7ac528e126c483ff19e3aa5961",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/metadata.yaml": {
+    "mtime": 1783256092.0143638,
+    "ast_hash": "5e9c7029bfb89649e6ae3fffd05376c4",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/question-bank/answer-key.md": {
+    "mtime": 1783256633.9077601,
+    "ast_hash": "c1dcc185dbcf89ef35cc39beec9d79d7",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/question-bank/assertion-reason.md": {
+    "mtime": 1783220097.0661733,
+    "ast_hash": "1ac6797e7085281cef15e219c77d9ebd",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/question-bank/case-study.md": {
+    "mtime": 1783220097.117908,
+    "ast_hash": "047e1e11e601800a71749b83c5ae5ab4",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/question-bank/challenge-problems.md": {
+    "mtime": 1783258233.8223412,
+    "ast_hash": "e90cbc11e451b8a0f7f87f1035f17240",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/question-bank/competency-based.md": {
+    "mtime": 1783220097.1058779,
+    "ast_hash": "acdece99e35a9f35783781cf806ad4d7",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/question-bank/long-answer.md": {
+    "mtime": 1783220097.0933528,
+    "ast_hash": "0a9f72dac9866e4b3415d8ff58b14080",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/question-bank/mcq.md": {
+    "mtime": 1783220097.0531461,
+    "ast_hash": "1e9d82fc6e3b5b9bcfcbfe51d35a7e73",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/question-bank/previous-year.md": {
+    "mtime": 1783187950.1677332,
+    "ast_hash": "5d20ce71efed51831679c612dd3c7979",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/question-bank/short-answer.md": {
+    "mtime": 1783220097.079836,
+    "ast_hash": "290af711d92c9455b735b831f87a761f",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/references.md": {
+    "mtime": 1783187950.129117,
+    "ast_hash": "17d01b27e5f00e0f949be33f7befc55c",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/worksheets/worksheet-answer-key.md": {
+    "mtime": 1783262975.9319744,
+    "ast_hash": "dc800a7347c9585f8080e805c092655e",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/worksheets/worksheet-basic.md": {
+    "mtime": 1783261498.4486468,
+    "ast_hash": "3daab039b8142c528f60a28fb6c195d1",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/worksheets/worksheet-case-study.md": {
+    "mtime": 1783262254.1087198,
+    "ast_hash": "5fd9b193747faf93eb24159035a2e30a",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/worksheets/worksheet-hots.md": {
+    "mtime": 1783262254.0770888,
+    "ast_hash": "2d9471b49cf96f19ac4599aaa9d5e5a9",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/worksheets/worksheet-lesson-aligned.md": {
+    "mtime": 1783256036.5728135,
+    "ast_hash": "8fc37fdee10eb19d07624511d0c9be52",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/worksheets/worksheet-standard.md": {
+    "mtime": 1783261498.4807227,
+    "ast_hash": "7e79c1ce47911f0a49f76e4d46a0b51a",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/references/OKF Integration for Eduva CoTeacher.html": {
+    "mtime": 1783435680.3856776,
+    "ast_hash": "319bcd63d2ae5b7d490669a5b9c2419b",
+    "semantic_hash": ""
+  },
+  "edova-web/README.md": {
+    "mtime": 1783625624.4654686,
+    "ast_hash": "10495bfcc6c568eca4dab6dd5df795d3",
+    "semantic_hash": ""
+  },
+  "edova-web/index.html": {
+    "mtime": 1783625752.7733102,
+    "ast_hash": "652e27274d48c56704eeabdcfa8a2132",
+    "semantic_hash": ""
+  },
+  "ncert_rag/requirements.txt": {
+    "mtime": 1783715308.5440285,
+    "ast_hash": "f0fb3f653b4403f02e6cf6b1fccf2cf6",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-1-real-numbers/chapter-1-real-numbers.pdf": {
+    "mtime": 1783152476.9004955,
+    "ast_hash": "65e3f07f03af86afc06672f290efaeda",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-2-polynomials/chapter-2-polynomials.pdf": {
+    "mtime": 1783152476.9402232,
+    "ast_hash": "d226002464c56b68beed5eb752c78498",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-3-linear-equations/chapter-3-linear-equations.pdf": {
+    "mtime": 1783152476.9743145,
+    "ast_hash": "9dd9c72876f71be029525489c61c19a3",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/chapter-4-quadratic-equations.pdf": {
+    "mtime": 1783152477.0108607,
+    "ast_hash": "eaa726ce37c1033603130af59df2d13d",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-5-arithmetic-progression/chapter-5-arithmetic-progression.pdf": {
+    "mtime": 1783152477.040717,
+    "ast_hash": "08f12b0bcf4409469945dc206e87c7e4",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-6-triangles/chapter-6-triangles.pdf": {
+    "mtime": 1783152477.0752838,
+    "ast_hash": "86d753e606702ba322afd8b949adda5d",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-7-coordinate-geometry/chapter-7-coordinate-geometry.pdf": {
+    "mtime": 1783152477.1052482,
+    "ast_hash": "f2b256874b75eef0820105a436803c9a",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/01-dashboard.png": {
+    "mtime": 1783623168.296043,
+    "ast_hash": "3f737692e4d3f781c887046a35949f18",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/02-calendar.png": {
+    "mtime": 1783623168.3093867,
+    "ast_hash": "89d6a1b1dfcb178dbdaf6e5ba2abb7e1",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/03-my-classes.png": {
+    "mtime": 1783623168.3242767,
+    "ast_hash": "65ca334e3a81c258481e178d5520749e",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/04-my-subjects.png": {
+    "mtime": 1783623168.3385432,
+    "ast_hash": "a3933fd7daa05608795b5f5c9921b012",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/05-lesson-planner.png": {
+    "mtime": 1783623168.3542256,
+    "ast_hash": "3e861cb1bb11107429bb598d47695898",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/06-syllabus-map.png": {
+    "mtime": 1783623168.3674781,
+    "ast_hash": "a147a03fbe7bdb4f75b750640d559b5f",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/07-course-progress.png": {
+    "mtime": 1783623168.3814776,
+    "ast_hash": "5dcffa7e94f8499dddc6aeffa8d2b9ab",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/08-assignments.png": {
+    "mtime": 1783623168.3952634,
+    "ast_hash": "5e084750c1c1b2a674756a97649d14fd",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/09-homework-tracker.png": {
+    "mtime": 1783623168.4081726,
+    "ast_hash": "0edd6663e593ea6d17555df8d6d372b1",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/10-assessment-exams.png": {
+    "mtime": 1783623168.4207385,
+    "ast_hash": "9bac13bed714f5373f7d3648a6e490eb",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/11-assessment-builder.png": {
+    "mtime": 1783623168.4340365,
+    "ast_hash": "3007985eb08569be5d8dac38a1a8250e",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/12-attendance.png": {
+    "mtime": 1783623168.4465666,
+    "ast_hash": "1345cc8abe6704421dcb98440b09c350",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/13-learning-resources.png": {
+    "mtime": 1783623168.4594543,
+    "ast_hash": "70adbccef614d21b6ce3beea9d93193b",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/14-student-behavior.png": {
+    "mtime": 1783623168.4724114,
+    "ast_hash": "5335b396d5b99a220c698bada72d6b4d",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/15-gradebook.png": {
+    "mtime": 1783623168.4835958,
+    "ast_hash": "ecec13e981e6a38b68a5a260c84956fd",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/16-student-progress.png": {
+    "mtime": 1783623168.4960582,
+    "ast_hash": "4331bdadc5c9c62683ea9d0049d40a3d",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/17-class-analytics.png": {
+    "mtime": 1783623168.5100737,
+    "ast_hash": "c0b8dcb2f233550b23076eab83417ac9",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/18-announcements.png": {
+    "mtime": 1783623168.5226095,
+    "ast_hash": "0f2169cb191d27a671a5ba857debf870",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/19-upcoming-tasks.png": {
+    "mtime": 1783623168.5342755,
+    "ast_hash": "b8d2e1856ac35ece5865aa3aa9c248c0",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/20-parent-communication.png": {
+    "mtime": 1783623168.5494783,
+    "ast_hash": "eaa2e4713d92f80c152c1cf5ff3218d4",
+    "semantic_hash": ""
+  },
+  "design_handoff_teacher_productivity_platform/screenshots/21-reports.png": {
+    "mtime": 1783623168.5620377,
+    "ast_hash": "dd7fb524c3507ae91ab22d5da6c504e8",
+    "semantic_hash": ""
+  },
+  "edova-web/public/favicon.svg": {
+    "mtime": 1783625624.5054677,
+    "ast_hash": "7e840862161341271697daa99a40d76b",
+    "semantic_hash": ""
+  },
+  "edova-web/public/icons.svg": {
+    "mtime": 1783625624.5254686,
+    "ast_hash": "3b4fcfcf393eca4d264dca4a4663bc37",
+    "semantic_hash": ""
+  },
+  "edova-web/src/assets/react.svg": {
+    "mtime": 1783625624.538472,
+    "ast_hash": "f0402b67b6ce880f65666bb49e841696",
+    "semantic_hash": ""
+  },
+  "edova-web/src/assets/vite.svg": {
+    "mtime": 1783625624.5515406,
+    "ast_hash": "9960a24288958394ac50e57ff638b036",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/quadratic-equations/videos/Quadratic-Polynomials.mp4": {
+    "mtime": 1783186245.226781,
+    "ast_hash": "7e3c1bd4ca47bb30e2c558b4278e1cca",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/math-Knowledge/chapters/quadratic-equations/videos/Train-problem-quadratic-equations.mp4": {
+    "mtime": 1783186234.9347794,
+    "ast_hash": "bb660f40bf7ab9ca1c8714e16fc8003b",
+    "semantic_hash": ""
+  },
+  "edova-brain/math-Knowledge/chapters/chapter-4-quadratic-equations/assets/concept-videos/quadratic_polynomial.mp4": {
+    "mtime": 1783371663.4911027,
+    "ast_hash": "a26ca3dc4b91be8adf48954934c936e5",
+    "semantic_hash": ""
+  },
+  ".claude/settings.json": {
+    "mtime": 1783688398.8169134,
+    "ast_hash": "4b6e281ff20f47061939fb41fcf0af73",
+    "semantic_hash": ""
+  },
+  ".claude/settings.local.json": {
+    "mtime": 1783690410.5351942,
+    "ast_hash": "7751049690c9a3151b0365fc37dd7480",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000001_extensions_and_organizations.sql": {
+    "mtime": 1783697504.020771,
+    "ast_hash": "23fb4b18307ac504c8487f5a41fdba60",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000002_users_auth_rbac.sql": {
+    "mtime": 1783697422.1348627,
+    "ast_hash": "95d0aaa7fa507cddeda5cadf3a8db9ea",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000003_academic_structure.sql": {
+    "mtime": 1783697664.5520353,
+    "ast_hash": "dff3354fcd225199ed7c32e5c07278e1",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000004_classrooms_and_coteaching.sql": {
+    "mtime": 1783698324.8192942,
+    "ast_hash": "60a0e4da7ba01e670139ca4545c540ec",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000005_students_and_enrollments.sql": {
+    "mtime": 1783698330.7902026,
+    "ast_hash": "53e0e03b5a4d044ec2ecfbf1099b23d0",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000006_lesson_plans_and_assignments.sql": {
+    "mtime": 1783697785.3935118,
+    "ast_hash": "3fb55487be1c019cc87410b66b003961",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000007_submissions_and_grades.sql": {
+    "mtime": 1783697846.5557318,
+    "ast_hash": "5d1ecf507e8c254f8dcdc98d9f78a41b",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000008_attendance_schedule_calendar.sql": {
+    "mtime": 1783697944.1928346,
+    "ast_hash": "ccb38efe5cffed77727fba0fb61e2aa5",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000009_resources.sql": {
+    "mtime": 1783698205.0710335,
+    "ast_hash": "f9d3a036cee11fe726ba03381385ea7a",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000010_communication.sql": {
+    "mtime": 1783698002.1546364,
+    "ast_hash": "c85008eb1bd5c9b61629abec35c60c84",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000011_audit_and_analytics.sql": {
+    "mtime": 1783698052.4952424,
+    "ast_hash": "1f013457b734f06b024cacf58f63ff4c",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000012_settings_grading_pools_comments.sql": {
+    "mtime": 1783698118.7472072,
+    "ast_hash": "cd7aba84b3baa896845f876a9bc13b66",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000013_pgvector_knowledge_and_rag.sql": {
+    "mtime": 1783703028.057454,
+    "ast_hash": "05717d74387267141077969f3a40af8e",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000014_gemini_768_embeddings.sql": {
+    "mtime": 1783708358.4596627,
+    "ast_hash": "476c45947ad664c08d7f4aa9bbf1e038",
+    "semantic_hash": ""
+  },
+  "db/package.json": {
+    "mtime": 1783697308.2466884,
+    "ast_hash": "24364671e1a8e2c15e1f30318a606eff",
+    "semantic_hash": ""
+  },
+  "db/tests/smoke-test.sql": {
+    "mtime": 1783697880.9907813,
+    "ast_hash": "aebc7c10adf13d346425a6df55d83a0c",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/common/SlideUpOverlay.tsx": {
+    "mtime": 1783752720.9404721,
+    "ast_hash": "903a35e69b465bad7839f53efb54ad4e",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/Attendance.tsx": {
+    "mtime": 1783691122.6697192,
+    "ast_hash": "ab764fdcc591d87b0c28bb6266d81290",
+    "semantic_hash": ""
+  },
+  "ncert_rag/api/__init__.py": {
+    "mtime": 1783699105.2404466,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "ncert_rag/api/app.py": {
+    "mtime": 1783711931.3217356,
+    "ast_hash": "0bf767ebb249c84986c3950136c94230",
+    "semantic_hash": ""
+  },
+  "ncert_rag/embedding/gemini_embedder.py": {
+    "mtime": 1783708472.052744,
+    "ast_hash": "3ef7ed30bba4752584652a2c30626eb1",
+    "semantic_hash": ""
+  },
+  "ncert_rag/extraction/llamaparse_extractor.py": {
+    "mtime": 1783708501.2092814,
+    "ast_hash": "f69b1aca10fd74583fcb62b4ced1e4c3",
+    "semantic_hash": ""
+  },
+  "ncert_rag/ingestion/okf_bundle_parser.py": {
+    "mtime": 1783711714.6798313,
+    "ast_hash": "4db610d74417697f6583315c685ac026",
+    "semantic_hash": ""
+  },
+  "ncert_rag/watcher/__init__.py": {
+    "mtime": 1783714634.8317137,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "ncert_rag/watcher/chapter_router.py": {
+    "mtime": 1783714875.4652677,
+    "ast_hash": "c5fdac25e45004f165da76126898bc8e",
+    "semantic_hash": ""
+  },
+  "ncert_rag/watcher/converters/__init__.py": {
+    "mtime": 1783714634.8791187,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "ncert_rag/watcher/converters/base.py": {
+    "mtime": 1783714981.6001153,
+    "ast_hash": "f95419e2829adb2f9f196765162d4d0a",
+    "semantic_hash": ""
+  },
+  "ncert_rag/watcher/converters/document_converter.py": {
+    "mtime": 1783715066.8627005,
+    "ast_hash": "39300a6dc92a24f639263aff3a35d771",
+    "semantic_hash": ""
+  },
+  "ncert_rag/watcher/converters/excel_converter.py": {
+    "mtime": 1783715019.5139148,
+    "ast_hash": "dd011074c5aaffd894b867386cad50af",
+    "semantic_hash": ""
+  },
+  "ncert_rag/watcher/converters/image_converter.py": {
+    "mtime": 1783715076.5137851,
+    "ast_hash": "9853502e9c8e549ab5fb27cd31df9d34",
+    "semantic_hash": ""
+  },
+  "ncert_rag/watcher/converters/text_converter.py": {
+    "mtime": 1783715040.3100562,
+    "ast_hash": "4a7359f0d3efac06e971155275746f2a",
+    "semantic_hash": ""
+  },
+  "ncert_rag/watcher/converters/video_converter.py": {
+    "mtime": 1783715000.0117755,
+    "ast_hash": "9af300f5759372586a00a222b0cea1ef",
+    "semantic_hash": ""
+  },
+  "ncert_rag/watcher/file_watcher.py": {
+    "mtime": 1783714900.7997868,
+    "ast_hash": "5a325f855fc0e4e4f86e14814b05812a",
+    "semantic_hash": ""
+  },
+  "ncert_rag/watcher/metadata_generator.py": {
+    "mtime": 1783715205.2877462,
+    "ast_hash": "78c361b4ea41a5a4cec35f06023bd9ca",
+    "semantic_hash": ""
+  },
+  "ncert_rag/watcher/okf_writer.py": {
+    "mtime": 1783714731.194556,
+    "ast_hash": "d1e5616be6a628c488a905be310365aa",
+    "semantic_hash": ""
+  },
+  "ncert_rag/watcher/pipeline.py": {
+    "mtime": 1783715236.2283537,
+    "ast_hash": "7be605994642071ed88770979ac687c7",
+    "semantic_hash": ""
+  },
+  "ncert_rag/watcher/type_router.py": {
+    "mtime": 1783714826.0726562,
+    "ast_hash": "ed20f473fc58e2eb6e9743945e21ea91",
+    "semantic_hash": ""
+  },
+  "CLAUDE.md": {
+    "mtime": 1783688398.8122962,
+    "ast_hash": "8a6643a420fdad6bfb583523bc6cef16",
+    "semantic_hash": ""
+  },
+  "db/README.md": {
+    "mtime": 1783712036.8214202,
+    "ast_hash": "72da236a8f1d1d976b636a81b5bd5739",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/biology-knowledge/chapters/index.md": {
+    "mtime": 1783713638.0574684,
+    "ast_hash": "f89743a1a00ea9125239d3ee4749c3cb",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/biology-knowledge/chapters/life-processes/index.md": {
+    "mtime": 1783713873.460579,
+    "ast_hash": "ee525701cb6e9643a201a9be598e7ec2",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/biology-knowledge/chapters/life-processes/log.md": {
+    "mtime": 1783713891.3750663,
+    "ast_hash": "e40f0ec628b8add76d03c706095c4392",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/biology-knowledge/chapters/life-processes/textbook.md": {
+    "mtime": 1783713866.2033052,
+    "ast_hash": "2f19fd659a66235e572bea5798961ad5",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/biology-knowledge/chapters/life-processes/videos/digestive-system.md": {
+    "mtime": 1783713659.6371477,
+    "ast_hash": "8c389ba9863bc85b5ed56ab4aaa2147c",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/biology-knowledge/chapters/life-processes/videos/index.md": {
+    "mtime": 1783713879.834096,
+    "ast_hash": "2f8c1a9c4f106f5d8f1a8c3346a59198",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/biology-knowledge/chapters/life-processes/videos/photosynthesis.md": {
+    "mtime": 1783713851.6530113,
+    "ast_hash": "e88f7db85a64069a66c5b0d501c5ffad",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/biology-knowledge/index.md": {
+    "mtime": 1783713633.5771792,
+    "ast_hash": "d27cd4d172320a7793f18fe1948925db",
+    "semantic_hash": ""
+  },
+  "edova-brain/OKF/biology-knowledge/log.md": {
+    "mtime": 1783713684.378685,
+    "ast_hash": "00cad6d61dc7339e2021c7d887e93e3b",
+    "semantic_hash": ""
+  },
+  "graphify-out/converted/Learning-Resources-Developer-Handoff-Notes_94c00cc8.md": {
+    "mtime": 1783753084.8249223,
+    "ast_hash": "3736f7619b381087f2aa17d8fda15ecb",
+    "semantic_hash": ""
+  },
+  "edova-brain/biology-knowledge/chapters/life-process.pdf": {
+    "mtime": 1783713359.3398376,
+    "ast_hash": "08923fdd1f4b0564a60682dafe0c3dae",
+    "semantic_hash": ""
+  },
+  "edova-brain/biology-knowledge/concept-videos/digestive-system.mp4": {
+    "mtime": 1783713257.1102686,
+    "ast_hash": "59ff811dbb252c721d8d30475a0eeb21",
+    "semantic_hash": ""
+  },
+  "edova-brain/biology-knowledge/concept-videos/photosynthesis.mp4": {
+    "mtime": 1783409631.9382813,
+    "ast_hash": "373152abc51438c153b61617b4eb3d7b",
+    "semantic_hash": ""
+  },
+  "edova-web/src/lib/media.ts": {
+    "mtime": 1783824394.8300169,
+    "ast_hash": "1e614ed2eb24bebd416e4411f2f88359",
+    "semantic_hash": ""
+  },
+  "edova-web/src/vite-env.d.ts": {
+    "mtime": 1783824399.2961488,
+    "ast_hash": "00dd874f5f3092c088a001dee428e1dd",
+    "semantic_hash": ""
+  },
+  "instructions/innuxai-edova-coteacher_S3/.oxlintrc.json": {
+    "mtime": 1783500890.0,
+    "ast_hash": "5e6e3cea3e89137071c142dd7835b0ef",
+    "semantic_hash": ""
+  },
+  "instructions/innuxai-edova-coteacher_S3/package.json": {
+    "mtime": 1783501112.0,
+    "ast_hash": "0eea93a5489f877e5dfe63f2bc43e86d",
+    "semantic_hash": ""
+  },
+  "instructions/innuxai-edova-coteacher_S3/src/App.jsx": {
+    "mtime": 1783505312.0,
+    "ast_hash": "7c36b4e4ecbcb5d3125c7e51189fb910",
+    "semantic_hash": ""
+  },
+  "instructions/innuxai-edova-coteacher_S3/src/CourseViewer.jsx": {
+    "mtime": 1783502974.0,
+    "ast_hash": "1747391159bd2a61786324ebf74fd3d6",
+    "semantic_hash": ""
+  },
+  "instructions/innuxai-edova-coteacher_S3/src/S3Browser.jsx": {
+    "mtime": 1783502998.0,
+    "ast_hash": "78651e27264d20b0cfd53d5a4db1a073",
+    "semantic_hash": ""
+  },
+  "instructions/innuxai-edova-coteacher_S3/src/main.jsx": {
+    "mtime": 1783500890.0,
+    "ast_hash": "e13723e2574429d9a6d849727e3ff695",
+    "semantic_hash": ""
+  },
+  "instructions/innuxai-edova-coteacher_S3/vite.config.js": {
+    "mtime": 1783500890.0,
+    "ast_hash": "88439104b3c207f17d33ef3160e3b080",
+    "semantic_hash": ""
+  },
+  "graphify-out/converted/CBSE_Class10_Science_Subtopics_b17b3d93.md": {
+    "mtime": 1783841903.3438704,
+    "ast_hash": "bd2ee5371c912156842864d85ac72e8d",
+    "semantic_hash": ""
+  },
+  "graphify-out/converted/Learning-Resources-Developer-Handoff-Notes_c9e1fe0d.md": {
+    "mtime": 1783841910.5207138,
+    "ast_hash": "3736f7619b381087f2aa17d8fda15ecb",
+    "semantic_hash": ""
+  },
+  "instructions/Learning-resources-css.md": {
+    "mtime": 1783768145.0980303,
+    "ast_hash": "dab4bceff89f14cafe98cabb8bb4b515",
+    "semantic_hash": ""
+  },
+  "instructions/Learning-resources-page.md": {
+    "mtime": 1783749397.4006393,
+    "ast_hash": "c65045801100fabd2d23ac9f23d1cadc",
+    "semantic_hash": ""
+  },
+  "instructions/OKF_steps.md": {
+    "mtime": 1783708008.2357852,
+    "ast_hash": "e545504b556184d545580a5624cab92a",
+    "semantic_hash": ""
+  },
+  "instructions/db-schema-design.md": {
+    "mtime": 1783692692.4911082,
+    "ast_hash": "a35e143349f428bafc4adffc2040b5e6",
+    "semantic_hash": ""
+  },
+  "instructions/innuxai-edova-coteacher_S3/README.md": {
+    "mtime": 1783500890.0,
+    "ast_hash": "75eb386f17caf77fd6fe3ce1d90968ee",
+    "semantic_hash": ""
+  },
+  "instructions/innuxai-edova-coteacher_S3/index.html": {
+    "mtime": 1783500892.0,
+    "ast_hash": "e4a9183d19c08c09573e40fdaa2be3b5",
+    "semantic_hash": ""
+  },
+  "instructions/innuxai-edova-coteacher_S3/requirements.txt": {
+    "mtime": 1783505536.0,
+    "ast_hash": "831c9b6227b3085e4120ba4729e56ba8",
+    "semantic_hash": ""
+  },
+  "instructions/innuxai-edova-coteacher_S3/public/favicon.svg": {
+    "mtime": 1783500890.0,
+    "ast_hash": "7e840862161341271697daa99a40d76b",
+    "semantic_hash": ""
+  },
+  "instructions/innuxai-edova-coteacher_S3/public/icons.svg": {
+    "mtime": 1783500890.0,
+    "ast_hash": "3b4fcfcf393eca4d264dca4a4663bc37",
+    "semantic_hash": ""
+  },
+  "instructions/innuxai-edova-coteacher_S3/src/assets/hero.png": {
+    "mtime": 1783500890.0,
+    "ast_hash": "aead493361b27e7510691c5d7072dfc1",
+    "semantic_hash": ""
+  },
+  "instructions/innuxai-edova-coteacher_S3/src/assets/react.svg": {
+    "mtime": 1783500890.0,
+    "ast_hash": "f0402b67b6ce880f65666bb49e841696",
+    "semantic_hash": ""
+  },
+  "instructions/innuxai-edova-coteacher_S3/src/assets/vite.svg": {
+    "mtime": 1783500890.0,
+    "ast_hash": "9960a24288958394ac50e57ff638b036",
+    "semantic_hash": ""
+  },
+  "instructions/search-Learning-resources.png": {
+    "mtime": 1783754961.8556,
+    "ast_hash": "6d648aa6e9b4888539f7d7d200b0e225",
+    "semantic_hash": ""
+  },
+  "instructions/settings page.jpeg": {
+    "mtime": 1783756790.446968,
+    "ast_hash": "b5527e42f161db3e69e838c05a7da280",
+    "semantic_hash": ""
+  },
+  "instructions/video-rendering.png": {
+    "mtime": 1783820860.4812303,
+    "ast_hash": "71dfd6335e817579cc675bc25b94ac6d",
+    "semantic_hash": ""
+  }
+}

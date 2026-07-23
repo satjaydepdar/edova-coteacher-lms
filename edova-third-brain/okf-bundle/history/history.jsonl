@@ -1,0 +1,44 @@
+{"action": "add", "doc_id": "math_math-ch1_chapter_content_dc88ce76", "at": "2026-07-17T03:22:17.030277+00:00"}
+{"action": "add", "doc_id": "math_math-ch2_chapter_content_028c9038", "at": "2026-07-17T03:22:17.495511+00:00"}
+{"action": "add", "doc_id": "math_math-ch3_chapter_content_f3f6c6b9", "at": "2026-07-17T03:22:18.024761+00:00"}
+{"action": "add", "doc_id": "math_math-ch4_chapter_content_8beaf15b", "at": "2026-07-17T03:22:18.472945+00:00"}
+{"action": "add", "doc_id": "math_math-ch5_chapter_content_24f46175", "at": "2026-07-17T03:22:18.912658+00:00"}
+{"action": "add", "doc_id": "math_math-ch6_chapter_content_73d3ce06", "at": "2026-07-17T03:22:19.547015+00:00"}
+{"action": "add", "doc_id": "math_math-ch7_chapter_content_82f7b6ba", "at": "2026-07-17T03:22:20.184909+00:00"}
+{"action": "add", "doc_id": "science_physics-ch1_chapter_content_a647d66c", "at": "2026-07-17T03:22:42.508687+00:00"}
+{"action": "add", "doc_id": "science_physics-ch2_chapter_content_c8ed49fa", "at": "2026-07-17T03:22:43.302789+00:00"}
+{"action": "add", "doc_id": "science_physics-ch3_chapter_content_640a680a", "at": "2026-07-17T03:22:44.425611+00:00"}
+{"action": "add", "doc_id": "science_chemistry-ch1_chapter_content_9d58fa61", "at": "2026-07-17T03:22:45.563412+00:00"}
+{"action": "add", "doc_id": "science_chemistry-ch2_chapter_content_8ce001e9", "at": "2026-07-17T03:22:53.865392+00:00"}
+{"action": "add", "doc_id": "science_chemistry-ch3_chapter_content_cda8ac2d", "at": "2026-07-17T03:22:59.459634+00:00"}
+{"action": "add", "doc_id": "science_chemistry-ch4_chapter_content_efbb053e", "at": "2026-07-17T03:23:02.877838+00:00"}
+{"action": "add", "doc_id": "science_biology-ch1_chapter_content_685ec722", "at": "2026-07-17T03:23:24.329098+00:00"}
+{"action": "add", "doc_id": "science_biology-ch2_chapter_content_bf4ddfa1", "at": "2026-07-17T03:23:38.433225+00:00"}
+{"action": "add", "doc_id": "science_biology-ch3_chapter_content_575cb5a5", "at": "2026-07-17T03:23:43.968924+00:00"}
+{"action": "add", "doc_id": "science_biology-ch4_chapter_content_b0357c0b", "at": "2026-07-17T03:23:45.798152+00:00"}
+{"action": "add", "doc_id": "test_test-ch99_chapter_content_243ed031", "at": "2026-07-17T03:24:57.609015+00:00"}
+{"action": "remove", "doc_id": "test_test-ch99_chapter_content_243ed031", "at": "2026-07-17T03:24:57.947816+00:00"}
+{"action": "add", "doc_id": "test_test-ch99_chapter_content_11f32954", "at": "2026-07-17T03:24:57.950378+00:00"}
+{"action": "remove", "doc_id": "test_test-ch99_chapter_content_11f32954", "at": "2026-07-17T03:25:45.129785+00:00"}
+{"action": "add", "doc_id": "test_test-ch99_chapter_content_6d407668", "at": "2026-07-17T03:26:20.862205+00:00"}
+{"action": "remove", "doc_id": "test_test-ch99_chapter_content_6d407668", "at": "2026-07-17T03:26:46.336529+00:00"}
+{"action": "add", "doc_id": "test_test-ch99_chapter_content_27b31cf3", "at": "2026-07-17T03:27:22.468384+00:00"}
+{"action": "remove", "doc_id": "test_test-ch99_chapter_content_27b31cf3", "at": "2026-07-17T03:27:22.806294+00:00"}
+{"action": "add", "doc_id": "test_test-ch99_chapter_content_1a40f8b2", "at": "2026-07-17T03:27:22.808258+00:00"}
+{"action": "remove", "doc_id": "test_test-ch99_chapter_content_1a40f8b2", "at": "2026-07-17T03:27:34.188083+00:00"}
+{"action": "add", "doc_id": "math_math-ch5_worksheet_ebc73e89", "at": "2026-07-17T03:35:57.410340+00:00"}
+{"action": "remove", "doc_id": "math_math-ch5_worksheet_ebc73e89", "at": "2026-07-17T03:36:12.317291+00:00"}
+{"action": "add", "doc_id": "math_math-ch5_worksheet_b78d1add", "at": "2026-07-17T03:36:12.318291+00:00"}
+{"action": "remove", "doc_id": "math_math-ch5_worksheet_b78d1add", "at": "2026-07-17T03:36:32.089150+00:00"}
+{"action": "add", "doc_id": "math_math-ch5_worksheet_ebc73e89", "at": "2026-07-17T03:36:32.090148+00:00"}
+{"action": "review", "file": "General Knowledge Quiz.md", "decision": {"subject": null, "chapter_id": null, "chapter_name": null, "doc_type": "assessments", "confidence": 0.0, "rationale": "no taxonomy keywords matched the document content", "backend": "heuristic"}, "at": "2026-07-17T05:29:35.023901+00:00"}
+{"action": "add", "doc_id": "science_physics-ch3_handbook_a9a21e1f", "at": "2026-07-17T05:29:35.065832+00:00"}
+{"action": "auto_file", "file": "Teacher Notes - Electric Circuits.md", "decision": {"subject": "science", "chapter_id": "physics-ch3", "chapter_name": "Electricity", "doc_type": "handbook", "confidence": 0.8, "rationale": "matched keywords: electricity (score 4, runner-up 0)", "backend": "heuristic"}, "ingest": {"status": "added", "doc_id": "science_physics-ch3_handbook_a9a21e1f"}, "deep_check": true, "at": "2026-07-17T05:29:35.455038+00:00"}
+{"action": "add", "doc_id": "science_physics-ch1_activity_6b1e4769", "at": "2026-07-17T05:30:17.700642+00:00"}
+{"action": "review_applied", "file": "General Knowledge Quiz.md", "decision": {"approved": true, "file": "General Knowledge Quiz.md", "subject": "science", "chapter_id": "physics-ch1", "chapter_name": null, "doc_type": "activities", "confidence": 0.0, "rationale": "no taxonomy keywords matched the document content [human: class activity, Light chapter]", "backend": "heuristic"}, "ingest": {"status": "added", "doc_id": "science_physics-ch1_activity_6b1e4769"}, "deep_check": true, "at": "2026-07-17T05:30:17.914093+00:00"}
+{"action": "remove", "doc_id": "science_physics-ch3_handbook_a9a21e1f", "at": "2026-07-17T05:31:00.423331+00:00"}
+{"action": "remove", "doc_id": "science_physics-ch1_activity_6b1e4769", "at": "2026-07-17T05:31:00.583477+00:00"}
+{"action": "add", "doc_id": "science_biology-ch1_video_47497fa9", "at": "2026-07-22T09:59:28.591012+00:00"}
+{"action": "add", "doc_id": "science_biology-ch1_video_8239d1b8", "at": "2026-07-22T09:59:29.293912+00:00"}
+{"action": "add", "doc_id": "math_math-ch4_worksheet_1ce90f12", "at": "2026-07-22T13:24:08.163468+00:00"}
+{"action": "remove", "doc_id": "math_math-ch4_worksheet_1ce90f12", "at": "2026-07-22T13:24:58.960385+00:00"}

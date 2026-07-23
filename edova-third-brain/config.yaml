@@ -1,0 +1,18 @@
+# edova-third-brain top-level config
+
+paths:
+  subjects: "./subjects"
+  okf_bundle: "./okf-bundle"
+  logs: "./logs"
+  inbox: "./inbox"
+  review: "./review"
+
+# Cloud shelf (tools/s3_push.py). Keys derive as
+# <prefix>/<Subject>/Chapter-XX/<filename> and are written back into OKF nodes.
+s3:
+  bucket: "innuxai-edova-coteacher"
+  prefix: "Class-10/Semester-01"
+
+subjects: {}
+
+document_types: {}

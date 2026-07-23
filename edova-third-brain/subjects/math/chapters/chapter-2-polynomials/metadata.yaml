@@ -1,0 +1,14 @@
+chapter_number: 2
+chapter_title: "Polynomials"
+subject: "Mathematics"
+grade: 10
+curriculum: "CBSE / NCERT"
+status: "in_progress"
+created: "2026-07-02"
+last_updated: "2026-07-02"
+topics:
+  - "Introduction to Polynomials"
+  - "Geometrical Meaning of Zeroes"
+  - "Relationship Between Zeroes and Coefficients"
+  - "Division Algorithm for Polynomials"
+

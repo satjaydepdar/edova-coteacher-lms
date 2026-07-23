@@ -1,0 +1,9 @@
+{
+  "edge_id": "physics-ch1_to_subject_science",
+  "type": "belongs_to",
+  "from": "physics-ch1",
+  "to": "subject_science",
+  "doc_ids": [
+    "science_physics-ch1_chapter_content_a647d66c"
+  ]
+}

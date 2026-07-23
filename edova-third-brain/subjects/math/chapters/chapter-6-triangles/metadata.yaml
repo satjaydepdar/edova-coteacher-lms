@@ -1,0 +1,23 @@
+chapter_number: 6
+chapter_name: Triangles
+subject: Mathematics
+grade: 10
+board: CBSE
+
+ncert_source: chapter-6-triangles.pdf
+
+learning_model:
+  - Bloom
+  - Competency Based
+  - NEP2020
+
+status:
+  ncert_conversion: complete
+  handbook: complete
+  worksheets: complete
+  lesson_plans: complete
+  question_bank: complete
+  activities: complete
+  assessments: complete
+
+version: 1.0

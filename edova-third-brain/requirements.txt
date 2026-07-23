@@ -1,0 +1,7 @@
+# Python dependencies for tools/ (install: pip install -r requirements.txt)
+pyyaml>=6.0
+pypdf>=4.0
+# Optional: CAMEL-AI backend for tools/classify.py (LLM classification; needs an API key)
+# camel-ai
+# Required for tools/s3_push.py --upload (AWS S3 shelving)
+boto3>=1.34

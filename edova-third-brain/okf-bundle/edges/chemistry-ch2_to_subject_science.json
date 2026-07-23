@@ -1,0 +1,9 @@
+{
+  "edge_id": "chemistry-ch2_to_subject_science",
+  "type": "belongs_to",
+  "from": "chemistry-ch2",
+  "to": "subject_science",
+  "doc_ids": [
+    "science_chemistry-ch2_chapter_content_8ce001e9"
+  ]
+}

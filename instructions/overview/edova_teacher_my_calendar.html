@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edova — Teaching</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #E5E1D3;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #1C1F1B;
+  }
+  .app {
+    max-width: 960px;
+    margin: 32px auto;
+    background: #EEEBE1;
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+  }
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 3px;
+    border: 1px solid #DAD5C4;
+  }
+  .tab-btn {
+    padding: 7px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    border: 1px solid transparent;
+    background: none;
+    color: #6B695F;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .tab-btn.active {
+    background: #E9F0E4;
+    color: #3F6B36;
+    font-weight: 600;
+    border-color: #B9D2AE;
+  }
+  .today-label { font-size: 12px; color: #6B695F; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Calendar */
+  .banner {
+    background: #1B241E;
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .banner-left { display: flex; align-items: center; gap: 10px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .banner-title { font-size: 13px; color: #F4F1EA; font-weight: 600; }
+  .banner-sub { font-size: 12px; color: #9FA79A; }
+  .banner-count { font-size: 12px; color: #C9D6C3; background: #2C3830; padding: 4px 10px; border-radius: 6px; }
+
+  .cal-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .cal-title { font-size: 18px; font-weight: 600; }
+  .cal-controls-right { display: flex; gap: 8px; align-items: center; }
+  .toggle { display: flex; gap: 4px; background: #fff; border-radius: 8px; padding: 3px; border: 1px solid #DAD5C4; }
+  .toggle-btn { padding: 5px 14px; border-radius: 6px; font-size: 12px; color: #6B695F; cursor: pointer; border: 1px solid transparent; background: none; font-family: inherit; }
+  .toggle-btn.active { background: #E9F0E4; color: #3F6B36; font-weight: 600; border-color: #B9D2AE; }
+  .add-btn { display: flex; align-items: center; gap: 6px; background: #1B241E; color: #F4F1EA; border: none; border-radius: 6px; padding: 7px 14px; font-size: 12px; cursor: pointer; font-family: inherit; }
+
+  .weekday-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 6px; }
+  .weekday-row div { font-size: 11px; color: #6B695F; text-align: center; padding: 2px 0; }
+
+  .month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .day-cell {
+    background: #fff;
+    border: 1px solid #DAD5C4;
+    border-radius: 8px;
+    padding: 6px;
+    min-height: 78px;
+    cursor: pointer;
+    transition: border-color .12s ease;
+  }
+  .day-cell:hover { border-color: #B9D2AE; }
+  .day-cell.empty { background: transparent; border: none; cursor: default; min-height: 78px; }
+  .day-cell.today { background: #1B241E; border-color: #1B241E; }
+  .day-num { font-size: 11px; color: #6B695F; margin-bottom: 3px; }
+  .day-cell.today .day-num { color: #F4F1EA; font-weight: 600; }
+  .chip { font-size: 10px; border-radius: 4px; padding: 1px 5px; margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .more-link { font-size: 10px; font-weight: 600; color: #3F6B36; }
+  .day-cell.today .more-link { color: #C9D6C3; }
+
+  .chip-class { background: #E6F0FA; color: #2A5C94; }
+  .chip-exam { background: #FBE2DF; color: #B5382D; }
+  .chip-homework { background: #FBE9DD; color: #B85C1E; }
+  .chip-meeting { background: #E9F0E4; color: #3F6B36; }
+  .chip-reminder { background: #F1EFE8; color: #6B695F; }
+  .day-cell.today .chip { background: #2C3830; color: #D4E3CE; }
+
+  .dot-class { background: #3B7BC4; }
+  .dot-exam { background: #D14B3F; }
+  .dot-homework { background: #D8874C; }
+  .dot-meeting { background: #4E8B45; }
+  .dot-reminder { background: #9C988A; }
+
+  /* Week view */
+  .week-list { display: flex; flex-direction: column; gap: 8px; }
+  .week-day {
+    background: #fff;
+    border: 1px solid #DAD5C4;
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .week-day.today { border-color: #1B241E; border-width: 2px; }
+  .week-day-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .week-day-title { font-size: 13px; font-weight: 600; }
+  .week-day-title .muted { font-weight: 400; color: #6B695F; margin-left: 6px; }
+  .week-event { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 12px; }
+  .week-event .time { color: #6B695F; width: 72px; flex-shrink: 0; }
+  .week-empty { font-size: 12px; color: #9C988A; }
+  .week-add {
+    display: flex; align-items: center; gap: 6px; font-size: 12px; color: #3F6B36;
+    margin-top: 8px; padding-top: 8px; border-top: 1px solid #EAE6D9; cursor: pointer; width: fit-content;
+  }
+
+  /* Classes / Subjects (shared card styles) */
+  .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .card { background: #fff; border: 1px solid #DAD5C4; border-radius: 10px; padding: 16px; }
+  .card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .card-title { font-size: 14px; font-weight: 600; }
+  .card-sub { font-size: 12px; color: #6B695F; }
+  .time-badge { font-size: 11px; background: #E6F0FA; color: #2A5C94; border-radius: 5px; padding: 3px 8px; height: fit-content; }
+  .stat-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .stat { flex: 1; background: #F6F4EC; border-radius: 8px; padding: 8px; }
+  .stat-label { font-size: 11px; color: #6B695F; }
+  .stat-value { font-size: 16px; font-weight: 600; }
+  .section-label { font-size: 12px; color: #6B695F; margin-bottom: 6px; }
+  .material-row { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-bottom: 4px; }
+
+  .subject-list { display: flex; flex-direction: column; gap: 14px; }
+  .subject-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
+  .subject-gap { font-size: 19px; font-weight: 700; }
+  .track { position: relative; height: 30px; margin-bottom: 6px; }
+  .track-base { position: absolute; top: 14px; left: 0; right: 0; height: 3px; background: #EAE6D9; border-radius: 2px; }
+  .track-fill { position: absolute; top: 14px; left: 0; height: 3px; border-radius: 2px; }
+  .track-tick { position: absolute; top: 7px; width: 2px; height: 18px; background: #9C988A; }
+  .track-dot { position: absolute; top: 8px; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #fff; transform: translateX(-50%); }
+  .pill-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill { font-size: 11px; border-radius: 5px; padding: 4px 9px; }
+  .pill-warn { background: #FBE2DF; color: #B5382D; }
+  .pill-neutral { background: #F6F4EC; color: #6B695F; }
+
+  /* Modal */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+    display: flex; align-items: center; justify-content: center; z-index: 50;
+  }
+  .overlay[hidden] { display: none; }
+  .modal {
+    background: #fff; border-radius: 12px; padding: 18px; width: 300px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+  }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .modal-title { font-size: 14px; font-weight: 600; }
+  .modal-close { cursor: pointer; color: #6B695F; background: none; border: none; font-size: 16px; }
+  .modal-event { display: flex; gap: 8px; align-items: center; padding: 4px 0; font-size: 12px; }
+  .modal-empty { font-size: 12px; color: #9C988A; padding: 6px 0; }
+  .modal-add { display: flex; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #EAE6D9; }
+  .modal-add input {
+    flex: 1; border: 1px solid #DAD5C4; border-radius: 6px; padding: 7px 9px; font-size: 12px; font-family: inherit;
+  }
+  .modal-add button {
+    background: #1B241E; color: #F4F1EA; border: none; border-radius: 6px; padding: 7px 12px; font-size: 12px; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="topbar">
+    <div class="tabs">
+      <button class="tab-btn active" data-panel="panel-calendar" onclick="showPanel(this)">Calendar</button>
+      <button class="tab-btn" data-panel="panel-classes" onclick="showPanel(this)">Classes</button>
+      <button class="tab-btn" data-panel="panel-subjects" onclick="showPanel(this)">Subjects</button>
+    </div>
+    <div class="today-label" id="today-label"></div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div id="panel-calendar" class="panel active">
+
+    <div class="banner">
+      <div class="banner-left">
+        <div class="dot dot-exam"></div>
+        <div>
+          <div class="banner-title">Next: Grade 8 — Section A, Algebra quiz</div>
+          <div class="banner-sub">Room 204 · starts in 40 min</div>
+        </div>
+      </div>
+      <div class="banner-count" id="today-count"></div>
+    </div>
+
+    <div class="cal-controls">
+      <div class="cal-title" id="cal-title"></div>
+      <div class="cal-controls-right">
+        <div class="toggle">
+          <button class="toggle-btn" id="toggle-week" onclick="setView('week')">Week</button>
+          <button class="toggle-btn active" id="toggle-month" onclick="setView('month')">Month</button>
+        </div>
+        <button class="add-btn" onclick="openModal(TODAY.getDate())"><i class="ti ti-plus"></i>Add event</button>
+      </div>
+    </div>
+
+    <div id="month-view">
+      <div class="weekday-row">
+        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+      </div>
+      <div class="month-grid" id="month-grid"></div>
+    </div>
+
+    <div id="week-view" style="display:none;">
+      <div class="week-list" id="week-list"></div>
+    </div>
+
+  </div>
+
+  <!-- CLASSES -->
+  <div id="panel-classes" class="panel">
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Grade 8 — Section A</div>
+            <div class="card-sub">Mathematics · Room 204</div>
+          </div>
+          <div class="time-badge">9:00 AM</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="stat-label">Present</div><div class="stat-value">30/32</div></div>
+          <div class="stat"><div class="stat-label">Avg grade</div><div class="stat-value" style="color:#3F6B36;">B+</div></div>
+          <div class="stat"><div class="stat-label">Done</div><div class="stat-value">86%</div></div>
+        </div>
+        <div class="section-label">Assignments and materials</div>
+        <div class="material-row"><i class="ti ti-file-text" style="color:#B85C1E;"></i>Algebra quiz — Linear equations <span style="color:#6B695F;">&nbsp;due today</span></div>
+        <div class="material-row"><i class="ti ti-file" style="color:#6B695F;"></i>Chapter 5 worksheet.pdf</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Grade 7 — Section A</div>
+            <div class="card-sub">Mathematics · Room 108</div>
+          </div>
+          <div class="time-badge">11:15 AM</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="stat-label">Present</div><div class="stat-value">28/28</div></div>
+          <div class="stat"><div class="stat-label">Avg grade</div><div class="stat-value" style="color:#3F6B36;">A-</div></div>
+          <div class="stat"><div class="stat-label">Done</div><div class="stat-value">95%</div></div>
+        </div>
+        <div class="section-label">Assignments and materials</div>
+        <div class="material-row"><i class="ti ti-file" style="color:#6B695F;"></i>Fractions review slides.pptx</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBJECTS -->
+  <div id="panel-subjects" class="panel">
+    <div style="font-size:12px;color:#6B695F;margin-bottom:12px;">2 subjects assigned to you</div>
+    <div class="subject-list">
+
+      <div class="card">
+        <div class="subject-head">
+          <div>
+            <div class="card-title">Mathematics</div>
+            <div class="card-sub">Sections 8A, 8B · 61 students</div>
+          </div>
+          <div class="subject-gap" style="color:#B5382D;">−3<span style="font-size:11px;color:#6B695F;font-weight:400;"> topics</span></div>
+        </div>
+        <div class="track">
+          <div class="track-base"></div>
+          <div class="track-fill" style="width:61%;background:#D14B3F;"></div>
+          <div class="track-tick" style="left:78%;"></div>
+          <div class="track-dot" style="left:61%;background:#D14B3F;box-shadow:0 0 0 1px #D14B3F;"></div>
+        </div>
+        <div class="pill-row">
+          <div class="pill pill-warn">Won't finish before Aug 4 exam</div>
+          <div class="pill pill-neutral">Weak: Linear equations · 62%</div>
+          <div class="pill pill-neutral">Next: Quadratic basics</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="subject-head">
+          <div>
+            <div class="card-title">Mathematics (Grade 7)</div>
+            <div class="card-sub">Section 7A · 28 students</div>
+          </div>
+          <div class="subject-gap" style="color:#3F6B36;">On pace</div>
+        </div>
+        <div class="track">
+          <div class="track-base"></div>
+          <div class="track-fill" style="width:60%;background:#4E8B45;"></div>
+          <div class="track-tick" style="left:60%;"></div>
+          <div class="track-dot" style="left:60%;background:#4E8B45;box-shadow:0 0 0 1px #4E8B45;"></div>
+        </div>
+        <div class="pill-row">
+          <div class="pill pill-neutral">On track for Aug 10 exam</div>
+          <div class="pill pill-neutral">No topics flagged</div>
+          <div class="pill pill-neutral">Next: Fractions review</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Day detail modal -->
+<div class="overlay" id="overlay" hidden onclick="if(event.target===this) closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div id="modal-events"></div>
+    <div class="modal-add">
+      <input type="text" id="reminder-input" placeholder="Add a reminder for this day">
+      <button onclick="addReminder()">Add</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const YEAR = 2026, MONTH = 6; // July 2026
+  const TODAY = new Date(YEAR, MONTH, 14);
+
+  // Seed events, keyed by day-of-month
+  const events = {
+    7:  [{time:'9:00 AM', label:'8A — Mathematics', type:'class'}],
+    8:  [
+          {time:'9:00 AM', label:'7A — Mathematics', type:'class'},
+          {time:'11:15 AM', label:'8B — Mathematics', type:'class'},
+          {time:'11:59 PM', label:'9C — Homework due', type:'homework'},
+          {time:'3:00 PM', label:'9A — Homeroom', type:'meeting'}
+        ],
+    9:  [
+          {time:'9:00 AM', label:'8A — Algebra quiz', type:'exam'},
+          {time:'2:30 PM', label:'Parent meeting — Olivia Brown', type:'meeting'}
+        ],
+    10: [{time:'1:00 PM', label:'9C — Chapter 5 review', type:'exam'}],
+    11: [{time:'11:59 PM', label:'Homework due — Linear equations', type:'homework'}],
+    13: [{time:'8:00 AM', label:'Staff meeting', type:'meeting'}],
+    14: [
+          {time:'9:00 AM', label:'8A — Algebra quiz', type:'exam'},
+          {time:'11:15 AM', label:'7A — Mathematics', type:'class'}
+        ],
+    15: [{time:'8:00 AM', label:'Staff meeting', type:'meeting'}],
+    17: [
+          {time:'All day', label:'8A — Mid-term exam', type:'exam'},
+          {time:'All day', label:'8B — Mid-term exam', type:'exam'}
+        ],
+    18: [{time:'All day', label:'9C — Mid-term exam', type:'exam'}]
+  };
+  const reminders = {}; // day -> array of strings, added at runtime
+
+  const typeLabel = { class: 'Class', exam: 'Exam', homework: 'Homework', meeting: 'Meeting', reminder: 'Reminder' };
+
+  function dayEvents(day) {
+    const base = (events[day] || []).slice();
+    (reminders[day] || []).forEach(text => base.push({time:'Reminder', label:text, type:'reminder'}));
+    return base;
+  }
+
+  function fmtHeader() {
+    document.getElementById('today-label').textContent = TODAY.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+    document.getElementById('cal-title').textContent = TODAY.toLocaleDateString('en-US', { month:'long', year:'numeric' });
+    document.getElementById('today-count').textContent = dayEvents(TODAY.getDate()).length + ' events today';
+  }
+
+  function renderMonth() {
+    const grid = document.getElementById('month-grid');
+    grid.innerHTML = '';
+    const firstDay = new Date(YEAR, MONTH, 1).getDay();
+    const daysInMonth = new Date(YEAR, MONTH + 1, 0).getDate();
+
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement('div');
+      empty.className = 'day-cell empty';
+      grid.appendChild(empty);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const cell = document.createElement('div');
+      const isToday = d === TODAY.getDate();
+      cell.className = 'day-cell' + (isToday ? ' today' : '');
+      cell.onclick = () => openModal(d);
+
+      const num = document.createElement('div');
+      num.className = 'day-num';
+      num.textContent = d;
+      cell.appendChild(num);
+
+      const list = dayEvents(d);
+      const shown = list.slice(0, 2);
+      shown.forEach(ev => {
+        const chip = document.createElement('div');
+        chip.className = 'chip chip-' + ev.type;
+        chip.textContent = ev.label;
+        cell.appendChild(chip);
+      });
+      if (list.length > 2) {
+        const more = document.createElement('div');
+        more.className = 'more-link';
+        more.textContent = '+' + (list.length - 2) + ' more';
+        cell.appendChild(more);
+      }
+      grid.appendChild(cell);
+    }
+  }
+
+  function startOfWeek(date) {
+    const d = new Date(date);
+    d.setDate(d.getDate() - d.getDay());
+    return d;
+  }
+
+  function renderWeek() {
+    const list = document.getElementById('week-list');
+    list.innerHTML = '';
+    const sunday = startOfWeek(TODAY);
+
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(sunday);
+      d.setDate(sunday.getDate() + i);
+      const dayNum = d.getDate();
+      const isToday = d.toDateString() === TODAY.toDateString();
+
+      const row = document.createElement('div');
+      row.className = 'week-day' + (isToday ? ' today' : '');
+
+      const head = document.createElement('div');
+      head.className = 'week-day-head';
+      head.innerHTML = '<div class="week-day-title">' +
+        d.toLocaleDateString('en-US', { weekday: 'long' }) +
+        '<span class="muted">' + d.toLocaleDateString('en-US', { month:'short', day:'numeric' }) + '</span></div>';
+      row.appendChild(head);
+
+      const evs = dayEvents(dayNum);
+      if (evs.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'week-empty';
+        empty.textContent = 'No events scheduled';
+        row.appendChild(empty);
+      } else {
+        evs.forEach(ev => {
+          const line = document.createElement('div');
+          line.className = 'week-event';
+          line.innerHTML = '<span class="dot dot-' + ev.type + '"></span><span class="time">' + ev.time + '</span><span>' + ev.label + '</span>';
+          row.appendChild(line);
+        });
+      }
+
+      const addLine = document.createElement('div');
+      addLine.className = 'week-add';
+      addLine.innerHTML = '<i class="ti ti-plus"></i>Add reminder';
+      addLine.onclick = () => openModal(dayNum);
+      row.appendChild(addLine);
+
+      list.appendChild(row);
+    }
+  }
+
+  function setView(mode) {
+    document.getElementById('toggle-week').classList.toggle('active', mode === 'week');
+    document.getElementById('toggle-month').classList.toggle('active', mode === 'month');
+    document.getElementById('month-view').style.display = mode === 'month' ? 'block' : 'none';
+    document.getElementById('week-view').style.display = mode === 'week' ? 'block' : 'none';
+    if (mode === 'week') renderWeek();
+  }
+
+  let selectedDay = null;
+  function openModal(day) {
+    selectedDay = day;
+    const date = new Date(YEAR, MONTH, day);
+    document.getElementById('modal-title').textContent = date.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+
+    const container = document.getElementById('modal-events');
+    container.innerHTML = '';
+    const evs = dayEvents(day);
+    if (evs.length === 0) {
+      const p = document.createElement('div');
+      p.className = 'modal-empty';
+      p.textContent = 'No events yet for this day.';
+      container.appendChild(p);
+    } else {
+      evs.forEach(ev => {
+        const row = document.createElement('div');
+        row.className = 'modal-event';
+        row.innerHTML = '<span class="dot dot-' + ev.type + '"></span><span>' + ev.label + ' <span style="color:#6B695F;">' + ev.time + '</span></span>';
+        container.appendChild(row);
+      });
+    }
+    document.getElementById('reminder-input').value = '';
+    document.getElementById('overlay').hidden = false;
+  }
+
+  function closeModal() {
+    document.getElementById('overlay').hidden = true;
+    selectedDay = null;
+  }
+
+  function addReminder() {
+    const input = document.getElementById('reminder-input');
+    const text = input.value.trim();
+    if (!text || selectedDay === null) return;
+    if (!reminders[selectedDay]) reminders[selectedDay] = [];
+    reminders[selectedDay].push(text);
+    renderMonth();
+    fmtHeader();
+    openModal(selectedDay); // refresh modal contents
+  }
+
+  function showPanel(btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.panel).classList.add('active');
+  }
+
+  fmtHeader();
+  renderMonth();
+</script>
+
+</body>
+</html>

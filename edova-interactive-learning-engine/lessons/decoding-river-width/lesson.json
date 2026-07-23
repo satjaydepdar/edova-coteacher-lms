@@ -1,0 +1,268 @@
+{
+  "id": "decoding-river-width",
+  "slug": "decoding-river-width",
+  "version": "1.0.0",
+  "status": "published",
+  "isReferenceLesson": true,
+  "language": "en-IN",
+  "title": "Decoding River Width",
+  "subtitle": "Using trigonometry to measure a distance you can never walk",
+  "shortDescription": "Learn how a baseline, one measured angle, and the tangent ratio let a surveyor calculate a river's width entirely from dry land.",
+  "metadata": {
+    "board": "CBSE",
+    "grade": 10,
+    "subject": "Mathematics",
+    "unit": "Trigonometry",
+    "chapter": "Some Applications of Trigonometry (Heights and Distances)",
+    "ncertReference": "NCERT Class 10 Mathematics, Chapter 9",
+    "learningOutcomeCodes": [
+      "C10.MATH.TRIG.HD.01",
+      "C10.MATH.TRIG.HD.02",
+      "C10.MATH.TRIG.HD.03"
+    ],
+    "difficulty": "intermediate",
+    "estimatedDurationSeconds": 480,
+    "estimatedSeatTimeSeconds": 780,
+    "author": "Edova Curriculum Team",
+    "reviewedBy": "CBSE Instructional Design Lead",
+    "createdDate": "2026-07-21",
+    "lastUpdatedDate": "2026-07-21",
+    "tags": [
+      "trigonometry",
+      "heights-and-distances",
+      "tangent-ratio",
+      "applied-math",
+      "indirect-measurement",
+      "cbse-class-10"
+    ],
+    "prerequisites": [
+      "Identify opposite, adjacent, and hypotenuse sides relative to a given angle in a right triangle",
+      "Recall sine, cosine, and tangent ratios",
+      "Evaluate tan(30 degrees), tan(45 degrees), tan(60 degrees) from the standard ratio table",
+      "Rearrange a simple equation to isolate an unknown"
+    ]
+  },
+  "media": {
+    "video": {
+      "assetPath": "assets/explainer-video- decoding-river_width.mp4",
+      "durationSeconds": 480,
+      "mimeType": "video/mp4",
+      "hasCaptions": false
+    },
+    "diagrams": {
+      "assetDir": "assets/diagrams",
+      "description": "Riverbank triangle diagrams (ABC and ADC) used across scenes 5, 6, 9, and 11."
+    },
+    "images": {
+      "assetDir": "assets/images",
+      "description": "Supporting still images (river hero shot, clinometer close-up, recap montage panels)."
+    }
+  },
+  "learningOutline": {
+    "overview": "Students follow a surveyor's problem end to end: frame the river's width as an unreachable side of a right triangle, measure a baseline and one angle on dry land, apply the tangent ratio to solve for the unknown width, and verify the result with a second, independent triangle.",
+    "learningOutcomes": [
+      "Explain why some real-world distances must be measured indirectly.",
+      "Define angle of elevation and line of sight in a measurement context.",
+      "Construct a right triangle model from a real-world scenario.",
+      "Apply the tangent ratio to calculate an unknown distance.",
+      "Evaluate the reliability of a measurement using a second, independent triangle.",
+      "Design a measurement plan for a new, unseen indirect-measurement scenario."
+    ],
+    "conceptFlow": ["c1", "c2", "c3", "c4", "c5", "c6"]
+  },
+  "concepts": [
+    {
+      "id": "c1",
+      "title": "The Indirect Measurement Problem",
+      "description": "Some real-world distances cannot be measured by walking the distance with a tape. This concept frames the problem of reducing an unreachable distance to a side of a right triangle calculable from a reachable baseline and a measured angle.",
+      "learningIntent": "Motivate why trigonometry is needed before introducing how it is used.",
+      "difficulty": "foundational",
+      "importance": "high",
+      "bloomLevel": "understand",
+      "misconceptions": [
+        "You need to cross the river to measure it.",
+        "Indirect measurement requires special or expensive equipment."
+      ],
+      "prerequisites": [],
+      "timestampSeconds": 20
+    },
+    {
+      "id": "c2",
+      "title": "Angle of Elevation and Line of Sight",
+      "description": "Introduces the line of sight and the angle measured between two lines of sight using an instrument such as a clinometer or theodolite.",
+      "learningIntent": "Give students precise vocabulary for the angle used later in the tangent ratio, tied to a real measuring instrument.",
+      "difficulty": "foundational",
+      "importance": "high",
+      "bloomLevel": "remember",
+      "misconceptions": [
+        "Confusing angle of elevation with the horizontal sighting angle used in this lesson.",
+        "Assuming the line of sight must be perfectly horizontal to count."
+      ],
+      "prerequisites": ["c1"],
+      "timestampSeconds": 55
+    },
+    {
+      "id": "c3",
+      "title": "Constructing the Right Triangle",
+      "description": "Converts the river scenario into a labelled right triangle: observer at A, right angle at A, baseline AB, and measured angle B.",
+      "learningIntent": "Build the skill of translating a word scenario into a correctly labelled geometric diagram.",
+      "difficulty": "intermediate",
+      "importance": "high",
+      "bloomLevel": "understand",
+      "misconceptions": [
+        "Placing the right angle at the wrong vertex (commonly B instead of A).",
+        "Confusing which side is opposite vs. adjacent once the triangle is drawn."
+      ],
+      "prerequisites": ["c1", "c2"],
+      "timestampSeconds": 115
+    },
+    {
+      "id": "c4",
+      "title": "The Tangent Ratio",
+      "description": "States and applies tan(theta) = opposite / adjacent to the triangle, showing AC = AB * tan(angle B).",
+      "learningIntent": "Show the tangent ratio as a direct algebraic consequence of the triangle, not an isolated formula.",
+      "difficulty": "intermediate",
+      "importance": "critical",
+      "bloomLevel": "apply",
+      "misconceptions": [
+        "Inverting the ratio (using adjacent/opposite instead of opposite/adjacent).",
+        "Forgetting to rearrange the equation before substituting numbers."
+      ],
+      "prerequisites": ["c3"],
+      "timestampSeconds": 190
+    },
+    {
+      "id": "c5",
+      "title": "Solving for River Width",
+      "description": "A fully worked numeric example: baseline AB = 40 m, angle B = 30 degrees, AC = 40 * tan(30 degrees) is approximately 23.1 m.",
+      "learningIntent": "Give students a complete, correct worked example to model their own problem-solving on.",
+      "difficulty": "intermediate",
+      "importance": "high",
+      "bloomLevel": "apply",
+      "misconceptions": [
+        "Rounding tan(30 degrees) too early or too aggressively.",
+        "Mislabeling or omitting units in the final answer."
+      ],
+      "prerequisites": ["c4"],
+      "timestampSeconds": 270
+    },
+    {
+      "id": "c6",
+      "title": "Verification via a Second Baseline",
+      "description": "Walking a further 20 m to point D and measuring a new angle ADC to confirm the width found in c5 through an independent triangle.",
+      "learningIntent": "Teach that a single trigonometric calculation should be checked against an independent measurement.",
+      "difficulty": "advanced",
+      "importance": "high",
+      "bloomLevel": "evaluate",
+      "misconceptions": [
+        "Believing any mismatch, however small, means the method has failed.",
+        "Assuming a second measurement automatically proves the first is correct."
+      ],
+      "prerequisites": ["c5"],
+      "timestampSeconds": 350
+    }
+  ],
+  "learningObjectives": [
+    { "id": "lo1", "bloomLevel": "remember", "conceptIds": ["c2"], "statement": "State the definition of line of sight and angle of sight as used in indirect measurement." },
+    { "id": "lo2", "bloomLevel": "remember", "conceptIds": ["c4"], "statement": "Recall the tangent ratio, tan(theta) = opposite / adjacent, for a right triangle." },
+    { "id": "lo3", "bloomLevel": "understand", "conceptIds": ["c1"], "statement": "Explain why a distance such as a river's width must be measured indirectly rather than directly." },
+    { "id": "lo4", "bloomLevel": "understand", "conceptIds": ["c3"], "statement": "Describe how a real-world scenario is represented as a labelled right triangle." },
+    { "id": "lo5", "bloomLevel": "apply", "conceptIds": ["c4", "c5"], "statement": "Calculate an unknown side of a right triangle given one side and one angle, using the tangent ratio." },
+    { "id": "lo6", "bloomLevel": "apply", "conceptIds": ["c5"], "statement": "Substitute measured values into AC = AB * tan(B) and compute the river width to one decimal place." },
+    { "id": "lo7", "bloomLevel": "analyze", "conceptIds": ["c6"], "statement": "Compare a predicted angle against an independently measured angle to determine triangle consistency." },
+    { "id": "lo8", "bloomLevel": "analyze", "conceptIds": ["c3", "c6"], "statement": "Break down a new indirect-measurement scenario into its baseline, right angle, and target components." },
+    { "id": "lo9", "bloomLevel": "evaluate", "conceptIds": ["c6"], "statement": "Judge whether a calculated river width is reliable given the size of the verification discrepancy." },
+    { "id": "lo10", "bloomLevel": "evaluate", "conceptIds": ["c2", "c6"], "statement": "Justify why accurate angle measurement matters more than baseline accuracy when the baseline is short." },
+    { "id": "lo11", "bloomLevel": "create", "conceptIds": ["c3", "c4", "c6"], "statement": "Design a complete measurement plan for a new, unseen indirect-measurement scenario." }
+  ],
+  "timeline": {
+    "totalDurationSeconds": 480,
+    "scenes": [
+      { "sceneNumber": 1, "startTime": "00:00", "endTime": "00:20", "startSeconds": 0, "endSeconds": 20, "conceptId": null, "visualDescription": "Wide drone-style shot of a river cutting through a valley; camera pushes in on the far bank.", "narration": "A river cuts through a valley, wide and fast-flowing, with no bridge in sight. Two hundred years ago, a surveyor mapping this land needed to know exactly how wide it was without ever stepping into the water. How do you measure something you cannot walk across, wrap a tape around, or touch? Today, we decode the river's width using nothing but angles, a measuring tape on dry land, and one powerful idea from trigonometry.", "onScreenText": "Decoding River Width", "animationNotes": "Title card fades in at 00:14, fades out by 00:19.", "learningIntent": "Hook attention and establish real-world stakes." },
+      { "sceneNumber": 2, "startTime": "00:20", "endTime": "00:55", "startSeconds": 20, "endSeconds": 55, "conceptId": "c1", "visualDescription": "Animated surveyor on riverbank transitions into a geometric right-triangle outline over the river image.", "narration": "This is the problem of indirect measurement, finding a distance you cannot access directly. Surveyors, cartographers, and engineers have faced this problem for centuries. The tool that solves it is the right triangle and the ratios hidden inside it. If we can turn the far bank into the corner of a triangle, and the near bank into its base, the width becomes a side we can calculate instead of a side we have to walk. That is the core idea of this lesson.", "onScreenText": "Indirect Measurement", "animationNotes": "Triangle outline draws stroke-by-stroke as narration mentions it.", "learningIntent": "Frame why trigonometry is the right tool." },
+      { "sceneNumber": 3, "startTime": "00:55", "endTime": "01:40", "startSeconds": 55, "endSeconds": 100, "conceptId": "c2", "visualDescription": "Close-up on a hand holding a clinometer, sighting across the river; split-screen shows the angle readout.", "narration": "Concept two: the angle of elevation and the line of sight. Imagine standing on the near bank, directly facing a large tree on the far bank. The straight line from your eye to the base of that tree is called the line of sight. The angle between your baseline direction and that line of sight is measured with a clinometer or theodolite. This measured angle is the single most important number in our calculation.", "onScreenText": "Line of Sight - Angle of Sight", "animationNotes": "Dashed sight-line animates in; protractor arc animates at 'measured angle'.", "learningIntent": "Introduce precise vocabulary tied to a real instrument." },
+      { "sceneNumber": 4, "startTime": "01:40", "endTime": "01:55", "startSeconds": 100, "endSeconds": 115, "conceptId": "c2", "visualDescription": "Video pauses on clinometer readout; prediction prompt overlay with text input.", "narration": "Before we go further, pause for a moment. If you only know the angle you just measured, what else would you still need to calculate an actual distance in metres?", "onScreenText": "PREDICT: What else do you need?", "animationNotes": "Playback freezes; input card slides up.", "learningIntent": "Prime learners to anticipate the need for a known length.", "interactionId": "int1" },
+      { "sceneNumber": 5, "startTime": "01:55", "endTime": "02:50", "startSeconds": 115, "endSeconds": 170, "conceptId": "c3", "visualDescription": "Triangle diagram builds on-screen: point A, point C, right-angle marker, then point B with measuring-wheel animation, then angle arc at B.", "narration": "Concept three: setting up the right triangle. Let point A be where you stand, directly opposite a tree at point C. Because A is directly opposite C, line AC meets the riverbank at a right angle. Walk along the bank to point B and measure that baseline distance. From B, sight the tree at C and measure angle B. You now have right triangle ABC with a known side and a known angle.", "onScreenText": "A - B - C, Baseline AB, Right angle at A", "animationNotes": "Labels appear in sync with narration; triangle glows once complete.", "learningIntent": "Build the skill of translating a scenario into a labelled diagram." },
+      { "sceneNumber": 6, "startTime": "02:50", "endTime": "03:10", "startSeconds": 170, "endSeconds": 190, "conceptId": "c3", "visualDescription": "Unlabelled triangle diagram with three draggable label chips at the bottom.", "narration": "Try labelling this triangle yourself: drag the labels River Width, Baseline, and Angle of Sight onto the correct sides and angle of the diagram.", "onScreenText": "DRAG & DROP: Label the triangle", "animationNotes": "Correct drops snap with a green pulse; incorrect drops bounce back.", "learningIntent": "Reinforce triangle labelling immediately after introduction.", "interactionId": "int2" },
+      { "sceneNumber": 7, "startTime": "03:10", "endTime": "04:10", "startSeconds": 190, "endSeconds": 250, "conceptId": "c4", "visualDescription": "Triangle remains on-screen left; formula tan(theta) = opposite/adjacent builds on-screen right, substitutes, then rearranges.", "narration": "Concept four: the tangent ratio. The tangent of an angle equals opposite over adjacent. In triangle ABC, AC is opposite angle B and AB is adjacent to it. So tan(B) equals AC over AB. Rearranging gives AC equals AB multiplied by tan(B). An unreachable distance becomes a simple multiplication.", "onScreenText": "tan(B) = AC / AB -> AC = AB x tan(B)", "animationNotes": "Opposite/adjacent sides highlight in different colours; algebra animates step-by-step.", "learningIntent": "Present the tangent ratio as a consequence of the triangle." },
+      { "sceneNumber": 8, "startTime": "04:10", "endTime": "04:30", "startSeconds": 250, "endSeconds": 270, "conceptId": "c4", "visualDescription": "Equation with 'tangent' removed and replaced by a blank; four word-chip options below.", "narration": "Fill in the missing term: AC equals AB multiplied by blank of angle B.", "onScreenText": "AC = AB x ___ (B)", "animationNotes": "Selected chip animates into the blank; correct locks green.", "learningIntent": "Check immediate recall of the tangent ratio's structure.", "interactionId": "int3" },
+      { "sceneNumber": 9, "startTime": "04:30", "endTime": "05:30", "startSeconds": 270, "endSeconds": 330, "conceptId": "c5", "visualDescription": "Whiteboard-style worked example: AB = 40 m and angle B = 30 degrees written onto the triangle, substitution and calculation line by line.", "narration": "Concept five: solving a real example. A surveyor measures a baseline AB of forty metres and an angle of thirty degrees. AC equals forty times tan(30 degrees), approximately zero point five seven seven, giving approximately twenty three point one metres. That is the width of the river, calculated entirely from dry land.", "onScreenText": "AB = 40 m, angle B = 30 deg -> AC = ~23.1 m", "animationNotes": "Final answer enlarges and pulses; measuring-tape icon animates across the river.", "learningIntent": "Model a complete, correct worked example." },
+      { "sceneNumber": 10, "startTime": "05:30", "endTime": "05:50", "startSeconds": 330, "endSeconds": 350, "conceptId": "c5", "visualDescription": "Video pauses on the worked example; four-option MCQ card slides in.", "narration": "Quick check: if the baseline had been forty metres and the measured angle sixty degrees instead of thirty, would the calculated river width be larger or smaller? Choose the correct estimate.", "onScreenText": "CHECK: Angle 30 deg -> 60 deg. Width goes...?", "animationNotes": "Selected option highlights; explanation fades in beneath it.", "learningIntent": "Confirm reasoning about how angle affects width.", "interactionId": "int4" },
+      { "sceneNumber": 11, "startTime": "05:50", "endTime": "06:50", "startSeconds": 350, "endSeconds": 410, "conceptId": "c6", "visualDescription": "Camera walks further along the bank to point D; second triangle overlays the first, sharing side AC; new angle arc animates at D.", "narration": "Concept six: verifying the answer. Walk twenty metres further to point D, so baseline AD is sixty metres. Measure the new angle ADC. If our first answer is correct, this new angle should be close to twenty one degrees. If the measured angle matches the predicted angle, the width calculation is confirmed.", "onScreenText": "AD = 60 m -> predicted angle D = ~21 deg", "animationNotes": "Predicted and measured angles overlay, then snap together with a checkmark when matching.", "learningIntent": "Model verification as standard scientific/surveying practice." },
+      { "sceneNumber": 12, "startTime": "06:50", "endTime": "07:10", "startSeconds": 410, "endSeconds": 430, "conceptId": "c6", "visualDescription": "Video pauses on the two matching angles; open text-response card appears.", "narration": "Reflect for a moment: why might measuring the angle carefully matter more than measuring the baseline carefully?", "onScreenText": "REFLECT: Angle precision vs. baseline precision", "animationNotes": "Text field with placeholder prompt; no correctness indicator shown.", "learningIntent": "Encourage metacognition about measurement error.", "interactionId": "int5" },
+      { "sceneNumber": 13, "startTime": "07:10", "endTime": "07:40", "startSeconds": 430, "endSeconds": 460, "conceptId": null, "visualDescription": "Four-panel recap montage: river with no bridge, baseline + clinometer, triangle with formula, two triangles matching at verification.", "narration": "Let's recap. We turned an unreachable distance into the side of a right triangle. We measured one baseline and one angle. We used the tangent ratio to connect them. And we verified the result using a second baseline and angle.", "onScreenText": "Frame -> Measure -> Calculate -> Verify", "animationNotes": "Recap words appear beneath each matching panel in sync with narration.", "learningIntent": "Consolidate the four-step method." },
+      { "sceneNumber": 14, "startTime": "07:40", "endTime": "08:00", "startSeconds": 460, "endSeconds": 480, "conceptId": null, "visualDescription": "Four recap step-cards shuffled with drag-to-reorder UI over the paused final frame; then outro shot of a tower on a hill.", "narration": "Before you go, summarise the four steps of this method in your own words, in the order you would actually perform them in the field. In the next lesson, we will use this same triangle idea to measure the height of objects we cannot climb, starting with a tower on a hill.", "onScreenText": "SUMMARIZE: Reorder the four steps / Next: Measuring Heights", "animationNotes": "Cards reorder via drag; correct order glows green, video resumes after 1.5s.", "learningIntent": "Consolidate the full method and bridge to the next lesson.", "interactionId": "int6" }
+    ]
+  },
+  "interactions": [
+    { "id": "int1", "timestampSeconds": 100, "conceptId": "c2", "type": "prediction", "pauseRequired": true, "resumeCondition": "Learner submits a prediction or taps Skip after one attempt.", "purpose": "Prime learners to anticipate that an angle alone is insufficient without a known length.", "estimatedTimeSeconds": 20, "questionId": "q1" },
+    { "id": "int2", "timestampSeconds": 170, "conceptId": "c3", "type": "drag_drop", "pauseRequired": true, "resumeCondition": "Learner drags all three labels to correct targets and taps Check.", "purpose": "Reinforce correct triangle labelling before the tangent ratio is introduced.", "estimatedTimeSeconds": 30, "questionId": "q2" },
+    { "id": "int3", "timestampSeconds": 250, "conceptId": "c4", "type": "fill_blank", "pauseRequired": true, "resumeCondition": "Learner submits the missing term; hint shown after first incorrect attempt.", "purpose": "Check immediate recall of the tangent ratio structure.", "estimatedTimeSeconds": 15, "questionId": "q3" },
+    { "id": "int4", "timestampSeconds": 330, "conceptId": "c5", "type": "mcq", "pauseRequired": true, "resumeCondition": "Learner selects one of four options; resumes after feedback.", "purpose": "Confirm reasoning about how angle affects calculated width.", "estimatedTimeSeconds": 25, "questionId": "q4" },
+    { "id": "int5", "timestampSeconds": 410, "conceptId": "c6", "type": "reflection", "pauseRequired": true, "resumeCondition": "Learner enters a free-text response or taps Skip.", "purpose": "Encourage metacognition about measurement error.", "estimatedTimeSeconds": 30, "questionId": "q5" },
+    { "id": "int6", "timestampSeconds": 462, "conceptId": null, "type": "summary", "pauseRequired": true, "resumeCondition": "Learner orders four summary steps correctly, or taps Continue after two attempts.", "purpose": "Consolidate the full four-step method before the lesson ends.", "estimatedTimeSeconds": 40, "questionId": "q8" }
+  ],
+  "questions": [
+    { "id": "q1", "conceptId": "c2", "bloomLevel": "understand", "difficulty": "easy", "type": "prediction", "question": "You've just measured the angle between your baseline and your line of sight to the tree across the river. Before you can turn that angle into an actual distance in metres, what else do you still need to know?", "options": [], "correctAnswer": "A known length (the baseline distance) is required, since an angle alone cannot produce a distance.", "explanation": "An angle describes a direction, not a size. Without at least one known length in the triangle, the tangent ratio has no scale to work from.", "hint": "Think about what tan(angle) = opposite / adjacent actually needs on the right-hand side.", "estimatedTimeSeconds": 20, "tags": ["prediction", "trigonometry", "angle-of-sight", "pre-concept-check"] },
+    { "id": "q2", "conceptId": "c3", "bloomLevel": "understand", "difficulty": "medium", "type": "drag_drop", "question": "Drag each label onto the correct part of the triangle diagram: River Width, Baseline, Angle of Sight.", "options": ["River Width -> AC", "Baseline -> AB", "Angle of Sight -> angle B"], "correctAnswer": "River Width -> AC, Baseline -> AB, Angle of Sight -> angle B", "explanation": "AC is the side we cannot walk (river width). AB is the distance we walk on dry land (baseline). The angle at B is the angle of sight.", "hint": "The right angle is at A - start by finding which side is opposite the vertex you walked to.", "estimatedTimeSeconds": 30, "tags": ["drag-drop", "diagram-labelling", "right-triangle", "geometry"] },
+    { "id": "q3", "conceptId": "c4", "bloomLevel": "remember", "difficulty": "easy", "type": "fill_blank", "question": "AC = AB x ______ of angle B", "options": ["sine", "cosine", "tangent", "secant"], "correctAnswer": "tangent", "explanation": "Because AC is opposite angle B and AB is adjacent to it, the ratio connecting them is the tangent.", "hint": "Which ratio is defined as opposite over adjacent?", "estimatedTimeSeconds": 15, "tags": ["fill-blank", "tangent-ratio", "formula-recall"] },
+    { "id": "q4", "conceptId": "c5", "bloomLevel": "analyze", "difficulty": "medium", "type": "mcq", "question": "The baseline stays 40 m, but the measured angle increases from 30 degrees to 60 degrees. What happens to the calculated river width?", "options": ["It stays exactly the same, because the baseline didn't change.", "It gets smaller, because a bigger angle means a shorter opposite side.", "It gets larger, because tan(60 deg) > tan(30 deg), so the product increases.", "It becomes negative, because the angle is now more than 45 degrees."], "correctAnswer": "It gets larger, because tan(60 deg) > tan(30 deg), so the product increases.", "explanation": "tan(60 deg) is approximately 1.732 while tan(30 deg) is approximately 0.577, so the calculated width increases from about 23.1 m to about 69.3 m.", "hint": "Look up tan(30 deg) and tan(60 deg) - which one is bigger?", "estimatedTimeSeconds": 25, "tags": ["mcq", "tangent-ratio", "proportional-reasoning", "checkpoint"] },
+    { "id": "q5", "conceptId": "c6", "bloomLevel": "evaluate", "difficulty": "medium", "type": "reflection", "question": "Why might measuring the angle carefully matter more than measuring the baseline carefully, especially when the baseline is short?", "options": [], "correctAnswer": "A small error in a short baseline scales the result only a little, while a small error in the angle is magnified by the tangent function, especially near steep angles, shifting the calculated width by a much larger amount.", "explanation": "Width = baseline x tan(angle). Baseline errors scale linearly; angle errors pass through the tangent function, which grows steeply as the angle approaches 90 degrees.", "hint": "Try the calculation with the angle off by 1 degree and compare it to the baseline off by 1 m.", "estimatedTimeSeconds": 30, "tags": ["reflection", "measurement-error", "evaluate", "metacognition"] },
+    { "id": "q6", "conceptId": "c4", "bloomLevel": "apply", "difficulty": "medium", "type": "mcq", "question": "A surveyor measures a baseline of 25 m and an angle of sight of 45 degrees. What is the calculated width of the river?", "options": ["12.5 m", "17.7 m", "25 m", "35.4 m"], "correctAnswer": "25 m", "explanation": "tan(45 deg) = 1, so width = 25 x 1 = 25 m. At exactly 45 degrees, the width always equals the baseline.", "hint": "What is tan(45 deg) exactly?", "estimatedTimeSeconds": 30, "tags": ["mcq", "tangent-ratio", "worked-practice", "special-angle"] },
+    { "id": "q7", "conceptId": "c6", "bloomLevel": "evaluate", "difficulty": "hard", "type": "mcq", "question": "A first calculation gives a river width of 23.1 m from a 40 m baseline. A second measurement, from a 60 m baseline, gives an angle of 25 degrees instead of the predicted 21 degrees. What should the surveyor do next?", "options": ["Accept 23.1 m as final, since one measurement is always enough.", "Immediately conclude the tangent ratio is wrong for this triangle.", "Re-check the baseline distances and angle readings, since a 4 degree mismatch is larger than typical instrument error.", "Average 21 and 25 degrees and stop checking further."], "correctAnswer": "Re-check the baseline distances and angle readings, since a 4 degree mismatch is larger than typical instrument error.", "explanation": "A 4-degree discrepancy is larger than the small error expected from a well-used clinometer, signalling a likely mistake in a reading rather than a flaw in the method.", "hint": "Is a 4 degree gap the kind of small error you'd expect from reading an instrument, or something bigger?", "estimatedTimeSeconds": 35, "tags": ["mcq", "verification", "evaluate", "measurement-error"] },
+    { "id": "q8", "conceptId": null, "bloomLevel": "create", "difficulty": "medium", "type": "summary", "question": "Put these four steps of the river-width method in the order you would actually perform them in the field.", "options": ["Measure the angle of sight from the baseline point to the landmark.", "Mark a baseline along the near bank and measure its length.", "Calculate the width using width = baseline x tan(angle).", "Walk to a second baseline point and verify with a second angle."], "correctAnswer": "Mark the baseline and measure its length -> Measure the angle of sight -> Calculate the width using the tangent ratio -> Verify with a second baseline and angle.", "explanation": "The method proceeds from setup to measurement to calculation to verification; reordering these steps is not possible.", "hint": "You can't calculate anything until you've measured both the baseline and the angle - which comes first in the field?", "estimatedTimeSeconds": 40, "tags": ["summary", "sequencing", "whole-lesson-recap", "create"] }
+  ],
+  "glossary": [
+    { "term": "Angle of Sight", "definition": "The angle measured between two lines of sight, typically between a baseline and the direction to a distant target.", "example": "Standing at point B, the angle between the baseline and the line of sight to the tree at C is the angle of sight, measured as 30 degrees.", "usage": "Measure the angle of sight from point B to the tree using the clinometer." },
+    { "term": "Angle of Elevation", "definition": "The angle between a horizontal line and the line of sight to an object above the horizontal.", "example": "Looking up at the top of a flagpole, the angle between the horizontal and the line of sight to the top is the angle of elevation.", "usage": "The angle of elevation to the top of the tower was measured as 42 degrees." },
+    { "term": "Line of Sight", "definition": "The straight, unobstructed line from an observer or instrument to the object being observed.", "example": "The line from the surveyor at A to the base of the tree at C is the line of sight used to define the river's width.", "usage": "There must be a clear line of sight to the target for the angle measurement to be valid." },
+    { "term": "Baseline", "definition": "A known, measurable distance walked and marked on accessible ground, used as the known side of the triangle.", "example": "Walking 40 m along the near riverbank from A to B creates the baseline AB used in the calculation.", "usage": "A longer baseline generally produces a more reliable angle measurement, up to a practical limit." },
+    { "term": "Tangent Ratio", "definition": "The ratio of the side opposite a given angle to the side adjacent to it in a right triangle: tan(theta) = opposite / adjacent.", "example": "In triangle ABC, tan(B) = AC / AB, rearranged to AC = AB x tan(B).", "usage": "Because we know one side and one angle and want the side opposite that angle, the tangent ratio is the correct tool." },
+    { "term": "Opposite Side", "definition": "In a right triangle, the side that does not touch the angle being considered.", "example": "Relative to angle B, side AC (the river width) is the opposite side.", "usage": "The opposite side is on the far side of the triangle from the angle you're using." },
+    { "term": "Adjacent Side", "definition": "In a right triangle, the side that touches the angle being considered but is not the hypotenuse.", "example": "Relative to angle B, side AB (the baseline) is the adjacent side.", "usage": "The baseline is adjacent to angle B, since it forms one arm of that angle." },
+    { "term": "Hypotenuse", "definition": "The longest side of a right triangle, always opposite the 90-degree angle.", "example": "In triangle ABC, side BC is the hypotenuse, though it is never directly used in this lesson's calculation.", "usage": "The hypotenuse is not needed here because the tangent ratio only involves the opposite and adjacent sides." },
+    { "term": "Clinometer", "definition": "A handheld instrument used to measure angles of elevation, depression, or sight relative to a horizontal reference.", "example": "The surveyor uses a clinometer to measure the 30-degree angle of sight from B to the tree at C.", "usage": "Modern smartphone apps can approximate a clinometer using the device's built-in accelerometer." },
+    { "term": "Theodolite", "definition": "A precision optical instrument for measuring both horizontal and vertical angles, used in professional surveying.", "example": "A theodolite would be used instead of a simple clinometer for a professional land survey.", "usage": "Large-scale surveys typically use a theodolite rather than a handheld clinometer for greater precision." },
+    { "term": "Similar Triangles", "definition": "Two triangles whose corresponding angles are equal and corresponding sides are in the same proportion.", "example": "The verification triangle formed with point D shares angle A and side AC with the original triangle.", "usage": "Similar triangles are the alternative method for solving this problem without trigonometric ratios." },
+    { "term": "Indirect Measurement", "definition": "Determining a distance that cannot be measured directly by measuring related, accessible quantities and calculating the desired value.", "example": "Finding the width of a river without crossing it is a classic example of indirect measurement.", "usage": "Indirect measurement is essential whenever the distance in question is physically inaccessible or unsafe to measure directly." }
+  ],
+  "references": {
+    "conceptSources": [
+      "NCERT. Mathematics - Textbook for Class X, Chapter 9: Some Applications of Trigonometry.",
+      "NCERT. Mathematics - Textbook for Class X, Chapter 8: Introduction to Trigonometry.",
+      "Survey of India. Elementary Surveying: Principles and Practice."
+    ],
+    "cbseAlignment": {
+      "board": "CBSE",
+      "grade": 10,
+      "subject": "Mathematics",
+      "unit": "Trigonometry",
+      "chapter": "Some Applications of Trigonometry (Heights and Distances)",
+      "assessmentAlignment": "Suitable for CBSE Periodic Test / Board-pattern application-based questions (2-5 mark word problems on heights and distances)."
+    },
+    "suggestedReading": [
+      "NCERT Exemplar Problems - Mathematics, Class X, Chapter 9.",
+      "Survey of India educational resources on classical field-surveying techniques.",
+      "Standard Class 10 trigonometric ratio table (0, 30, 45, 60, 90 degrees)."
+    ]
+  },
+  "settings": {
+    "allowSkipInteractions": true,
+    "maxInteractionAttempts": 2,
+    "showHintsAfterFailedAttempt": 1,
+    "autoResumeAfterCorrect": true,
+    "autoResumeDelaySeconds": 1.5,
+    "captionsAvailable": false,
+    "playbackSpeeds": [0.75, 1.0, 1.25, 1.5]
+  },
+  "analytics": {
+    "trackedEvents": [
+      "lesson_started",
+      "video_paused_for_interaction",
+      "interaction_submitted",
+      "interaction_skipped",
+      "concept_completed",
+      "lesson_completed"
+    ]
+  }
+}

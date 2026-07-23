@@ -1,0 +1,161 @@
+<div style="background:#EEEBE1;border-radius:12px;padding:1.25rem;font-family:var(--font-sans);color:#1C1F1B;">
+<h2 class="sr-only">Combined teacher dashboard with clickable Calendar, Classes and Subjects tabs</h2>
+
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+  <div style="display:flex;gap:4px;background:#fff;border-radius:8px;padding:3px;border:0.5px solid #DAD5C4;">
+    <button id="tab-calendar" onclick="showTab('panel-calendar',this)" style="padding:6px 16px;border-radius:6px;font-size:13px;border:0.5px solid transparent;background:#E9F0E4;color:#3F6B36;font-weight:500;cursor:pointer;">Calendar</button>
+    <button id="tab-classes" onclick="showTab('panel-classes',this)" style="padding:6px 16px;border-radius:6px;font-size:13px;border:0.5px solid transparent;background:none;color:#6B695F;cursor:pointer;">Classes</button>
+    <button id="tab-subjects" onclick="showTab('panel-subjects',this)" style="padding:6px 16px;border-radius:6px;font-size:13px;border:0.5px solid transparent;background:none;color:#6B695F;cursor:pointer;">Subjects</button>
+  </div>
+  <div style="font-size:12px;color:#6B695F;">Tue, Jul 14</div>
+</div>
+
+<div id="panel-calendar" class="tab-panel">
+  <div style="background:#1B241E;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:8px;height:8px;border-radius:50%;background:#E2544A;"></div>
+      <div>
+        <div style="font-size:13px;color:#F4F1EA;font-weight:500;">Next: Grade 8 — Section A, Algebra quiz</div>
+        <div style="font-size:12px;color:#9FA79A;">Room 204 · starts in 40 min</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:#C9D6C3;background:#2C3830;padding:4px 10px;border-radius:6px;">3 events today</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px;">
+    <div style="font-size:11px;color:#6B695F;text-align:center;">Sun</div><div style="font-size:11px;color:#6B695F;text-align:center;">Mon</div><div style="font-size:11px;color:#6B695F;text-align:center;">Tue</div><div style="font-size:11px;color:#6B695F;text-align:center;">Wed</div><div style="font-size:11px;color:#6B695F;text-align:center;">Thu</div><div style="font-size:11px;color:#6B695F;text-align:center;">Fri</div><div style="font-size:11px;color:#6B695F;text-align:center;">Sat</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;">
+    <div style="background:#fff;border:0.5px solid #DAD5C4;border-radius:8px;padding:6px;min-height:64px;"><div style="font-size:11px;color:#6B695F;">12</div></div>
+    <div style="background:#1B241E;border-radius:8px;padding:6px;min-height:64px;">
+      <div style="font-size:11px;color:#F4F1EA;font-weight:500;margin-bottom:3px;">13</div>
+      <div style="font-size:10px;background:#3A4A3D;color:#D4E3CE;border-radius:4px;padding:1px 4px;">Staff mtg</div>
+    </div>
+    <div style="background:#fff;border:2px solid #B9D2AE;border-radius:8px;padding:6px;min-height:64px;">
+      <div style="font-size:11px;color:#6B695F;margin-bottom:3px;">14</div>
+      <div style="font-size:10px;background:#FBE2DF;color:#B5382D;border-radius:4px;padding:1px 4px;margin-bottom:2px;">8A Quiz</div>
+      <div style="font-size:10px;color:#3F6B36;font-weight:500;">+2 more</div>
+    </div>
+    <div style="background:#fff;border:0.5px solid #DAD5C4;border-radius:8px;padding:6px;min-height:64px;"><div style="font-size:11px;color:#6B695F;">15</div></div>
+    <div style="background:#fff;border:0.5px solid #DAD5C4;border-radius:8px;padding:6px;min-height:64px;">
+      <div style="font-size:11px;color:#6B695F;margin-bottom:3px;">16</div>
+      <div style="font-size:10px;background:#FBE9DD;color:#B85C1E;border-radius:4px;padding:1px 4px;">HW due</div>
+    </div>
+    <div style="background:#fff;border:0.5px solid #DAD5C4;border-radius:8px;padding:6px;min-height:64px;"><div style="font-size:11px;color:#6B695F;">17</div></div>
+    <div style="background:#fff;border:0.5px solid #DAD5C4;border-radius:8px;padding:6px;min-height:64px;"><div style="font-size:11px;color:#6B695F;">18</div></div>
+  </div>
+</div>
+
+<div id="panel-classes" class="tab-panel" style="display:none;">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <div style="background:#fff;border:0.5px solid #DAD5C4;border-radius:10px;padding:14px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+        <div>
+          <div style="font-size:14px;font-weight:500;">Grade 8 — Section A</div>
+          <div style="font-size:12px;color:#6B695F;">Mathematics · Room 204</div>
+        </div>
+        <div style="font-size:11px;background:#E6F0FA;color:#2A5C94;border-radius:5px;padding:2px 7px;height:fit-content;">9:00 AM</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <div style="flex:1;background:#F6F4EC;border-radius:8px;padding:8px;">
+          <div style="font-size:11px;color:#6B695F;">Present</div>
+          <div style="font-size:15px;font-weight:500;">30/32</div>
+        </div>
+        <div style="flex:1;background:#F6F4EC;border-radius:8px;padding:8px;">
+          <div style="font-size:11px;color:#6B695F;">Avg grade</div>
+          <div style="font-size:15px;font-weight:500;color:#3F6B36;">B+</div>
+        </div>
+        <div style="flex:1;background:#F6F4EC;border-radius:8px;padding:8px;">
+          <div style="font-size:11px;color:#6B695F;">Done</div>
+          <div style="font-size:15px;font-weight:500;">86%</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:#6B695F;margin-bottom:4px;">Assignments</div>
+      <div style="font-size:12px;">Algebra quiz <span style="color:#6B695F;">due today</span></div>
+    </div>
+    <div style="background:#fff;border:0.5px solid #DAD5C4;border-radius:10px;padding:14px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+        <div>
+          <div style="font-size:14px;font-weight:500;">Grade 7 — Section A</div>
+          <div style="font-size:12px;color:#6B695F;">Mathematics · Room 108</div>
+        </div>
+        <div style="font-size:11px;background:#E6F0FA;color:#2A5C94;border-radius:5px;padding:2px 7px;height:fit-content;">11:15 AM</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <div style="flex:1;background:#F6F4EC;border-radius:8px;padding:8px;">
+          <div style="font-size:11px;color:#6B695F;">Present</div>
+          <div style="font-size:15px;font-weight:500;">28/28</div>
+        </div>
+        <div style="flex:1;background:#F6F4EC;border-radius:8px;padding:8px;">
+          <div style="font-size:11px;color:#6B695F;">Avg grade</div>
+          <div style="font-size:15px;font-weight:500;color:#3F6B36;">A-</div>
+        </div>
+        <div style="flex:1;background:#F6F4EC;border-radius:8px;padding:8px;">
+          <div style="font-size:11px;color:#6B695F;">Done</div>
+          <div style="font-size:15px;font-weight:500;">95%</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:#6B695F;margin-bottom:4px;">Assignments</div>
+      <div style="font-size:12px;">Fractions review slides.pptx</div>
+    </div>
+  </div>
+</div>
+
+<div id="panel-subjects" class="tab-panel" style="display:none;">
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div style="background:#fff;border:0.5px solid #DAD5C4;border-radius:10px;padding:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;">
+        <div>
+          <div style="font-size:15px;font-weight:500;">Mathematics</div>
+          <div style="font-size:12px;color:#6B695F;">Sections 8A, 8B · 61 students</div>
+        </div>
+        <div style="font-size:19px;font-weight:500;color:#B5382D;">−3<span style="font-size:11px;color:#6B695F;font-weight:400;"> topics</span></div>
+      </div>
+      <div style="position:relative;height:30px;margin-bottom:6px;">
+        <div style="position:absolute;top:14px;left:0;right:0;height:3px;background:#EAE6D9;border-radius:2px;"></div>
+        <div style="position:absolute;top:14px;left:0;width:61%;height:3px;background:#D14B3F;border-radius:2px;"></div>
+        <div style="position:absolute;top:7px;left:78%;width:2px;height:18px;background:#9C988A;"></div>
+        <div style="position:absolute;top:8px;left:61%;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:#D14B3F;border:2px solid #fff;box-shadow:0 0 0 1px #D14B3F;"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="font-size:11px;background:#FBE2DF;color:#B5382D;border-radius:5px;padding:4px 9px;">Won't finish before Aug 4 exam</div>
+        <div style="font-size:11px;background:#F6F4EC;color:#6B695F;border-radius:5px;padding:4px 9px;">Weak: Linear equations</div>
+      </div>
+    </div>
+    <div style="background:#fff;border:0.5px solid #DAD5C4;border-radius:10px;padding:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;">
+        <div>
+          <div style="font-size:15px;font-weight:500;">Mathematics (Grade 7)</div>
+          <div style="font-size:12px;color:#6B695F;">Section 7A · 28 students</div>
+        </div>
+        <div style="font-size:19px;font-weight:500;color:#3F6B36;">On pace</div>
+      </div>
+      <div style="position:relative;height:30px;margin-bottom:6px;">
+        <div style="position:absolute;top:14px;left:0;right:0;height:3px;background:#EAE6D9;border-radius:2px;"></div>
+        <div style="position:absolute;top:14px;left:0;width:60%;height:3px;background:#4E8B45;border-radius:2px;"></div>
+        <div style="position:absolute;top:7px;left:60%;width:2px;height:18px;background:#9C988A;"></div>
+        <div style="position:absolute;top:8px;left:60%;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:#4E8B45;border:2px solid #fff;box-shadow:0 0 0 1px #4E8B45;"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="font-size:11px;background:#F6F4EC;color:#6B695F;border-radius:5px;padding:4px 9px;">On track for Aug 10 exam</div>
+        <div style="font-size:11px;background:#F6F4EC;color:#6B695F;border-radius:5px;padding:4px 9px;">No topics flagged</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+function showTab(panelId, btn) {
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.style.display = 'none'; });
+  document.getElementById(panelId).style.display = 'block';
+  document.querySelectorAll('#tab-calendar, #tab-classes, #tab-subjects').forEach(function(b){
+    b.style.background = 'none';
+    b.style.color = '#6B695F';
+    b.style.fontWeight = '400';
+  });
+  btn.style.background = '#E9F0E4';
+  btn.style.color = '#3F6B36';
+  btn.style.fontWeight = '500';
+}
+window.showTab = showTab;
+</script>

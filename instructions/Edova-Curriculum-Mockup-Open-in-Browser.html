@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Edova Co-teacher - Curriculum | CBSE LKG-10</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif;letter-spacing:-0.01em}
+body{background:#f6f7fb;color:#1a1d23;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.topbar{height:64px;background:#fff;border-bottom:1px solid #e6e8ef;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:20}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+.logo-badge{width:32px;height:32px;background:#4f46e5;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff}
+.nav{display:flex;gap:24px;font-size:14px;font-weight:500;color:#6b7280}
+.nav .active{color:#4f46e5}
+.actions{display:flex;gap:12px}
+.btn{height:36px;padding:0 16px;border-radius:8px;border:1px solid #e5e7eb;font-weight:600;font-size:13px;cursor:pointer}
+.btn-primary{background:#4f46e5;color:#fff;border-color:#4f46e5}
+.btn-dark{background:#111827;color:#fff}
+.container{max-width:1200px;margin:24px auto;padding:0 20px}
+.breadcrumb{font-size:12px;color:#9ca3af;margin-bottom:12px}
+.breadcrumb b{color:#4f46e5}
+.filters{background:#fff;border:1px solid #e6e8ef;border-radius:16px;padding:16px;display:flex;flex-wrap:wrap;gap:12px;align-items:end;justify-content:space-between;margin-bottom:20px}
+.filter-group{display:flex;gap:12px;flex-wrap:wrap}
+.select,label{font-size:12px;font-weight:600;color:#6b7280;display:flex;flex-direction:column;gap:6px}
+select,input[type=text]{height:40px;border:1px solid #e5e7eb;border-radius:10px;padding:0 12px;min-width:160px;background:#fff;font-size:13px;font-weight:500}
+.search{position:relative}
+.search input{padding-left:36px;min-width:260px;background:#f9fafb}
+.search span{position:absolute;left:12px;top:11px;color:#9ca3af}
+.card{background:#fff;border:1px solid #e6e8ef;border-radius:16px;overflow:hidden}
+.card-head{padding:16px 20px;display:flex;justify-content:space-between;align-items:center;background:#fcfcff;border-bottom:1px solid #eef0f6}
+.class-title{display:flex;align-items:center;gap:12px}
+.avatar{width:36px;height:36px;border-radius:10px;background:#ffedd5;color:#ea580c;display:flex;align-items:center;justify-content:center;font-weight:700}
+.meta{font-size:12px;color:#6b7280;margin-top:2px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.5;font-variant-numeric:tabular-nums}
+th{ text-align:left; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#9ca3af; font-weight:600; padding:12px 16px; background:#f9fafb; border-bottom:1px solid #eef0f6; white-space:nowrap}
+td{padding:14px 16px;border-bottom:1px solid #f1f2f6;vertical-align:middle}
+.badge{padding:4px 8px;border-radius:999px;font-size:11px;font-weight:600}
+.theory{background:#e0e7ff;color:#4338ca} .lab{background:#f3e8ff;color:#7e22ce} .soft{background:#dcfce7;color:#15803d} .skill{background:#ffedd5;color:#c2410c}
+.code{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500}
+[lang="ta"],.tamil{line-height:1.6}
+.link{color:#4f46e5;font-weight:600;cursor:pointer;text-decoration:none}
+.link:hover{text-decoration:underline}
+.icon-btn{width:28px;height:28px;border-radius:8px;border:1px solid #e5e7eb;background:#fff;cursor:pointer}
+.drawer{position:fixed;top:0;right:-420px;width:400px;height:100%;background:#fff;box-shadow:-20px 0 40px rgba(0,0,0,.08);transition:.3s;z-index:50;border-left:1px solid #e6e8ef;display:flex;flex-direction:column}
+.drawer.open{right:0}
+.drawer-head{padding:20px;border-bottom:1px solid #eef0f6;display:flex;justify-content:space-between;align-items:center}
+.tabs{display:flex;gap:16px;padding:0 20px;border-bottom:1px solid #eef0f6}
+.tabs div{padding:12px 0;font-size:13px;font-weight:600;color:#9ca3af;border-bottom:2px solid transparent;cursor:pointer}
+.tabs .on{color:#4f46e5;border-color:#4f46e5}
+.drawer-body{padding:20px;overflow:auto}
+.chapter{padding:12px;border:1px solid #eef0f6;border-radius:10px;margin-bottom:10px}
+.chapter b{font-size:13px}
+.chapter p{font-size:12px;color:#6b7280;margin-top:4px}
+.overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.25);z-index:40}
+.overlay.show{display:block}
+@media(max-width:768px){ .filters{flex-direction:column;align-items:stretch} select,input{width:100%} .search input{min-width:100%} table{min-width:680px} .drawer{width:100%}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo"><div class="logo-badge">E</div> Edova <span style="font-weight:400;color:#6b7280">Co-teacher</span></div>
+  <div class="nav"><span>Home</span><span class="active">Academics</span><span>Non-Academics</span><span>AI Assistant</span><span>Templates</span></div>
+  <div class="actions"><button class="btn">Request a Demo</button><button class="btn btn-primary">Get Started</button></div>
+</div>
+
+<div class="container">
+  <div class="breadcrumb">Home / <b>Academics</b> / Curriculum</div>
+
+  <div class="filters">
+    <div class="filter-group">
+      <label>Academic Year<select id="year"><option>2025-26</option><option>2024-25</option></select></label>
+      <label>Board<select><option>CBSE</option><option>ICSE</option></select></label>
+      <label>Class<select id="classSelect" onchange="changeClass(this.value)">
+        <option>LKG</option><option>UKG</option><option>Class 1</option><option>Class 2</option><option>Class 3</option><option>Class 4</option><option selected>Class 5</option><option>Class 6</option><option>Class 7</option><option>Class 8</option><option>Class 9</option><option>Class 10</option>
+      </select></label>
+    </div>
+    <div class="filter-group">
+      <div class="search"><span>🔍</span><input id="searchInput" type="text" placeholder="Search by Subject Name / Code" oninput="filterTable()"/></div>
+      <button class="btn">Download</button>
+      <button class="btn btn-dark">+ Add Subject</button>
+    </div>
+  </div>
+
+  <div class="card" id="card">
+    <div class="card-head">
+      <div class="class-title">
+        <div class="avatar" id="classAvatar">5</div>
+        <div>
+          <div style="font-weight:700" id="className">Class 5 - CBSE (2025-26)</div>
+          <div class="meta" id="classMeta">6 subjects • 10 credits • Updated today</div>
+        </div>
+      </div>
+      <button class="btn" style="height:32px">Collapse</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>S.No</th><th>Subject Code</th><th>Subject Name</th><th>Subject Type</th><th class="creditsCol">Credits</th><th>Chapters</th><th>Syllabus</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head"><div><div style="font-weight:700" id="dTitle">Physics</div><div style="font-size:12px;color:#6b7280" id="dCode">PHY001 • Class 5</div></div><button class="icon-btn" onclick="closeDrawer()">✕</button></div>
+  <div class="tabs"><div class="on">Chapters</div><div>Outcomes</div><div>Resources</div></div>
+  <div class="drawer-body" id="drawerBody"></div>
+</div>
+
+<script>
+const DATA={
+"LKG":[
+ {code:"ENG001",name:"English",type:"Theory",ch:"8",syll:["Alphabets A-Z","Phonics","Rhymes & Stories"]},
+ {code:"NUM001",name:"Number Work",type:"Theory",ch:"6",syll:["Numbers 1-100","Shapes","Sorting & Patterns"]},
+ {code:"EVS001",name:"EVS & Awareness",type:"Practical",ch:"5",syll:["Myself","My Family","Animals"]},
+ {code:"ART001",name:"Art & Craft",type:"Soft Skills",ch:"10",syll:["Coloring","Clay Modelling","Paper Craft"]}
+],
+"Class 5":[
+ {code:"AAA001",name:"Technical English",type:"Theory",credits:2,ch:"12",syll:["Grammar Fundamentals","Creative Writing","Reading Comprehension"]},
+ {code:"FAM001",name:"Film and Media",type:"Lab",credits:1,ch:"5",syll:["Introduction to Media","Storyboarding"]},
+ {code:"LAL001",name:"Language and Linguistics",type:"Soft Skills",credits:3,ch:"8",syll:["Phonetics","Language Families"]},
+ {code:"TEC001",name:"Technology",type:"Theory",credits:1,ch:"6",syll:["Computers & AI","Internet Safety"]},
+ {code:"PHY001",name:"Physics",type:"Theory",credits:2,ch:"10",syll:["Motion & Measurement","Light & Shadows","Electricity Basics"]},
+ {code:"EDU001",name:"Education",type:"Theory",credits:1,ch:"4",syll:["Learning to Learn","Value Education"]}
+],
+"Class 10":[
+ {code:"ENG101",name:"English Lang & Literature",type:"Theory",credits:5,ch:"11",syll:["First Flight - Prose","Poetry","Footprints Without Feet"]},
+ {code:"MAT101",name:"Mathematics Standard",type:"Theory",credits:5,ch:"14",syll:["Real Numbers","Polynomials","Triangles","Statistics"]},
+ {code:"SCI101",name:"Science",type:"Theory",credits:5,ch:"16",syll:["Chemical Reactions","Life Processes","Light","Electricity"]},
+ {code:"SST101",name:"Social Science",type:"Theory",credits:5,ch:"22",syll:["Nationalism in India","Federalism","Resources"]},
+ {code:"IT101",name:"Information Technology",type:"Skill",credits:3,ch:"8",syll:["Python Basics","Database","Cyber Safety"]}
+]
+};
+// Fill missing classes with Class 5 as base for demo
+["UKG","Class 1","Class 2","Class 3","Class 4","Class 6","Class 7","Class 8","Class 9"].forEach(k=>{ if(!DATA[k]) DATA[k]=DATA["Class 5"] });
+
+function badge(t){ const m={Theory:'theory',Lab:'lab', 'Soft Skills':'soft',Practical:'soft',Skill:'skill'}; return `<span class="badge ${m[t]||'theory'}">${t}</span>` }
+
+function render(cls){
+ const rows=DATA[cls]||[];
+ document.getElementById('className').innerText=cls+" - CBSE (2025-26)";
+ document.getElementById('classAvatar').innerText=cls.replace('Class ','').replace('LKG','L').replace('UKG','U');
+ document.getElementById('classMeta').innerText=rows.length+" subjects • "+rows.reduce((a,b)=>a+(b.credits||0),0)+" credits";
+ document.querySelectorAll('.creditsCol').forEach(el=>el.style.display=(cls==='LKG'||cls==='UKG')?'none':'table-cell');
+ const tbody=document.getElementById('tbody'); tbody.innerHTML='';
+ rows.forEach((r,i)=>{
+   const showCred=!(cls==='LKG'||cls==='UKG');
+   tbody.innerHTML+=`<tr>
+    <td>${i+1}</td><td class="code">${r.code}</td><td style="font-weight:500">${r.name}</td>
+    <td>${badge(r.type)}</td>${showCred?`<td>${r.credits||'-'}</td>`:`<td style="display:none"></td>`}
+    <td>${r.ch}</td><td><a class="link" onclick="openDrawer('${r.code}')">View</a></td>
+    <td><button class="icon-btn">✎</button> <button class="icon-btn">🗑</button></td></tr>`;
+ });
+}
+function filterTable(){
+ const q=document.getElementById('searchInput').value.toLowerCase();
+ document.querySelectorAll('#tbody tr').forEach(tr=>{ tr.style.display=tr.innerText.toLowerCase().includes(q)?'':'none' });
+}
+function changeClass(v){ render(v); }
+function openDrawer(code){
+ const cls=document.getElementById('classSelect').value; const subj=DATA[cls].find(s=>s.code===code);
+ document.getElementById('dTitle').innerText=subj.name; document.getElementById('dCode').innerText=code+" • "+cls;
+ document.getElementById('drawerBody').innerHTML=subj.syll.map((s,i)=>`<div class="chapter"><b>Chapter ${i+1}: ${s}</b><p>Learning outcome, activities and resources for ${s.toLowerCase()}.</p></div>`).join('')+`<button class="btn btn-primary" style="width:100%;margin-top:12px">Download Syllabus PDF</button>`;
+ document.getElementById('drawer').classList.add('open'); document.getElementById('overlay').classList.add('show');
+}
+function closeDrawer(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+render('Class 5');
+</script>
+</body>
+</html>

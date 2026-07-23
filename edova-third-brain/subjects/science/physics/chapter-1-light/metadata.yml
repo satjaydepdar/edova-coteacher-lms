@@ -1,0 +1,132 @@
+---
+title: "Light – Reflection and Refraction"
+chapter_number: 1
+subject: "Science"
+domain: physics
+class: 10
+board: "CBSE / NCERT"
+language: "English"
+created: '2026-07-17'
+last_updated: '2026-07-17'
+
+
+summary: >
+  This chapter explores the optical phenomena of reflection and refraction 
+  using the straight-line propagation of light. It covers the properties of 
+  spherical mirrors (concave and convex), ray diagrams, the mirror formula, 
+  and magnification. The latter half introduces refraction through glass slabs, 
+  Snell's law, refractive index, spherical lenses, the lens formula, and the 
+  concept of the power of a lens.
+
+sections:
+  - "9.1 REFLECTION OF LIGHT"
+  - "9.2 SPHERICAL MIRRORS"
+  - "9.2.1 Image Formation by Spherical Mirrors"
+  - "9.2.2 Representation of Images Formed by Spherical Mirrors Using Ray Diagrams"
+  - "9.2.3 Sign Convention for Reflection by Spherical Mirrors"
+  - "9.2.4 Mirror Formula and Magnification"
+  - "9.3 REFRACTION OF LIGHT"
+  - "9.3.1 Refraction through a Rectangular Glass Slab"
+  - "9.3.2 The Refractive Index"
+  - "9.3.3 Refraction by Spherical Lenses"
+  - "9.3.4 Image Formation by Lenses"
+  - "9.3.5 Image Formation in Lenses Using Ray Diagrams"
+  - "9.3.6 Sign Convention for Spherical Lenses"
+  - "9.3.7 Lens Formula and Magnification"
+  - "9.3.8 Power of a Lens"
+
+activities:
+  - "Activity 9.1: Exploring images in a curved spoon"
+  - "Activity 9.2: Finding the focal point of a concave mirror using sunlight"
+  - "Activity 9.3: Image formation by a concave mirror for different object positions"
+  - "Activity 9.4: Drawing ray diagrams for concave mirrors"
+  - "Activity 9.5: Observing image formation in a convex mirror"
+  - "Activity 9.6: Comparing full-length images in plane, concave, and convex mirrors"
+  - "Activity 9.7: Apparent displacement of a coin in water"
+  - "Activity 9.8: Refraction making a hidden coin visible"
+  - "Activity 9.9: Observing bending of a line under a glass slab"
+  - "Activity 9.10: Tracing the path of light through a rectangular glass slab"
+  - "Activity 9.11: Finding the focal point of a convex lens using sunlight"
+  - "Activity 9.12: Image formation by a convex lens for different object positions"
+  - "Activity 9.13: Image formation by a concave lens"
+
+tables:
+  - "Table 9.1: Image formation by a concave mirror for different positions of the object"
+  - "Table 9.2: Nature, position and relative size of the image formed by a convex mirror"
+  - "Table 9.3: Absolute refractive index of some material media"
+  - "Table 9.4: Nature, position and relative size of the image formed by a convex lens"
+  - "Table 9.5: Nature, position and relative size of the image formed by a concave lens"
+
+key_concepts:
+  - concept: "Laws of Reflection"
+    section: "9.1 REFLECTION OF LIGHT"
+    summary: "The angle of incidence equals the angle of reflection, and both rays along with the normal lie in the exact same geometric plane."
+    
+  - concept: "Concave and Convex Mirrors"
+    section: "9.2 SPHERICAL MIRRORS"
+    summary: "Curved mirrors where concave surfaces reflect light inward toward a center, while convex surfaces reflect light outward, causing parallel rays to diverge."
+    
+  - concept: "Pole, Principal Axis, Centre of Curvature"
+    section: "9.2 SPHERICAL MIRRORS"
+    summary: "The pole is the mirror's center. The principal axis is the straight line through the pole and the sphere's center of curvature."
+    
+  - concept: "Principal Focus and Focal Length"
+    section: "9.2 SPHERICAL MIRRORS"
+    summary: "The point where parallel rays converge or appear to diverge after reflection. Focal length is the distance from the pole to this focus."
+    
+  - concept: "New Cartesian Sign Convention"
+    section: "9.2.3 Sign Convention for Reflection by Spherical Mirrors"
+    summary: "A standard coordinate system where the mirror's pole is the origin, principal axis is the x-axis, and distances above and right are positive."
+    
+  - concept: "Mirror Formula (1/v + 1/u = 1/f)"
+    section: "9.2.4 Mirror Formula and Magnification"
+    summary: "A mathematical relationship connecting the object distance, image distance, and focal length of a spherical mirror, essential for calculating image positions accurately."
+    
+  - concept: "Magnification (m = h'/h = -v/u)"
+    section: "9.2.4 Mirror Formula and Magnification"
+    summary: "The ratio of image height to object height, indicating whether the image is enlarged or diminished, and whether it is erect or inverted."
+    
+  - concept: "Laws of Refraction"
+    section: "9.3.1 Refraction through a Rectangular Glass Slab"
+    summary: "The incident ray, refracted ray, and normal lie in the same plane, and the sine ratio of angles is constant (Snell's law)."
+    
+  - concept: "Snell's Law (sin i / sin r = constant)"
+    section: "9.3.1 Refraction through a Rectangular Glass Slab"
+    summary: "States that the ratio of the sine of the angle of incidence to the sine of the angle of refraction remains constant."
+    
+  - concept: "Refractive Index (n = c/v)"
+    section: "9.3.2 The Refractive Index"
+    summary: "A measure of how much light slows down when entering a medium, calculated as the ratio of speeds in vacuum versus the medium."
+    
+  - concept: "Optical Density"
+    section: "9.3.2 The Refractive Index"
+    summary: "The ability of a medium to bend light rays, determined by its refractive index rather than its mass density; higher index means optically denser."
+    
+  - concept: "Concave and Convex Lenses"
+    section: "9.3.3 Refraction by Spherical Lenses"
+    summary: "Convex lenses are thicker in the middle and converge light rays, whereas concave lenses are thinner in the middle and diverge light rays."
+    
+  - concept: "Optical Centre and Principal Focus of Lenses"
+    section: "9.3.3 Refraction by Spherical Lenses"
+    summary: "The optical center is the lens's central point where light passes undeviated. The principal focus is where parallel rays converge or diverge."
+    
+  - concept: "Lens Formula (1/v - 1/u = 1/f)"
+    section: "9.3.7 Lens Formula and Magnification"
+    summary: "The fundamental equation relating the object distance, image distance, and focal length of a thin lens, used to determine image characteristics mathematically."
+    
+  - concept: "Power of a Lens (P = 1/f)"
+    section: "9.3.8 Power of a Lens"
+    summary: "The reciprocal of the focal length (in meters), measured in dioptres, indicating the lens's ability to converge or diverge incident light rays."
+
+tags:
+  - "Physics"
+  - "Optics"
+  - "Light"
+  - "Reflection"
+  - "Refraction"
+  - "Mirrors"
+  - "Lenses"
+  - "Spherical Mirrors"
+  - "Ray Diagrams"
+  - "Image Formation"
+...

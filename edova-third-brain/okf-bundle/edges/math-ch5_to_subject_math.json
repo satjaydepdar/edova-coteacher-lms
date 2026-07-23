@@ -1,0 +1,10 @@
+{
+  "edge_id": "math-ch5_to_subject_math",
+  "type": "belongs_to",
+  "from": "math-ch5",
+  "to": "subject_math",
+  "doc_ids": [
+    "math_math-ch5_chapter_content_24f46175",
+    "math_math-ch5_worksheet_ebc73e89"
+  ]
+}

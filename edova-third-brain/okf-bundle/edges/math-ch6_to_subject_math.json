@@ -1,0 +1,9 @@
+{
+  "edge_id": "math-ch6_to_subject_math",
+  "type": "belongs_to",
+  "from": "math-ch6",
+  "to": "subject_math",
+  "doc_ids": [
+    "math_math-ch6_chapter_content_73d3ce06"
+  ]
+}

@@ -1,0 +1,15 @@
+# Safety-net repo (added before a multi-file refactor) — keep it lean, source-focused.
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+dist/
+build/
+.env
+*.env.local
+
+# Runtime data / generated artifacts, not source.
+ncert_rag/clerk/clerk.db
+edova-third-brain/okf-bundle/cache/
+graphify-out/cache/

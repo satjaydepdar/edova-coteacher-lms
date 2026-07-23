@@ -1,0 +1,175 @@
+---
+title: "Acids, Bases and Salts"
+chapter_number: 2
+subject: "Science"
+domain: chemistry
+class: 10
+board: "CBSE / NCERT"
+language: "English"
+created: '2026-07-17'
+last_updated: '2026-07-17'
+page_range:
+  start: 18
+  end: 36
+
+summary: >
+  This chapter introduces the chemical properties of acids and bases, covering
+  their reactions with metals, metal carbonates and hydrogencarbonates, and
+  with each other through neutralisation. It explains that acids produce
+  hydrogen ions and bases produce hydroxide ions in aqueous solution, and
+  presents the pH scale for measuring how strong an acid or base is, along
+  with the importance of pH in everyday life. The chapter then examines
+  salts, their families and pH, the manufacture of sodium hydroxide,
+  bleaching powder, baking soda and washing soda from common salt, and
+  finishes with water of crystallisation, gypsum and Plaster of Paris.
+
+sections:
+  - "2.1 UNDERSTANDING THE CHEMICAL PROPERTIES OF ACIDS AND BASES"
+  - "2.1.1 Acids and Bases in the Laboratory"
+  - "2.1.2 How do Acids and Bases React with Metals?"
+  - "2.1.3 How do Metal Carbonates and Metal Hydrogencarbonates React with Acids?"
+  - "2.1.4 How do Acids and Bases React with each other?"
+  - "2.1.5 Reaction of Metallic Oxides with Acids"
+  - "2.1.6 Reaction of a Non-metallic Oxide with Base"
+  - "2.2 WHAT DO ALL ACIDS AND ALL BASES HAVE IN COMMON?"
+  - "2.2.1 What Happens to an Acid or a Base in a Water Solution?"
+  - "2.3 HOW STRONG ARE ACID OR BASE SOLUTIONS?"
+  - "2.3.1 Importance of pH in Everyday Life"
+  - "2.4 MORE ABOUT SALTS"
+  - "2.4.1 Family of Salts"
+  - "2.4.2 pH of Salts"
+  - "2.4.3 Chemicals from Common Salt"
+  - "2.4.4 Are the Crystals of Salts really Dry?"
+
+activities:
+  - "Activity 2.1: Testing laboratory acids and bases with red litmus, blue litmus, phenolphthalein and methyl orange indicators"
+  - "Activity 2.2: Using onion, vanilla essence and clove oil as olfactory indicators with dilute HCl and NaOH"
+  - "Activity 2.3: Reacting zinc granules with dilute sulphuric acid and testing the evolved hydrogen gas by burning"
+  - "Activity 2.4: Reacting sodium hydroxide solution with granulated zinc metal and testing the gas evolved"
+  - "Activity 2.5: Reacting sodium carbonate and sodium hydrogencarbonate with dilute HCl and passing the gas through lime water"
+  - "Activity 2.6: Neutralising sodium hydroxide with dilute hydrochloric acid using phenolphthalein as indicator"
+  - "Activity 2.7: Adding dilute hydrochloric acid to copper oxide and observing the blue-green solution formed"
+  - "Activity 2.8: Testing whether solutions of acids, glucose and alcohol conduct electricity"
+  - "Activity 2.9: Preparing HCl gas from sodium chloride and testing it with dry and wet blue litmus paper"
+  - "Activity 2.10: Observing the temperature change on mixing concentrated sulphuric acid or sodium hydroxide with water"
+  - "Activity 2.11: Testing the pH values of everyday solutions listed in Table 2.2 with pH paper"
+  - "Activity 2.12: Checking the pH of a soil sample filtrate using universal indicator paper"
+  - "Activity 2.13: Writing chemical formulae of salts and identifying their families and parent acids and bases"
+  - "Activity 2.14: Checking solubility and pH of salt solutions to classify them as acidic, basic or neutral"
+  - "Activity 2.15: Heating copper sulphate crystals to remove water of crystallisation and restoring the blue colour"
+
+tables:
+  - "Table 2.1: Testing sample solutions with red litmus, blue litmus, phenolphthalein solution and methyl orange solution"
+  - "Table 2.2: Colour of pH paper, approximate pH value and nature of some common substances"
+  - "Table 2.3: Some naturally occurring acids"
+  - "Table 2.4: pH of salt solutions with the acid used and the base used"
+
+key_concepts:
+  - concept: "Acid-Base Indicators"
+    section: "2.1.1 Acids and Bases in the Laboratory"
+    summary: "Dyes such as litmus, turmeric, methyl orange and phenolphthalein that change colour in acidic or basic solutions, thereby indicating the chemical nature of tested substances."
+
+  - concept: "Olfactory Indicators"
+    section: "2.1.1 Acids and Bases in the Laboratory"
+    summary: "Substances like onion, vanilla and clove oil whose odour changes when mixed with acidic or basic media, serving as reliable smell-based tests for identifying acids."
+
+  - concept: "Reaction of Acids with Metals"
+    section: "2.1.2 How do Acids and Bases React with Metals?"
+    summary: "Active metals like zinc displace hydrogen from dilute acids, forming a corresponding salt while releasing hydrogen gas that burns with a characteristic pop sound nearby."
+
+  - concept: "Reaction of Bases with Metals"
+    section: "2.1.2 How do Acids and Bases React with Metals?"
+    summary: "Some bases react with certain metals such as zinc forming a salt like sodium zincate, evolving hydrogen gas, though such reactions are impossible with metals."
+
+  - concept: "Metal Carbonates with Acids"
+    section: "2.1.3 How do Metal Carbonates and Metal Hydrogencarbonates React with Acids?"
+    summary: "All metal carbonates and hydrogencarbonates react with acids producing a corresponding salt, carbon dioxide gas and water; the evolved carbon dioxide turns lime water milky."
+
+  - concept: "Neutralisation Reaction"
+    section: "2.1.4 How do Acids and Bases React with each other?"
+    summary: "The reaction between an acid and a base producing salt and water, where each cancels out the other's effect, is known as a neutralisation reaction."
+
+  - concept: "Metallic Oxides with Acids"
+    section: "2.1.5 Reaction of Metallic Oxides with Acids"
+    summary: "Metallic oxides react with acids to form salt and water, resembling bases in their behaviour, so metallic oxides like copper oxide are called basic oxides."
+
+  - concept: "Non-metallic Oxides with Bases"
+    section: "2.1.6 Reaction of a Non-metallic Oxide with Base"
+    summary: "Non-metallic oxides such as carbon dioxide react with bases like calcium hydroxide to produce salt and water, showing that non-metallic oxides are acidic in nature."
+
+  - concept: "Hydrogen Ions from Acids"
+    section: "2.2 WHAT DO ALL ACIDS AND ALL BASES HAVE IN COMMON?"
+    summary: "All acids generate hydrogen ions in aqueous solution, and these ions carry electric current through the solution, being responsible for the characteristic acidic properties shown."
+
+  - concept: "Hydronium Ion Formation"
+    section: "2.2.1 What Happens to an Acid or a Base in a Water Solution?"
+    summary: "Hydrogen ions cannot exist independently; they combine with water molecules forming hydronium ions, which explains why dry hydrogen chloride gas shows no acidic behaviour whatsoever."
+
+  - concept: "Alkalis"
+    section: "2.2.1 What Happens to an Acid or a Base in a Water Solution?"
+    summary: "Bases that dissolve in water are called alkalis; they generate hydroxide ions in solution, feel soapy to touch, taste bitter and are corrosive in nature."
+
+  - concept: "Dilution of Acids and Bases"
+    section: "2.2.1 What Happens to an Acid or a Base in a Water Solution?"
+    summary: "Dissolving a concentrated acid or base in water is a highly exothermic process; always add the acid slowly to water with constant stirring for safety."
+
+  - concept: "Universal Indicator and pH Scale"
+    section: "2.3 HOW STRONG ARE ACID OR BASE SOLUTIONS?"
+    summary: "A universal indicator shows different colours at different hydrogen ion concentrations; the pH scale measuring this concentration generally ranges from zero up to fourteen overall."
+
+  - concept: "Strong and Weak Acids"
+    section: "2.3 HOW STRONG ARE ACID OR BASE SOLUTIONS?"
+    summary: "Strength depends on the number of hydrogen or hydroxide ions produced; acids giving rise to more hydrogen ions are strong, while others are weak acids."
+
+  - concept: "pH in Everyday Life"
+    section: "2.3.1 Importance of pH in Everyday Life"
+    summary: "Living organisms survive only within narrow pH ranges; acid rain, soil pH for plants, digestion, tooth decay and animal stings all involve acidity and pH."
+
+  - concept: "Family of Salts"
+    section: "2.4.1 Family of Salts"
+    summary: "Salts sharing the same positive or negative radicals are said to belong to one family, such as sodium salts or chloride salts, identified from formulae."
+
+  - concept: "pH of Salts"
+    section: "2.4.2 pH of Salts"
+    summary: "Salts of strong acids and strong bases are neutral, while salts of strong acids with weak bases are acidic, and vice versa for strong bases."
+
+  - concept: "Chlor-alkali Process"
+    section: "2.4.3 Chemicals from Common Salt"
+    summary: "Electricity passed through brine decomposes it into sodium hydroxide, with chlorine gas released at the anode and hydrogen gas at the cathode, all useful products."
+
+  - concept: "Bleaching Powder"
+    section: "2.4.3 Chemicals from Common Salt"
+    summary: "Produced by the action of chlorine on dry slaked lime, bleaching powder is used for bleaching cotton and wood pulp, as oxidising agent and disinfectant."
+
+  - concept: "Baking Soda"
+    section: "2.4.3 Chemicals from Common Salt"
+    summary: "Sodium hydrogencarbonate, prepared using sodium chloride as one raw material, is a mild non-corrosive basic salt used in baking powder, antacids and soda-acid fire extinguishers."
+
+  - concept: "Washing Soda"
+    section: "2.4.3 Chemicals from Common Salt"
+    summary: "Sodium carbonate decahydrate, obtained by recrystallisation of sodium carbonate, is a basic salt used in glass, soap and paper industries and for removing water hardness."
+
+  - concept: "Water of Crystallisation"
+    section: "2.4.4 Are the Crystals of Salts really Dry?"
+    summary: "The fixed number of water molecules present in one formula unit of a salt; heating blue hydrated copper sulphate removes this water, turning it white."
+
+  - concept: "Plaster of Paris"
+    section: "2.4.4 Are the Crystals of Salts really Dry?"
+    summary: "Calcium sulphate hemihydrate, obtained by heating gypsum at three hundred seventy-three kelvin, sets into a hard solid mass with water, supporting fractured bones as plaster."
+
+tags:
+  - "Chemistry"
+  - "Acids"
+  - "Bases"
+  - "Salts"
+  - "Indicators"
+  - "Neutralisation"
+  - "pH Scale"
+  - "Hydrogen Ions"
+  - "Alkalis"
+  - "Chlor-alkali Process"
+  - "Baking Soda"
+  - "Washing Soda"
+  - "Water of Crystallisation"
+  - "Plaster of Paris"
+...

@@ -1,0 +1,109 @@
+---
+title: "Heredity"
+chapter_number: 4
+subject: "Science"
+domain: biology
+class: 10
+board: "CBSE / NCERT"
+language: "English"
+created: '2026-07-17'
+last_updated: '2026-07-17'
+page_range:
+  start: 128
+  end: 133
+
+summary: >
+  This chapter explains how variations arise during reproduction and are
+  inherited across successive generations. It presents Mendel's classic
+  garden pea experiments, introducing dominant and recessive traits, F1
+  and F2 generations, and the independent inheritance of separate traits.
+  It then explains how genes on chromosomes control traits through protein
+  production, with germ cells carrying single gene sets. Finally, it covers
+  sex determination, showing how the X and Y chromosomes inherited from
+  parents decide the sex of human children.
+
+sections:
+  - "8.1 ACCUMULATION OF VARIATION DURING REPRODUCTION"
+  - "8.2 HEREDITY"
+  - "8.2.1 Inherited Traits"
+  - "8.2.2 Rules for the Inheritance of Traits – Mendel's Contributions"
+  - "8.2.3 How do these Traits get Expressed?"
+  - "8.2.4 Sex Determination"
+
+activities:
+  - "Activity 8.1: Observing free and attached earlobes in students, correlating them with parents, and suggesting an inheritance rule"
+  - "Activity 8.2: Designing an experiment to confirm the 1:2:1 ratio of TT, Tt and tt trait combinations in the F2 generation"
+
+tables: []
+
+key_concepts:
+  - concept: "Accumulation of Variation"
+    section: "8.1 ACCUMULATION OF VARIATION DURING REPRODUCTION"
+    summary: "Inheritance provides a common body design plus subtle changes, and each new generation adds fresh differences, gradually increasing diversity across successive generations over evolutionary time."
+
+  - concept: "Variation and Survival"
+    section: "8.1 ACCUMULATION OF VARIATION DURING REPRODUCTION"
+    summary: "Not all variations have equal survival chances; depending on their nature, different individuals gain advantages, and selection of variants by environmental factors drives evolutionary processes."
+
+  - concept: "Heredity and Rules of Inheritance"
+    section: "8.2 HEREDITY"
+    summary: "Heredity is the most obvious outcome of reproduction, generating individuals of similar design through rules that reliably pass traits from parents down to their offspring."
+
+  - concept: "Inherited Traits"
+    section: "8.2.1 Inherited Traits"
+    summary: "Children share basic features with parents yet never look exactly alike; human populations display great variation, such as free versus attached earlobes among different individuals."
+
+  - concept: "Equal Parental Genetic Contribution"
+    section: "8.2.2 Rules for the Inheritance of Traits – Mendel's Contributions"
+    summary: "Both the father and the mother contribute practically equal amounts of genetic material to the child, so each trait has two versions present in children."
+
+  - concept: "Mendel's Pea Plant Experiments"
+    section: "8.2.2 Rules for the Inheritance of Traits – Mendel's Contributions"
+    summary: "Mendel crossed tall and short garden pea plants, finding all first generation progeny were tall, proving parental traits are inherited as discrete units, not blended."
+
+  - concept: "F1 and F2 Generations"
+    section: "8.2.2 Rules for the Inheritance of Traits – Mendel's Contributions"
+    summary: "Self-pollinating F1 tall plants produced F2 progeny where one quarter were short, showing both traits were inherited in F1 but only tallness was outwardly expressed."
+
+  - concept: "Dominant and Recessive Traits"
+    section: "8.2.2 Rules for the Inheritance of Traits – Mendel's Contributions"
+    summary: "A single copy of the dominant factor T produces tall plants, while both copies must be recessive t for shortness; one trait masks the other."
+
+  - concept: "Independent Inheritance of Traits"
+    section: "8.2.2 Rules for the Inheritance of Traits – Mendel's Contributions"
+    summary: "Breeding plants differing in two traits, seed shape and colour, produced F2 offspring with new combinations, proving traits are always inherited independently of each other."
+
+  - concept: "Genes and Trait Expression"
+    section: "8.2.3 How do these Traits get Expressed?"
+    summary: "A gene is a cellular DNA section coding for one protein; enzyme efficiency controls hormone amounts which determine characteristics like plant height in garden peas."
+
+  - concept: "Chromosomes and Germ Cells"
+    section: "8.2.3 How do these Traits get Expressed?"
+    summary: "Each gene set exists as separate chromosomes; every germ cell takes one chromosome from each pair restoring the normal number when two germ cells combine."
+
+  - concept: "Sex Determination in Humans"
+    section: "8.2.4 Sex Determination"
+    summary: "Human sex is genetically determined: women carry two X chromosomes while men carry one X and one shorter Y chromosome, forming a mismatched pair together."
+
+  - concept: "Father Determines Child's Sex"
+    section: "8.2.4 Sex Determination"
+    summary: "All children inherit an X chromosome from their mother, so inheriting X from the father produces a girl while inheriting Y instead produces a boy."
+
+  - concept: "Environmental Sex Determination"
+    section: "8.2.4 Sex Determination"
+    summary: "Different species use varied strategies: some reptiles determine sex by egg incubation temperature, while snails can change sex, showing sex is not always genetically determined."
+
+tags:
+  - "Biology"
+  - "Heredity"
+  - "Genetics"
+  - "Variation"
+  - "Inheritance"
+  - "Mendel"
+  - "Dominant Traits"
+  - "Recessive Traits"
+  - "Genes"
+  - "Chromosomes"
+  - "Sex Determination"
+  - "Evolution"
+...

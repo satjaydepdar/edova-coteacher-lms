@@ -1,0 +1,19 @@
+chapter_number: 5
+chapter_title: "Arithmetic Progression"
+subject: "Mathematics"
+grade: 10
+curriculum: "CBSE / NCERT"
+status: "in_progress"
+created: "2026-07-02"
+last_updated: "2026-07-15"
+handbook_status: "completed"
+question_bank_status: "completed"
+lesson_plans_status: "completed"
+worksheets_status: "completed"
+assessments_status: "completed"
+topics:
+  - "Introduction to Sequences"
+  - "Arithmetic Progressions"
+  - "nth Term of an AP"
+  - "Sum of First n Terms of an AP"
+

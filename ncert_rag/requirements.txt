@@ -1,0 +1,31 @@
+# DeepSeek / OpenAI compatible — LLM tasks (chat, semantic-search answer generation)
+openai==1.35.0
+
+# Gemini — embeddings (primary use), plus image captioning in the
+# document watcher (watcher/converters/image_converter.py) since
+# deepseek-chat isn't vision-capable — reuses this same client/key.
+google-genai==1.5.0
+
+# LlamaParse — PDF/docx extraction
+llama-parse==0.5.19
+
+# OKF (Open Knowledge Format) bundle parsing
+python-frontmatter==1.1.0
+
+# Document watcher — auto-convert dropped files into OKF concepts
+watchdog==5.0.3
+openpyxl==3.1.5
+
+# Database
+psycopg2-binary==2.9.9
+asyncpg==0.29.0
+
+# Utilities
+python-dotenv==1.0.1
+pydantic==2.7.0
+tqdm==4.66.4
+numpy==1.26.4
+
+# API server
+fastapi==0.111.0
+uvicorn==0.30.0

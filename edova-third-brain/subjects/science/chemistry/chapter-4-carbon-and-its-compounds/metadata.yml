@@ -1,0 +1,163 @@
+---
+title: "Carbon and its Compounds"
+chapter_number: 4
+subject: "Science"
+domain: chemistry
+class: 10
+board: "CBSE / NCERT"
+language: "English"
+page_range:
+  start: 58
+  end: 78
+created: '2026-07-17'
+last_updated: '2026-07-17'
+
+
+summary: >
+  This chapter introduces covalent bonding in carbon, showing how the sharing of
+  electrons produces single, double and triple bonds and the allotropes diamond,
+  graphite and fullerenes. It explains how tetravalency and catenation give rise
+  to chains, branches and rings, saturated and unsaturated hydrocarbons,
+  functional groups, homologous series and the nomenclature of carbon compounds.
+  The chemical properties of carbon compounds - combustion, oxidation, addition
+  and substitution reactions - are then studied, followed by the properties of
+  ethanol and ethanoic acid. The chapter closes with the cleansing action of
+  soaps and detergents and the behaviour of soap in hard water.
+
+sections:
+  - "4.1 BONDING IN CARBON – THE COVALENT BOND"
+  - "4.2 VERSATILE NATURE OF CARBON"
+  - "4.2.1 Saturated and Unsaturated Carbon Compounds"
+  - "4.2.2 Chains, Branches and Rings"
+  - "4.2.3 Will you be my Friend?"
+  - "4.2.4 Homologous Series"
+  - "4.2.5 Nomenclature of Carbon Compounds"
+  - "4.3 CHEMICAL PROPERTIES OF CARBON COMPOUNDS"
+  - "4.3.1 Combustion"
+  - "4.3.2 Oxidation"
+  - "4.3.3 Addition Reaction"
+  - "4.3.4 Substitution Reaction"
+  - "4.4 SOME IMPORTANT CARBON COMPOUNDS – ETHANOL AND ETHANOIC ACID"
+  - "4.4.1 Properties of Ethanol"
+  - "4.4.2 Properties of Ethanoic Acid"
+  - "4.5 SOAPS AND DETERGENTS"
+
+activities:
+  - "Activity 4.1: Listing ten things used since morning and sorting them by material"
+  - "Activity 4.2: Comparing formulae and molecular masses of alcohols to build a homologous series"
+  - "Activity 4.3: Burning carbon compounds and observing flame nature and soot deposition"
+  - "Activity 4.4: Adjusting a bunsen burner air hole to obtain different types of flames"
+  - "Activity 4.5: Adding alkaline potassium permanganate to warm ethanol and observing the colour"
+  - "Activity 4.6: Testing the reaction of sodium with ethanol (teacher's demonstration)"
+  - "Activity 4.7: Comparing the pH of dilute acetic acid and dilute hydrochloric acid"
+  - "Activity 4.8: Preparing an ester by warming ethanol with glacial acetic acid and sulphuric acid"
+  - "Activity 4.9: Reacting ethanoic acid with sodium carbonate and hydrogencarbonate, testing gas with lime-water"
+  - "Activity 4.10: Observing the effect of soap solution on a mixture of oil and water"
+  - "Activity 4.11: Comparing foam formation by soap in distilled water and hard water"
+  - "Activity 4.12: Comparing foaming of soap and detergent solutions in hard water"
+
+tables:
+  - "Table 4.1: Melting points and boiling points of some compounds of carbon"
+  - "Table 4.2: Formulae and structures of saturated compounds of carbon and hydrogen"
+  - "Table 4.3: Some functional groups in carbon compounds"
+  - "Table 4.4: Nomenclature of organic compounds"
+
+key_concepts:
+  - concept: "Covalent Bond"
+    section: "4.1 BONDING IN CARBON – THE COVALENT BOND"
+    summary: "A chemical bond formed when two atoms share pairs of valence electrons so that each atom attains the stable electronic configuration of a noble gas."
+
+  - concept: "Single, Double and Triple Bonds"
+    section: "4.1 BONDING IN CARBON – THE COVALENT BOND"
+    summary: "Depending on valency, atoms share one, two or three electron pairs, giving single bonds in hydrogen, double bonds in oxygen, and triple bonds in nitrogen."
+
+  - concept: "Properties of Covalent Compounds"
+    section: "4.1 BONDING IN CARBON – THE COVALENT BOND"
+    summary: "Covalent compounds have strong bonds within molecules but weak intermolecular forces, giving low melting and boiling points and making them generally poor conductors of electricity."
+
+  - concept: "Allotropes of Carbon"
+    section: "4.1 BONDING IN CARBON – THE COVALENT BOND"
+    summary: "Carbon exists as diamond with a rigid three-dimensional structure, slippery layered graphite which conducts electricity, and football-shaped fullerenes like C-60, differing only in atomic arrangement."
+
+  - concept: "Catenation"
+    section: "4.2 VERSATILE NATURE OF CARBON"
+    summary: "Carbon's unique ability to bond with other carbon atoms, forming long chains, branched chains and rings, gives rise to millions of stable compounds around us."
+
+  - concept: "Tetravalency of Carbon"
+    section: "4.2 VERSATILE NATURE OF CARBON"
+    summary: "Having four valence electrons, carbon bonds with four other atoms of carbon or other elements; its small size makes these bonds exceptionally strong and stable."
+
+  - concept: "Saturated and Unsaturated Compounds"
+    section: "4.2.1 Saturated and Unsaturated Carbon Compounds"
+    summary: "Saturated compounds like ethane contain only single carbon-carbon bonds and are fairly unreactive, while unsaturated compounds like ethene and ethyne contain double or triple bonds."
+
+  - concept: "Structural Isomers"
+    section: "4.2.2 Chains, Branches and Rings"
+    summary: "Compounds having identical molecular formulae but different structures are called structural isomers; for example, butane C4H10 exists as both straight-chain and branched-chain carbon skeleton arrangements."
+
+  - concept: "Hydrocarbons: Alkanes, Alkenes and Alkynes"
+    section: "4.2.2 Chains, Branches and Rings"
+    summary: "Compounds containing only carbon and hydrogen are hydrocarbons; saturated ones are alkanes, those with double bonds are alkenes, and those with triple bonds are alkynes."
+
+  - concept: "Heteroatoms and Functional Groups"
+    section: "4.2.3 Will you be my Friend?"
+    summary: "In hydrocarbon chains, hydrogen atoms can be replaced by halogens, oxygen, nitrogen or sulphur; such heteroatoms form functional groups that confer specific properties to compounds."
+
+  - concept: "Homologous Series"
+    section: "4.2.4 Homologous Series"
+    summary: "A series of compounds where the same functional group substitutes hydrogen in carbon chains of varying lengths; each successive member differs by a CH2 unit."
+
+  - concept: "Nomenclature of Carbon Compounds"
+    section: "4.2.5 Nomenclature of Carbon Compounds"
+    summary: "Compounds are named from the parent carbon chain, adding a prefix or suffix indicating the functional group; the final 'e' is dropped before vowel-starting suffixes."
+
+  - concept: "Combustion of Carbon Compounds"
+    section: "4.3.1 Combustion"
+    summary: "Carbon compounds burn in oxygen releasing carbon dioxide, water, heat and light; saturated hydrocarbons burn with blue flames while unsaturated ones give sooty yellow flames."
+
+  - concept: "Oxidation and Oxidising Agents"
+    section: "4.3.2 Oxidation"
+    summary: "Alcohols are converted to carboxylic acids by oxidising agents such as alkaline potassium permanganate or acidified potassium dichromate, which add oxygen to the starting material."
+
+  - concept: "Addition Reaction (Hydrogenation)"
+    section: "4.3.3 Addition Reaction"
+    summary: "Unsaturated hydrocarbons add hydrogen in the presence of catalysts such as palladium or nickel, giving saturated hydrocarbons; this hydrogenation reaction is applied to vegetable oils."
+
+  - concept: "Substitution Reaction"
+    section: "4.3.4 Substitution Reaction"
+    summary: "In sunlight, chlorine replaces hydrogen atoms of saturated hydrocarbons one by one; this substitution reaction, like methane forming chloromethane, usually yields a mixture of products."
+
+  - concept: "Properties of Ethanol"
+    section: "4.4.1 Properties of Ethanol"
+    summary: "Ethanol is a liquid at room temperature, miscible with water; it reacts with sodium releasing hydrogen, and dehydrates with concentrated sulphuric acid to give ethene."
+
+  - concept: "Properties of Ethanoic Acid"
+    section: "4.4.2 Properties of Ethanoic Acid"
+    summary: "Ethanoic acid, commonly called acetic acid, is a weak carboxylic acid; vinegar is its dilute solution, and it freezes during winter, giving glacial acetic acid."
+
+  - concept: "Esterification and Saponification"
+    section: "4.4.2 Properties of Ethanoic Acid"
+    summary: "Ethanoic acid reacts with absolute ethanol using an acid catalyst, giving sweet-smelling esters; esters react with sodium hydroxide to regenerate alcohol, a reaction called saponification."
+
+  - concept: "Micelles and Cleaning Action of Soap"
+    section: "4.5 SOAPS AND DETERGENTS"
+    summary: "Soap molecules have hydrophilic ionic ends and hydrophobic hydrocarbon tails; they form micelle clusters trapping oily dirt inside, forming an emulsion that rinses with water."
+
+  - concept: "Detergents and Hard Water"
+    section: "4.5 SOAPS AND DETERGENTS"
+    summary: "Soap forms scum with calcium and magnesium ions in hard water; detergents, salts of sulphonic acids, do not precipitate and remain effective in hard water."
+
+tags:
+  - "Chemistry"
+  - "Organic Chemistry"
+  - "Carbon"
+  - "Covalent Bond"
+  - "Catenation"
+  - "Hydrocarbons"
+  - "Functional Groups"
+  - "Homologous Series"
+  - "Ethanol"
+  - "Ethanoic Acid"
+  - "Soaps"
+  - "Detergents"
+...

@@ -1,0 +1,107 @@
+---
+title: "The Human Eye and the Colourful World"
+chapter_number: 2
+subject: "Science"
+domain: physics
+class: 10
+board: "CBSE / NCERT"
+language: "English"
+created: '2026-07-17'
+last_updated: '2026-07-17'
+
+page_range:
+  start: 161
+  end: 170
+
+summary: >
+  This chapter applies the optics of lenses to the human eye, explaining how
+  its lens system forms images on the retina and how defects of vision are
+  corrected with spectacles. It then studies refraction through a triangular
+  prism, the dispersion of white light into the VIBGYOR spectrum, and the
+  formation of rainbows. The chapter closes with atmospheric refraction and
+  the scattering of light, explaining the twinkling of stars and the blue
+  colour of the sky.
+
+sections:
+  - "10.1 THE HUMAN EYE"
+  - "10.1.1 Power of Accommodation"
+  - "10.2 DEFECTS OF VISION AND THEIR CORRECTION"
+  - "10.3 REFRACTION OF LIGHT THROUGH A PRISM"
+  - "10.4 DISPERSION OF WHITE LIGHT BY A GLASS PRISM"
+  - "10.5 ATMOSPHERIC REFRACTION"
+  - "10.6 SCATTERING OF LIGHT"
+  - "10.6.1 Tyndall Effect"
+  - "10.6.2 Why is the colour of the clear Sky Blue?"
+
+activities:
+  - "Activity 10.1: Tracing the path of light through a triangular glass prism using pins"
+  - "Activity 10.2: Observing sunlight split into a band of colours through a glass prism"
+
+tables: []
+
+key_concepts:
+  - concept: "Structure of the Human Eye"
+    section: "10.1 THE HUMAN EYE"
+    summary: "The eye works like a camera: light enters through the cornea, the iris controls the pupil, and the lens focuses images onto the light-sensitive retina."
+
+  - concept: "Power of Accommodation"
+    section: "10.1.1 Power of Accommodation"
+    summary: "The ability of the eye lens to adjust its focal length using ciliary muscles, becoming thicker for nearby objects and thinner for seeing distant objects."
+
+  - concept: "Near Point and Far Point"
+    section: "10.1.1 Power of Accommodation"
+    summary: "The near point is the minimum distance for distinct vision without strain, about twenty-five centimetres for normal young adults; the far point is normally infinity."
+
+  - concept: "Myopia (Near-sightedness)"
+    section: "10.2 DEFECTS OF VISION AND THEIR CORRECTION"
+    summary: "A refractive defect where distant objects form images in front of the retina due to excessive lens curvature or elongated eyeball; corrected using concave lenses."
+
+  - concept: "Hypermetropia (Far-sightedness)"
+    section: "10.2 DEFECTS OF VISION AND THEIR CORRECTION"
+    summary: "A refractive defect where nearby objects focus behind the retina because the eyeball is too short or focal length too long; corrected using convex lenses."
+
+  - concept: "Presbyopia"
+    section: "10.2 DEFECTS OF VISION AND THEIR CORRECTION"
+    summary: "Age-related loss of accommodation power where the near point recedes with weakening ciliary muscles and stiffening lens, often requiring bi-focal lenses for comfortable vision correction."
+
+  - concept: "Angle of Deviation"
+    section: "10.3 REFRACTION OF LIGHT THROUGH A PRISM"
+    summary: "The angle between the incident ray and emergent ray when light passes through a triangular prism, caused by bending at its two inclined refracting surfaces."
+
+  - concept: "Dispersion of White Light"
+    section: "10.4 DISPERSION OF WHITE LIGHT BY A GLASS PRISM"
+    summary: "The splitting of white light into its seven component colours while passing through a glass prism, because each colour bends through a slightly different angle."
+
+  - concept: "Rainbow Formation"
+    section: "10.4 DISPERSION OF WHITE LIGHT BY A GLASS PRISM"
+    summary: "A natural spectrum appearing opposite the Sun after rain, formed when tiny water droplets refract, internally reflect, and again refract sunlight, dispersing its component colours."
+
+  - concept: "Twinkling of Stars"
+    section: "10.5 ATMOSPHERIC REFRACTION"
+    summary: "Atmospheric refraction through layers of gradually changing refractive index makes a star's apparent position fluctuate slightly, so the starlight reaching our eyes flickers over time."
+
+  - concept: "Advance Sunrise and Delayed Sunset"
+    section: "10.5 ATMOSPHERIC REFRACTION"
+    summary: "Atmospheric refraction makes the Sun visible about two minutes before actual sunrise and two minutes after actual sunset, also apparently flattening its visible disc slightly."
+
+  - concept: "Tyndall Effect"
+    section: "10.6.1 Tyndall Effect"
+    summary: "The scattering of light by colloidal particles that makes a light beam's path visible, seen when sunlight enters a smoke-filled room or through misty forests."
+
+  - concept: "Why the Sky is Blue"
+    section: "10.6.2 Why is the colour of the clear Sky Blue?"
+    summary: "Air molecules and fine particles scatter shorter blue wavelengths far more strongly than longer red wavelengths, so scattered blue light dominates and reaches our eyes."
+
+tags:
+  - "Physics"
+  - "Optics"
+  - "Human Eye"
+  - "Vision Defects"
+  - "Myopia"
+  - "Prism"
+  - "Dispersion"
+  - "Rainbow"
+  - "Atmospheric Refraction"
+  - "Scattering"
+  - "Tyndall Effect"
+...

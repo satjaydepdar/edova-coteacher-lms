@@ -1,0 +1,15 @@
+chapter_number: 1
+chapter_title: "Real Numbers"
+subject: "Mathematics"
+grade: 10
+curriculum: "CBSE / NCERT"
+status: "in_progress"
+created: "2026-07-02"
+last_updated: "2026-07-15"
+topics:
+  - "Euclid's Division Lemma"
+  - "Fundamental Theorem of Arithmetic"
+  - "HCF and LCM"
+  - "Decimal Expansion of Rational Numbers"
+  - "Irrationality Proofs"
+

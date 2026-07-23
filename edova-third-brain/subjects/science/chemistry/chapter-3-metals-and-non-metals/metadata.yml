@@ -1,0 +1,164 @@
+---
+title: "Metals and Non-metals"
+chapter_number: 3
+subject: "Science"
+domain: chemistry
+class: 10
+board: "CBSE / NCERT"
+language: "English"
+created: '2026-07-17'
+last_updated: '2026-07-17'
+page_range:
+  start: 38
+  end: 57
+
+summary: >
+  This chapter classifies elements as metals and non-metals on the basis of their
+  physical and chemical properties. It examines metallic lustre, malleability,
+  ductility, sonority and conductivity, then studies reactions of metals with
+  oxygen, water, acids and salt solutions to build the reactivity series. It
+  explains the formation and properties of ionic compounds, the occurrence of
+  metals as minerals and ores, and extraction methods including roasting,
+  calcination, the thermit reaction, electrolytic reduction and refining. It
+  concludes with corrosion, the conditions for rusting, prevention methods such
+  as galvanisation, and the nature and uses of alloys.
+
+sections:
+  - "3.1 PHYSICAL PROPERTIES OF METALS AND NON-METALS"
+  - "3.1.1 Metals"
+  - "3.1.2 Non-metals"
+  - "3.2 CHEMICAL PROPERTIES OF METALS"
+  - "3.2.1 What happens when Metals are burnt in Air?"
+  - "3.2.2 What happens when Metals react with Water?"
+  - "3.2.3 What happens when Metals react with Acids?"
+  - "3.2.4 How do Metals react with Solutions of other Metal Salts?"
+  - "3.2.5 The Reactivity Series"
+  - "3.3 HOW DO METALS AND NON-METALS REACT?"
+  - "3.3.1 Properties of Ionic Compounds"
+  - "3.4 OCCURRENCE OF METALS"
+  - "3.4.1 Extraction of Metals"
+  - "3.4.2 Enrichment of Ores"
+  - "3.4.3 Extracting Metals Low in the Activity Series"
+  - "3.4.4 Extracting Metals in the Middle of the Activity Series"
+  - "3.4.5 Extracting Metals towards the Top of the Activity Series"
+  - "3.4.6 Refining of Metals"
+  - "3.5 CORROSION"
+  - "3.5.1 Prevention of Corrosion"
+
+activities:
+  - "Activity 3.1: Observing the appearance of iron, copper, aluminium and magnesium samples before and after rubbing with sand paper"
+  - "Activity 3.2: Trying to cut iron, copper, aluminium and magnesium with a knife, and cutting sodium held with tongs"
+  - "Activity 3.3: Hammering pieces of iron, zinc, lead and copper on a block of iron and recording the change in shape"
+  - "Activity 3.4: Listing the metals whose wires are seen in daily life"
+  - "Activity 3.5: Heating a clamped aluminium or copper wire with a pin fixed by wax to show conduction of heat"
+  - "Activity 3.6: Placing a metal between circuit terminals to test whether the bulb glows, showing conduction of electricity"
+  - "Activity 3.7: Repeating the physical property tests with samples of carbon, sulphur and iodine"
+  - "Activity 3.8: Burning magnesium ribbon and sulphur powder and testing the products with red and blue litmus paper"
+  - "Activity 3.9: Burning different metal samples over a flame and arranging them in decreasing order of reactivity towards oxygen"
+  - "Activity 3.10: Testing metal samples with cold water, hot water and steam to compare their reactivity with water"
+  - "Activity 3.11: Reacting metal samples with dilute hydrochloric acid and recording bubble rate and temperature rise"
+  - "Activity 3.12: Placing a copper wire in iron sulphate solution and an iron nail in copper sulphate solution to observe displacement"
+  - "Activity 3.13: Examining the physical state, melting, solubility and electrical conductivity of ionic salt samples"
+  - "Activity 3.14: Investigating the conditions under which iron rusts using nails in three test tubes"
+
+tables:
+  - "Table 3.1: Compilation of observations on metals and non-metals (no caption printed in text)"
+  - "Table 3.2: Activity series : Relative reactivities of metals"
+  - "Table 3.3: Electronic configurations of some elements"
+  - "Table 3.4: Melting and boiling points of some ionic compounds"
+
+key_concepts:
+  - concept: "Metallic Lustre"
+    section: "3.1.1 Metals"
+    summary: "Metals in their pure state have a shining surface; this property is called metallic lustre and is revealed when surfaces are cleaned thoroughly with sandpaper."
+
+  - concept: "Malleability"
+    section: "3.1.1 Metals"
+    summary: "Metals can be beaten into thin sheets using a hammer, a property called malleability; gold and silver are the most malleable metals known to us."
+
+  - concept: "Ductility"
+    section: "3.1.1 Metals"
+    summary: "The ability of metals to be drawn into wires is called ductility; gold is the most ductile metal, giving two kilometre wires from one gram."
+
+  - concept: "Conduction of Heat and Electricity"
+    section: "3.1.1 Metals"
+    summary: "Metals are good conductors of heat and electricity, with silver and copper conducting heat best, while lead and mercury are comparatively poor conductors of heat."
+
+  - concept: "Physical Properties of Non-metals"
+    section: "3.1.2 Non-metals"
+    summary: "Non-metals are generally soft, non-lustrous, brittle solids or gases that neither conduct heat nor electricity well, except graphite, and bromine is the only liquid non-metal."
+
+  - concept: "Allotropes of Carbon"
+    section: "3.1.2 Non-metals"
+    summary: "Carbon exists in different forms called allotropes; diamond is the hardest natural substance with high melting point, whereas graphite is a good conductor of electricity."
+
+  - concept: "Amphoteric Oxides"
+    section: "3.2.1 What happens when Metals are burnt in Air?"
+    summary: "Metal oxides are usually basic, but aluminium oxide and zinc oxide react with both acids and bases to produce salt and water, showing amphoteric behaviour."
+
+  - concept: "Reaction of Metals with Water"
+    section: "3.2.2 What happens when Metals react with Water?"
+    summary: "Metals react with water producing metal oxide and hydrogen gas; potassium and sodium react violently with cold water, while magnesium reacts only with hot water."
+
+  - concept: "Reaction of Metals with Acids"
+    section: "3.2.3 What happens when Metals react with Acids?"
+    summary: "Metals react with dilute acids to form salt and hydrogen gas, but nitric acid does not evolve hydrogen because it strongly oxidises the hydrogen produced."
+
+  - concept: "Displacement Reaction"
+    section: "3.2.4 How do Metals react with Solutions of other Metal Salts?"
+    summary: "A more reactive metal displaces a less reactive metal from its salt solution; iron displaces copper from copper sulphate solution, but copper cannot displace iron."
+
+  - concept: "The Reactivity Series"
+    section: "3.2.5 The Reactivity Series"
+    summary: "The reactivity series lists metals in order of decreasing activity, from potassium at the top down to gold; hydrogen is included as a reference point."
+
+  - concept: "Ionic (Electrovalent) Compounds"
+    section: "3.3 HOW DO METALS AND NON-METALS REACT?"
+    summary: "Ionic or electrovalent compounds form by transfer of electrons from metal atoms to non-metal atoms, creating oppositely charged ions held together by strong electrostatic forces."
+
+  - concept: "Properties of Ionic Compounds"
+    section: "3.3.1 Properties of Ionic Compounds"
+    summary: "Ionic compounds are hard, brittle solids with high melting and boiling points; they are soluble in water and conduct electricity in molten or aqueous state."
+
+  - concept: "Minerals, Ores and Gangue"
+    section: "3.4 OCCURRENCE OF METALS"
+    summary: "Naturally occurring elements or compounds in the earth's crust are minerals; minerals from which metals can be profitably extracted are ores, while impurities are gangue."
+
+  - concept: "Roasting and Calcination"
+    section: "3.4.4 Extracting Metals in the Middle of the Activity Series"
+    summary: "Roasting converts sulphide ores into oxides by strong heating in excess air, whereas calcination converts carbonate ores into oxides by strong heating in limited air."
+
+  - concept: "Thermit Reaction"
+    section: "3.4.4 Extracting Metals in the Middle of the Activity Series"
+    summary: "The highly exothermic displacement reaction between iron(III) oxide and aluminium powder produces molten iron, and is used for joining railway tracks or cracked machine parts."
+
+  - concept: "Electrolytic Reduction"
+    section: "3.4.5 Extracting Metals towards the Top of the Activity Series"
+    summary: "Highly reactive metals like sodium, magnesium, calcium and aluminium cannot be reduced by carbon, so they are extracted by electrolysis of their molten chloride compounds."
+
+  - concept: "Electrolytic Refining and Anode Mud"
+    section: "3.4.6 Refining of Metals"
+    summary: "In electrolytic refining, the impure metal is made the anode and pure metal strip the cathode; insoluble impurities settle below the anode as anode mud."
+
+  - concept: "Corrosion and Rusting"
+    section: "3.5 CORROSION"
+    summary: "Corrosion is the slow eating away of metals by air and moisture; iron rusts only when both air and water are simultaneously present around it."
+
+  - concept: "Galvanisation and Alloys"
+    section: "3.5.1 Prevention of Corrosion"
+    summary: "Rusting is prevented by painting, greasing or galvanising iron with zinc coating; alloys like stainless steel, brass and bronze are homogeneous mixtures improving metal properties."
+
+tags:
+  - "Chemistry"
+  - "Metals"
+  - "Non-metals"
+  - "Physical Properties"
+  - "Chemical Properties"
+  - "Reactivity Series"
+  - "Displacement Reaction"
+  - "Ionic Compounds"
+  - "Metallurgy"
+  - "Extraction of Metals"
+  - "Corrosion"
+  - "Alloys"
+...

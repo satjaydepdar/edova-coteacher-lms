@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #2563EB;
+  --color-secondary-indigo: #6366F1;
+  --color-secondary-purple: #8B5CF6;
+  --color-accent-green: #22C55E;
+  --color-accent-red: #EF4444;
+  --color-accent-yellow: #F59E0B;
+  
+  --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-card-hover: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+:root {
+  --background-gradient: linear-gradient(135deg, #EEF2FF 0%, #F8FAFC 100%);
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--background-gradient);
+  min-height: 100vh;
+  color: #1e293b;
+  overflow-x: hidden;
+}
+
+.card {
+  @apply bg-white rounded-[20px] shadow-card border border-slate-100 overflow-hidden transition-all duration-200 ease-in-out hover:shadow-card-hover hover:-translate-y-0.5;
+}
+
+.btn-primary {
+  @apply px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-all duration-200 ease-in-out font-medium flex items-center justify-center gap-2;
+}
+
+.btn-secondary {
+  @apply px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-all duration-200 ease-in-out font-medium flex items-center justify-center gap-2;
+}
+
+.input-field {
+  @apply w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200 ease-in-out bg-white;
+}
+
+/* Background Blobs */
+.bg-blob {
+  @apply absolute rounded-full filter blur-[100px] opacity-5 -z-10 animate-pulse;
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}

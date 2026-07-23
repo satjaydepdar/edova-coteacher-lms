@@ -1,0 +1,111 @@
+---
+title: "Electricity"
+chapter_number: 3
+subject: "Science"
+domain: physics
+class: 10
+board: "CBSE / NCERT"
+language: "English"
+created: '2026-07-17'
+last_updated: '2026-07-17'
+
+page_range:
+  start: 171
+  end: 194
+
+summary: >
+  This chapter introduces electric current and the quantities that control it
+  in a circuit: potential difference, resistance, and Ohm's law. It derives
+  how the resistance of a conductor depends on its length, cross-sectional
+  area, and material, and analyses series and parallel combinations of
+  resistors. The final sections cover the heating effect of electric current,
+  its practical applications including the electric fuse, electric power, and
+  the kilowatt hour as the commercial unit of electrical energy.
+
+sections:
+  - "11.1 ELECTRIC CURRENT AND CIRCUIT"
+  - "11.2 ELECTRIC POTENTIAL AND POTENTIAL DIFFERENCE"
+  - "11.3 CIRCUIT DIAGRAM"
+  - "11.4 OHM'S LAW"
+  - "11.5 FACTORS ON WHICH THE RESISTANCE OF A CONDUCTOR DEPENDS"
+  - "11.6 RESISTANCE OF A SYSTEM OF RESISTORS"
+  - "11.6.1 Resistors in Series"
+  - "11.6.2 Resistors in Parallel"
+  - "11.7 HEATING EFFECT OF ELECTRIC CURRENT"
+  - "11.7.1 Practical Applications of Heating Effect of Electric Current"
+  - "11.8 ELECTRIC POWER"
+
+activities:
+  - "Activity 11.1: Measuring current and potential difference across a nichrome wire with one to four cells to study the V/I ratio"
+  - "Activity 11.2: Comparing the current through a nichrome wire, a torch bulb, and a 10 W bulb connected in the same circuit gap"
+  - "Activity 11.3: Studying how current changes with wire length, thickness, and material using nichrome and copper wires"
+  - "Activity 11.4: Measuring the current at different positions in a series circuit of three resistors"
+  - "Activity 11.5: Measuring potential differences across the series combination and across each individual resistor"
+  - "Activity 11.6: Measuring the total current and the branch currents in a parallel combination of three resistors"
+
+tables:
+  - "Table 11.1: Symbols of some commonly used components in circuit diagrams"
+  - "Table 11.2: Electrical resistivity of some substances at 20°C"
+
+key_concepts:
+  - concept: "Electric Current (I = Q/t)"
+    section: "11.1 ELECTRIC CURRENT AND CIRCUIT"
+    summary: "The rate of flow of electric charge through a conductor's cross-section, measured in amperes, where one ampere equals one coulomb of charge flowing per second."
+
+  - concept: "Electric Circuit"
+    section: "11.1 ELECTRIC CURRENT AND CIRCUIT"
+    summary: "A continuous and closed conducting path along which an electric current flows, typically connecting a cell, bulb, ammeter, wires, and a switch or plug key."
+
+  - concept: "Potential Difference (V = W/Q)"
+    section: "11.2 ELECTRIC POTENTIAL AND POTENTIAL DIFFERENCE"
+    summary: "The work done in moving a unit charge between two points in a current-carrying circuit, measured in volts using a voltmeter always connected in parallel."
+
+  - concept: "Ohm's Law (V = IR)"
+    section: "11.4 OHM'S LAW"
+    summary: "The potential difference across a metallic conductor is directly proportional to the current flowing through it, provided the temperature of the conductor remains constant throughout."
+
+  - concept: "Resistance"
+    section: "11.4 OHM'S LAW"
+    summary: "A conductor's property that opposes the flow of electric charge through it, measured in ohms and determined by the ratio of applied voltage to current."
+
+  - concept: "Resistivity (R = ρl/A)"
+    section: "11.5 FACTORS ON WHICH THE RESISTANCE OF A CONDUCTOR DEPENDS"
+    summary: "The characteristic resistance property of a material, such that resistance increases with conductor length and decreases with cross-sectional area, and it is measured in ohm-metres."
+
+  - concept: "Resistors in Series"
+    section: "11.6.1 Resistors in Series"
+    summary: "Series connection of resistors carries identical current through every resistor, and the total equivalent resistance equals the sum of all individual resistances in the combination."
+
+  - concept: "Resistors in Parallel"
+    section: "11.6.2 Resistors in Parallel"
+    summary: "Parallel connection divides the total current among branches at equal voltage; the reciprocal of the equivalent resistance equals the sum of all individual resistors' reciprocals."
+
+  - concept: "Joule's Law of Heating (H = I²Rt)"
+    section: "11.7 HEATING EFFECT OF ELECTRIC CURRENT"
+    summary: "Heat produced in a resistor is directly proportional to the square of current, to its resistance, and to the time for which the current flows."
+
+  - concept: "Electric Fuse"
+    section: "11.7.1 Practical Applications of Heating Effect of Electric Current"
+    summary: "A safety wire of low-melting-point alloy placed in series with appliances; it melts and breaks the circuit whenever the current exceeds its specified rated value."
+
+  - concept: "Electric Power (P = VI)"
+    section: "11.8 ELECTRIC POWER"
+    summary: "The rate at which electrical energy is consumed or dissipated in a circuit, equal to voltage times current, and is measured in units of watts."
+
+  - concept: "Kilowatt Hour"
+    section: "11.8 ELECTRIC POWER"
+    summary: "The commercial unit of electrical energy, equal to the energy consumed when one kilowatt of power is used for one hour, equalling 3.6 million joules."
+
+tags:
+  - "Physics"
+  - "Electricity"
+  - "Electric Current"
+  - "Ohm's Law"
+  - "Resistance"
+  - "Resistivity"
+  - "Series Circuits"
+  - "Parallel Circuits"
+  - "Joule Heating"
+  - "Electric Fuse"
+  - "Electric Power"
+...
