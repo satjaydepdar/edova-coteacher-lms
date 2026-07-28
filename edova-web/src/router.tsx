@@ -15,6 +15,8 @@ import LearningResources from "@/pages/LearningResources"
 import Announcements from "@/pages/Announcements"
 import ParentCommunication from "@/pages/ParentCommunication"
 import Reports from "@/pages/Reports"
+import LearningHub from "@/pages/LearningHub"
+import WikiPage from "@/pages/WikiPage"
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +42,8 @@ export const router = createBrowserRouter([
       { path: "announcements", element: <Announcements /> },
       { path: "parent-communication", element: <ParentCommunication /> },
       { path: "reports", element: <Reports /> },
+      { path: "learning", element: <LearningHub /> },
+      { path: "wiki/:slug", element: <WikiPage /> },
       { path: "*", element: <Navigate to="/calendar" replace /> },
     ],
   },

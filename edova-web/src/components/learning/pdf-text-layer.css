@@ -1,0 +1,26 @@
+/* Minimal textLayer styling for pdfjs-dist's TextLayer output — just enough
+   for the invisible text spans to overlay the canvas at the right position
+   and be natively selectable. Trimmed from pdfjs-dist/web/pdf_viewer.css
+   (drops the highlight/annotation/forced-colors features we don't use). */
+.pdf-text-layer {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  line-height: 1;
+  text-align: initial;
+  text-size-adjust: none;
+  transform-origin: 0 0;
+}
+
+.pdf-text-layer span,
+.pdf-text-layer br {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+
+.pdf-text-layer ::selection {
+  background: rgba(217, 169, 78, 0.35);
+}
