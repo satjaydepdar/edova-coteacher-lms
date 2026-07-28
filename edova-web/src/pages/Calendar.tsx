@@ -1,16 +1,29 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { CALENDAR_EVENTS, CLASSES, EXAMS, APP_TODAY, TEACHERS } from "@/data/seed"
 import { dayLabelForDate, parseShortDate } from "@/lib/dates"
 import type { CalendarEvent } from "@/lib/types"
+import { useAppStore } from "@/store/app-store"
+import { useSchoolStore } from "@/store/school-store"
 import { CalendarToolbar } from "@/components/calendar/CalendarToolbar"
 import { CalendarLegend } from "@/components/calendar/CalendarLegend"
 import { MonthView } from "@/components/calendar/MonthView"
 import { TimeGrid } from "@/components/calendar/TimeGrid"
 import { YearView } from "@/components/calendar/YearView"
 import { DayInsightModal } from "@/components/calendar/DayInsightModal"
+import { AddSchoolEventModal } from "@/components/calendar/AddSchoolEventModal"
 import { dateKey, parseTimeOfDay } from "@/components/calendar/utils"
-import { kindForSchedule, makeItem, type CalItem } from "@/components/calendar/model"
+import { kindForSchedule, makeItem, type CalItem, type EventKind } from "@/components/calendar/model"
 import { type CalendarEntry, type CalendarViewKey } from "@/components/calendar/types"
+
+// Real calendar_events.event_type -> the display vocabulary already defined
+// in model.ts. "event" (general) has no dedicated kind, so it falls back to
+// "class" -- the closest neutral look.
+const REAL_EVENT_KIND: Record<string, EventKind> = {
+  meeting: "meeting",
+  holiday: "holiday",
+  exam: "exam",
+  event: "class",
+}
 
 function classNameById(id: string) {
   return CLASSES.find((c) => c.id === id)?.name ?? id
@@ -78,7 +91,24 @@ export default function Calendar() {
   const [currentDate, setCurrentDate] = useState<Date>(APP_TODAY)
   const [entries, setEntries] = useState<CalendarEntry[]>(SAMPLE_ENTRIES)
   const [modalDate, setModalDate] = useState<Date | null>(null)
+  const [addEventOpen, setAddEventOpen] = useState(false)
   const [teacherId, setTeacherId] = useState(TEACHERS[0].id)
+
+  // Real assignment due dates + real calendar events -- additive on top of
+  // the fake schedule/plan-entry data above, only for a real (non-Guest)
+  // session. Guest mode makes no real fetches, unchanged from before.
+  const session = useAppStore((s) => s.session)
+  const assignments = useSchoolStore((s) => s.assignments)
+  const realClassroomIdByFakeId = useSchoolStore((s) => s.realClassroomIdByFakeId)
+  const realCalendarEvents = useSchoolStore((s) => s.realCalendarEvents)
+  const hydrateAssignments = useSchoolStore((s) => s.hydrateAssignments)
+  const hydrateCalendarEvents = useSchoolStore((s) => s.hydrateCalendarEvents)
+  useEffect(() => {
+    if (session) {
+      hydrateAssignments()
+      hydrateCalendarEvents()
+    }
+  }, [session, hydrateAssignments, hydrateCalendarEvents])
 
   const visibleForTeacher = (ownerId: string | undefined) =>
     ownerId !== undefined && (ownerId === teacherId || ownerId === "all")
@@ -104,9 +134,29 @@ export default function Calendar() {
           makeItem(en.id, "entry", `${en.classSection} · ${en.subjectChapter}`, undefined, 0),
         )
       })
+    // Real items (Class 10 due dates + real calendar events) -- shown
+    // regardless of the fake teacher-switcher, since they belong to the
+    // one real logged-in teacher, not a fake persona.
+    if (session) {
+      const realClassIds = new Set(Object.keys(realClassroomIdByFakeId))
+      assignments
+        .filter((a) => realClassIds.has(a.classId) && a.due)
+        .forEach((a) => {
+          const d = parseShortDate(a.due)
+          ;(map[dateKey(d)] ??= []).push(
+            makeItem(`due_${a.id}`, "homework", `Due: ${a.title}`, undefined, d.getTime()),
+          )
+        })
+      realCalendarEvents.forEach((ev) => {
+        const d = new Date(ev.startAt)
+        ;(map[dateKey(d)] ??= []).push(
+          makeItem(`cal_${ev.id}`, REAL_EVENT_KIND[ev.eventType] ?? "class", ev.title, undefined, d.getTime()),
+        )
+      })
+    }
     return map
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scheduleEvents, entries, teacherId])
+  }, [scheduleEvents, entries, teacherId, session, assignments, realClassroomIdByFakeId, realCalendarEvents])
 
   const entriesByDate = useMemo(() => {
     const map: Record<string, CalendarEntry[]> = {}
@@ -159,6 +209,7 @@ export default function Calendar() {
         date={currentDate}
         onDateChange={setCurrentDate}
         onAddEntry={() => setModalDate(currentDate)}
+        onAddSchoolEvent={session ? () => setAddEventOpen(true) : undefined}
         teachers={TEACHERS}
         teacherId={teacherId}
         onTeacherChange={setTeacherId}
@@ -194,6 +245,14 @@ export default function Calendar() {
         onSave={handleSaveEntry}
         onDelete={handleDeleteEntry}
       />
+
+      {session && (
+        <AddSchoolEventModal
+          open={addEventOpen}
+          onOpenChange={setAddEventOpen}
+          date={currentDate}
+        />
+      )}
     </div>
   )
 }

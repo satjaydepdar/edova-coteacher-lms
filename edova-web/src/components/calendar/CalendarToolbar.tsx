@@ -16,12 +16,13 @@ interface CalendarToolbarProps {
   date: Date
   onDateChange: (date: Date) => void
   onAddEntry: () => void
+  onAddSchoolEvent?: () => void
   teachers?: { id: string; name: string }[]
   teacherId?: string
   onTeacherChange?: (id: string) => void
 }
 
-export function CalendarToolbar({ view, onViewChange, date, onDateChange, onAddEntry, teachers, teacherId, onTeacherChange }: CalendarToolbarProps) {
+export function CalendarToolbar({ view, onViewChange, date, onDateChange, onAddEntry, onAddSchoolEvent, teachers, teacherId, onTeacherChange }: CalendarToolbarProps) {
   const title =
     view === "year"
       ? String(date.getFullYear())
@@ -73,6 +74,15 @@ export function CalendarToolbar({ view, onViewChange, date, onDateChange, onAddE
           <Plus className="size-3.5" />
           Add entry
         </button>
+        {onAddSchoolEvent && (
+          <button
+            onClick={onAddSchoolEvent}
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-[8px] bg-gold px-3.5 py-[7px] text-[13px] font-semibold text-ink"
+          >
+            <Plus className="size-3.5" />
+            Add School Event
+          </button>
+        )}
       </div>
     </div>
   )

@@ -27,6 +27,14 @@ const MONTH_SHORT = [
 ]
 const formatShortDate = (d: Date) => `${MONTH_SHORT[d.getMonth()]} ${d.getDate()}`
 
+export interface RealCalendarEvent {
+  id: string
+  title: string
+  eventType: string
+  startAt: string
+  isAllDay: boolean
+}
+
 // A real classroom's roster (edova-backend), keyed by student id, so any
 // page can resolve a submission's studentId to a display name/rollNo
 // regardless of whether it's one of the fake seed.ts STUDENTS or a real
@@ -118,6 +126,7 @@ const focusKey = (f: Focus) => `${f.year}|${f.board}|${f.classLabel}|${f.subject
 // flat, app-wide roster lookup, fetched once and shared by every page.
 let realStudentsHydration: Promise<void> | null = null
 let assignmentsHydration: Promise<void> | null = null
+let calendarEventsHydration: Promise<void> | null = null
 
 // Shared mutable "schoolConfig" — mirrors the mockup Component's schoolConfig
 // state so mutations persist across navigation and propagate cross-view
@@ -186,6 +195,18 @@ interface SchoolState {
   // Returns the assignment's final id -- the real backend id when persisted,
   // otherwise the same id that was passed in (fake-class fallback).
   publishAssignment: (assignment: Assignment) => Promise<string>
+
+  // Real calendar events (meetings/holidays/exams/general) -- additive on
+  // top of Calendar.tsx's existing fake CALENDAR_EVENTS/EXAMS, never
+  // replacing them. Requires a real session (Guest mode never fetches).
+  realCalendarEvents: RealCalendarEvent[]
+  hydrateCalendarEvents: () => Promise<void>
+  createCalendarEvent: (input: {
+    title: string
+    eventType: string
+    startAt: string
+    isAllDay: boolean
+  }) => Promise<void>
   setSubmissionScore: (
     assignmentId: string,
     studentId: string,
@@ -451,6 +472,60 @@ export const useSchoolStore = create<SchoolState>()((set, get) => ({
     set((s) => ({ assignments: [assignment, ...s.assignments] }))
     return assignment.id
   },
+
+  realCalendarEvents: [],
+  hydrateCalendarEvents: () => {
+    const token = useAppStore.getState().session?.token
+    // No session yet (Guest mode, or not-logged-in-yet on a page that
+    // mounts before session hydration) -- nothing to fetch, and don't
+    // cache a permanent no-op so a later call (after login) can retry.
+    if (!token) return Promise.resolve()
+    if (!calendarEventsHydration) {
+      calendarEventsHydration = (async () => {
+        const rows: {
+          id: string; title: string; event_type: string; start_at: string; is_all_day: boolean
+        }[] = await fetch(`${BACKEND_API_URL}/api/calendar-events`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }).then((r) => {
+          if (!r.ok) throw new Error(`API ${r.status}`)
+          return r.json()
+        })
+        set({
+          realCalendarEvents: rows.map((r) => ({
+            id: r.id, title: r.title, eventType: r.event_type, startAt: r.start_at, isAllDay: r.is_all_day,
+          })),
+        })
+      })().catch((err) => {
+        calendarEventsHydration = null // retry on next call
+        console.warn("calendar events hydration failed:", err)
+      })
+    }
+    return calendarEventsHydration
+  },
+  createCalendarEvent: async (input) => {
+    const token = useAppStore.getState().session?.token
+    if (!token) throw new Error("not signed in")
+    const res = await fetch(`${BACKEND_API_URL}/api/calendar-events`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({
+        title: input.title,
+        event_type: input.eventType,
+        start_at: input.startAt,
+        is_all_day: input.isAllDay,
+        visibility: "school",
+      }),
+    })
+    if (!res.ok) throw new Error(`API ${res.status}`)
+    const row: { id: string; title: string; event_type: string; start_at: string; is_all_day: boolean } = await res.json()
+    set((s) => ({
+      realCalendarEvents: [
+        ...s.realCalendarEvents,
+        { id: row.id, title: row.title, eventType: row.event_type, startAt: row.start_at, isAllDay: row.is_all_day },
+      ],
+    }))
+  },
+
   setSubmissionScore: (assignmentId, studentId, value) =>
     set((s) => ({
       assignments: s.assignments.map((a) => {
