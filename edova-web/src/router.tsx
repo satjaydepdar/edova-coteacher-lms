@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate } from "react-router-dom"
 import { AppLayout } from "@/components/layout/AppLayout"
+import { useAppStore } from "@/store/app-store"
 import Login from "@/pages/Login"
 import Calendar from "@/pages/Calendar"
 import Settings from "@/pages/Settings"
@@ -19,13 +20,19 @@ import Reports from "@/pages/Reports"
 import LearningHub from "@/pages/LearningHub"
 import WikiPage from "@/pages/WikiPage"
 
+// Bare "/" lands a student on the Learning Hub, everyone else on Calendar.
+function IndexRedirect() {
+  const role = useAppStore((s) => s.session?.user.role)
+  return <Navigate to={role === "student" ? "/learning" : "/calendar"} replace />
+}
+
 export const router = createBrowserRouter([
   { path: "/login", element: <Login /> },
   {
     path: "/",
     element: <AppLayout />,
     children: [
-      { index: true, element: <Navigate to="/calendar" replace /> },
+      { index: true, element: <IndexRedirect /> },
       { path: "calendar", element: <Calendar /> },
       { path: "settings", element: <Settings /> },
       { path: "knowledge-graph", element: <KnowledgeGraph /> },

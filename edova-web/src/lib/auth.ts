@@ -7,7 +7,7 @@ export interface SessionUser {
   id: string
   name: string
   email: string
-  role: "teacher" | "admin"
+  role: "teacher" | "admin" | "student"
 }
 
 export interface LoginResult {

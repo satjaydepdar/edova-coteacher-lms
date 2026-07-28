@@ -101,6 +101,6 @@ export function identityFromUser(user: SessionUser) {
   return {
     name: user.name,
     initials: initials || "?",
-    roleLabel: user.role === "admin" ? "Administrator" : "Teacher",
+    roleLabel: user.role === "admin" ? "Administrator" : user.role === "student" ? "Student" : "Teacher",
   }
 }

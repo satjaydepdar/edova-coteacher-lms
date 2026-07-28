@@ -1,8 +1,48 @@
-import { Navigate, Outlet } from "react-router-dom"
+import { Navigate, Outlet, useNavigate } from "react-router-dom"
+import { LogOut } from "lucide-react"
 import { Sidebar } from "./Sidebar"
 import { Topbar } from "./Topbar"
 import { ChatWidget } from "@/components/chat/ChatWidget"
-import { useAppStore } from "@/store/app-store"
+import { useAppStore, identityFromUser } from "@/store/app-store"
+
+// A student has no business seeing the teacher dashboard chrome (Assignment
+// Tracker, Attendance, Administration, ...) -- just the page content behind
+// a minimal header. Route-level access control (stopping a student who
+// manually types a teacher URL) is a later hardening pass, not this one.
+function StudentShell() {
+  const navigate = useNavigate()
+  const session = useAppStore((s) => s.session)
+  const logout = useAppStore((s) => s.logout)
+  if (!session) return null
+  const identity = identityFromUser(session.user)
+
+  return (
+    <div className="min-h-screen bg-white text-ink">
+      <header className="flex h-14 items-center justify-between border-b border-card-border bg-cream px-6">
+        <div className="flex items-center gap-2">
+          <div className="flex size-7 items-center justify-center rounded-[6px] bg-ink font-display text-[13px] font-extrabold text-sidebar-text">
+            E
+          </div>
+          <span className="font-display text-[14px] font-bold text-ink">Edova</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-[13px] font-semibold text-text-secondary">{identity.name}</span>
+          <button
+            onClick={() => { logout(); navigate("/login") }}
+            aria-label="Log out"
+            className="grid size-8 cursor-pointer place-items-center rounded-[8px] text-text-secondary transition-colors hover:bg-muted hover:text-ink"
+          >
+            <LogOut size={16} />
+          </button>
+        </div>
+      </header>
+      <main className="px-6 py-6">
+        <Outlet />
+      </main>
+      <ChatWidget />
+    </div>
+  )
+}
 
 export function AppLayout() {
   // A real (persisted) session or a for-this-page-load Guest choice both
@@ -11,6 +51,10 @@ export function AppLayout() {
   const guestMode = useAppStore((s) => s.guestMode)
   if (!session && !guestMode) {
     return <Navigate to="/login" replace />
+  }
+
+  if (session?.user.role === "student") {
+    return <StudentShell />
   }
 
   return (

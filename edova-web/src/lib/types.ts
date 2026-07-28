@@ -16,7 +16,7 @@ export type ViewKey =
   | "learning"
   | "wiki"
 
-export type Role = "teacher" | "admin"
+export type Role = "teacher" | "admin" | "student"
 
 export interface NavItem {
   key: ViewKey

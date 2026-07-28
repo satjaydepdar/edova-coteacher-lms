@@ -31,16 +31,14 @@ export default function Login() {
     return <Navigate to="/" replace />
   }
 
-  const isStudent = role === "student"
-
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault()
-    if (isStudent) return
     setError("")
     setSubmitting(true)
     try {
       await login(email, password)
-      navigate("/")
+      const loggedInRole = useAppStore.getState().session?.user.role
+      navigate(loggedInRole === "student" ? "/learning" : "/")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign in failed")
     } finally {
@@ -111,7 +109,6 @@ export default function Login() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              disabled={isStudent}
               placeholder="you@edova.in"
               className="mt-2 h-11 rounded-[10px] text-[14px]"
             />
@@ -126,25 +123,20 @@ export default function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              disabled={isStudent}
               placeholder="••••••••"
               className="mt-2 h-11 rounded-[10px] text-[14px]"
             />
           </div>
 
-          {isStudent ? (
-            <p className="mt-4 rounded-[8px] bg-[#F3EFE3] px-3 py-2.5 text-[12.5px] text-text-secondary">
-              Student accounts aren't set up yet — continue as a guest for now.
-            </p>
-          ) : error ? (
+          {error && (
             <p className="mt-4 rounded-[8px] bg-[#FBEBD6] px-3 py-2.5 text-[12.5px] text-[#8A4B1F]">
               {error}
             </p>
-          ) : null}
+          )}
 
           <Button
             type="submit"
-            disabled={isStudent || submitting || !email || !password}
+            disabled={submitting || !email || !password}
             className="mt-5 h-11 w-full rounded-[10px] text-[14.5px]"
           >
             {submitting ? "Signing in…" : "Sign in"}
