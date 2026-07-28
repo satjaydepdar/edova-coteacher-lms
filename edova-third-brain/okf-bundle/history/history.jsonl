@@ -43,3 +43,17 @@
 {"action": "add", "doc_id": "math_math-ch4_worksheet_1ce90f12", "at": "2026-07-22T13:24:08.163468+00:00"}
 {"action": "remove", "doc_id": "math_math-ch4_worksheet_1ce90f12", "at": "2026-07-22T13:24:58.960385+00:00"}
 {"action": "add", "doc_id": "math_math-ch4_chapter_content_dea48ae5", "at": "2026-07-23T06:39:21.046261+00:00"}
+{"action": "add", "doc_id": "math_math-ch10_topic_tag_test_7f567d1c", "at": "2026-07-28T06:46:15.418924+00:00"}
+{"action": "remove", "doc_id": "math_math-ch10_topic_tag_test_7f567d1c", "at": "2026-07-28T06:46:15.769727+00:00"}
+{"action": "add", "doc_id": "math_math-ch10_topic_tag_test_9b4aab9f", "at": "2026-07-28T06:46:15.772725+00:00"}
+{"action": "remove", "doc_id": "math_math-ch10_topic_tag_test_9b4aab9f", "at": "2026-07-28T06:46:27.038487+00:00"}
+{"action": "add", "doc_id": "math_math-ch10_topic_tag_test2_030464ca", "at": "2026-07-28T06:47:25.185290+00:00"}
+{"action": "remove", "doc_id": "math_math-ch10_topic_tag_test2_030464ca", "at": "2026-07-28T06:47:35.404666+00:00"}
+{"action": "add", "doc_id": "math_math-ch10_topic_backend_test_22347aa9", "at": "2026-07-28T06:49:09.232453+00:00"}
+{"action": "remove", "doc_id": "math_math-ch10_topic_backend_test_22347aa9", "at": "2026-07-28T06:49:40.335380+00:00"}
+{"action": "add", "doc_id": "math_math-ch10_chapter_content_59d12c84", "at": "2026-07-28T06:55:12.671131+00:00"}
+{"action": "remove", "doc_id": "math_math-ch10_chapter_content_59d12c84", "at": "2026-07-28T06:55:38.860664+00:00"}
+{"action": "add", "doc_id": "math_math-ch10_chapter_content_59d12c84", "at": "2026-07-28T06:59:45.514433+00:00"}
+{"action": "add", "doc_id": "math_math-ch10_chapter_content_e7e4983b", "at": "2026-07-28T07:03:30.137366+00:00"}
+{"action": "remove", "doc_id": "math_math-ch10_chapter_content_59d12c84", "at": "2026-07-28T07:05:23.699141+00:00"}
+{"action": "remove", "doc_id": "math_math-ch10_chapter_content_e7e4983b", "at": "2026-07-28T07:05:23.988184+00:00"}
