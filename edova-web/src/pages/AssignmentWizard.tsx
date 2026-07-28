@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {
   Check,
@@ -18,12 +18,16 @@ import {
   HardDrive,
   Image as ImageIcon,
   Layers,
+  Library,
+  Video,
 } from "lucide-react"
 import { CLASSES, STUDENTS } from "@/data/seed"
 import { useSchoolStore } from "@/store/school-store"
 import { useAppStore } from "@/store/app-store"
 import { ASSIGNMENT_TYPES } from "@/lib/assignment-types"
-import type { Assignment, AssignmentType } from "@/lib/types"
+import { getSubjects, getResources, type LearningResource } from "@/lib/learning-api"
+import { getResourceUrl } from "@/lib/media"
+import type { Assignment, AssignmentAttachment, AssignmentType } from "@/lib/types"
 
 type Step = "type" | "create1" | "create2"
 
@@ -33,6 +37,52 @@ const MONTH_SHORT = [
 ]
 const APP_TODAY = new Date(2026, 6, 9)
 const SUBJECTS = Array.from(new Set(CLASSES.map((c) => c.subject)))
+
+// edova-backend (Step 3 of the real classes/students migration) -- optional.
+// Not every class has a real classroom yet (only Class 10 -- Section A --
+// Mathematics does today), and the service itself may not be running. Either
+// case is a silent, graceful fallback to the CLASSES/STUDENTS seed data
+// exactly as before -- never a crash, never a visible error.
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL ?? "http://localhost:8003"
+
+interface RealStudent { id: string; name: string; rollNo: string }
+
+function fetchRealRosterByClassId(): Promise<Record<string, RealStudent[]>> {
+  return fetch(`${BACKEND_API_URL}/api/classrooms`)
+    .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+    .then((classrooms: { id: string; class_level: number; section: string | null; subject: string }[]) =>
+      Promise.all(
+        classrooms.map((rc) => {
+          // Match on meaning (subject + class level + section), not exact name
+          // string -- the backend and the seed data don't share a punctuation
+          // convention ("Class 10 -- Section A" vs "Class 10 — Section A").
+          const cls = CLASSES.find(
+            (c) =>
+              c.subject === rc.subject &&
+              c.name.includes(`Class ${rc.class_level}`) &&
+              (!rc.section || c.name.includes(rc.section)),
+          )
+          if (!cls) return null
+          return fetch(`${BACKEND_API_URL}/api/classrooms/${rc.id}/students`)
+            .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+            .then(
+              (
+                students: { id: string; student_number: string; first_name: string; last_name: string }[],
+              ): [string, RealStudent[]] => [
+                cls.id,
+                students.map((s) => ({ id: s.id, name: `${s.first_name} ${s.last_name}`, rollNo: s.student_number })),
+              ],
+            )
+            .catch(() => null)
+        }),
+      ),
+    )
+    .then((pairs) => Object.fromEntries(pairs.filter((p): p is [string, RealStudent[]] => p !== null)))
+    .catch((err) => {
+      console.warn("real classroom roster fetch failed, falling back to seed data:", err)
+      return {}
+    })
+}
 
 const fieldLabel = "text-[13.5px] font-semibold text-text-secondary"
 const fieldInput =
@@ -48,9 +98,11 @@ export default function AssignmentWizard() {
   const [selectedType, setSelectedType] = useState<AssignmentType>("written")
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
-  const [attachments, setAttachments] = useState<{ name: string; size: string }[]>([])
+  const [attachments, setAttachments] = useState<AssignmentAttachment[]>([])
   const [showUpload, setShowUpload] = useState(false)
-  const [uploadTab, setUploadTab] = useState("Upload")
+  const [uploadTab, setUploadTab] = useState("Library")
+  const [libraryResources, setLibraryResources] = useState<LearningResource[]>([])
+  const [libraryLoading, setLibraryLoading] = useState(false)
 
   const [selectedClassIds, setSelectedClassIds] = useState<string[]>([CLASSES[0].id])
   const [subject, setSubject] = useState(CLASSES[0].subject)
@@ -60,6 +112,11 @@ export default function AssignmentWizard() {
   const [showCalendar, setShowCalendar] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [realRosterByClassId, setRealRosterByClassId] = useState<Record<string, RealStudent[]>>({})
+
+  useEffect(() => {
+    fetchRealRosterByClassId().then(setRealRosterByClassId)
+  }, [])
 
   const selectedTypeObj = ASSIGNMENT_TYPES.find((t) => t.id === selectedType)!
   const availableClasses = CLASSES.filter((c) => !selectedClassIds.includes(c.id))
@@ -72,8 +129,24 @@ export default function AssignmentWizard() {
   }, [])
   const dueLabel = `${dueDay} ${MONTH_SHORT[APP_TODAY.getMonth()]}, 11:59 PM`
 
+  useEffect(() => {
+    if (!showUpload || uploadTab !== "Library") return
+    setLibraryLoading(true)
+    getSubjects()
+      .then(({ subjects }) => subjects.find((s) => s.subject_name === subject))
+      .then((match) => (match ? getResources(match.id) : []))
+      .then((resources) => setLibraryResources(resources))
+      .catch(() => setLibraryResources([]))
+      .finally(() => setLibraryLoading(false))
+  }, [showUpload, uploadTab, subject])
+
   function handleAttach() {
     setAttachments([{ name: "Worksheet Attachment.pdf", size: "342.33KB" }])
+    setShowUpload(false)
+  }
+
+  function handleAttachResource(r: LearningResource) {
+    setAttachments([{ name: r.title, size: r.type, s3Key: r.s3_key, externalUrl: r.external_url }])
     setShowUpload(false)
   }
 
@@ -95,9 +168,11 @@ export default function AssignmentWizard() {
     let firstId = ""
     selectedClassIds.forEach((classId, idx) => {
       const cls = CLASSES.find((c) => c.id === classId)
-      const submissions: Assignment["submissions"] = STUDENTS.filter(
-        (st) => st.classId === classId
-      ).map((st) => ({
+      const realRoster = realRosterByClassId[classId]
+      const roster = realRoster && realRoster.length > 0
+        ? realRoster
+        : STUDENTS.filter((st) => st.classId === classId)
+      const submissions: Assignment["submissions"] = roster.map((st) => ({
         studentId: st.id,
         status: "not_started",
         submittedOn: "",
@@ -313,17 +388,28 @@ export default function AssignmentWizard() {
                     </button>
                   ) : (
                     <div className="flex flex-wrap gap-2">
-                      {attachments.map((a) => (
-                        <span
-                          key={a.name}
-                          className="inline-flex h-9 items-center gap-2 rounded-full border border-[var(--okf-border)] bg-[var(--okf-bg)] px-3 text-[12.5px] font-semibold text-[var(--okf-text)]"
-                        >
-                          <File size={14} /> {a.name}
-                          <button onClick={() => setAttachments([])} className="ml-1 grid h-5 w-5 place-items-center rounded-full bg-white">
-                            <X size={12} />
-                          </button>
-                        </span>
-                      ))}
+                      {attachments.map((a) => {
+                        const url = getResourceUrl({ s3_key: a.s3Key ?? null, external_url: a.externalUrl })
+                        const Tag = url ? "a" : "span"
+                        return (
+                          <Tag
+                            key={a.name}
+                            {...(url ? { href: url, target: "_blank", rel: "noreferrer" } : {})}
+                            className="inline-flex h-9 items-center gap-2 rounded-full border border-[var(--okf-border)] bg-[var(--okf-bg)] px-3 text-[12.5px] font-semibold text-[var(--okf-text)]"
+                          >
+                            <File size={14} /> {a.name}
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault()
+                                setAttachments([])
+                              }}
+                              className="ml-1 grid h-5 w-5 place-items-center rounded-full bg-white"
+                            >
+                              <X size={12} />
+                            </button>
+                          </Tag>
+                        )
+                      })}
                       <button
                         onClick={() => setShowUpload(true)}
                         className="inline-flex h-9 items-center gap-1.5 rounded-full border border-card-border bg-white px-3 text-[12.5px] font-semibold"
@@ -511,6 +597,7 @@ export default function AssignmentWizard() {
 
             <div className="flex items-center gap-1 overflow-auto border-b border-card-border px-5 pt-3">
               {[
+                { l: "Library", ic: Library },
                 { l: "Upload", ic: Upload },
                 { l: "PDF Question Paper", ic: FileText },
                 { l: "Drive", ic: HardDrive },
@@ -535,7 +622,37 @@ export default function AssignmentWizard() {
               })}
             </div>
 
-            {uploadTab === "Upload" ? (
+            {uploadTab === "Library" ? (
+              <div className="flex-1 overflow-auto p-4 md:p-6">
+                {libraryLoading ? (
+                  <div className="p-6 text-center text-[13px] text-text-secondary">Loading {subject} resources…</div>
+                ) : libraryResources.length === 0 ? (
+                  <div className="p-6 text-center text-[13px] text-text-secondary">
+                    No catalogued resources for {subject} yet — add them via Resource Library first.
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    {libraryResources.map((r) => (
+                      <button
+                        key={r.id}
+                        onClick={() => handleAttachResource(r)}
+                        className="flex items-center gap-3 rounded-[12px] border border-card-border bg-white p-3 text-left transition hover:bg-cream"
+                      >
+                        <div className="grid h-9 w-9 shrink-0 place-items-center rounded-[8px] border border-[var(--okf-border)] bg-[var(--okf-bg)] text-[var(--okf-text)]">
+                          {r.type === "Video" ? <Video size={16} /> : <File size={16} />}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate text-[13px] font-semibold text-ink">{r.title}</div>
+                          <div className="text-[11px] text-text-muted">
+                            {r.type}{r.chapter_number != null ? ` • Chapter ${r.chapter_number}` : ""}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : uploadTab === "Upload" ? (
               <div className="flex-1 overflow-auto p-4 md:p-6">
                 <div
                   onClick={() => fileInputRef.current?.click()}
