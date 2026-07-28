@@ -17,6 +17,13 @@ interface AppState {
   login: (email: string, password: string) => Promise<void>
   logout: () => void
 
+  // "Continue as Guest" for this page load only -- deliberately NOT
+  // persisted, so a fresh reload shows /login again (real sessions persist
+  // via `session` above; guests re-choose each reload, same one-click cost
+  // every time).
+  guestMode: boolean
+  continueAsGuest: () => void
+
   // Global academic context (persisted) — drives Syllabus Map, Course Progress, Settings.
   academicYear: string
   sectionId: string
@@ -45,6 +52,9 @@ export const useAppStore = create<AppState>()(
         set({ session: null, role: "teacher" })
         if (token) apiLogout(token).catch(() => { /* best-effort; local session is already cleared */ })
       },
+
+      guestMode: false,
+      continueAsGuest: () => set({ guestMode: true }),
 
       academicYear: "2026–27",
       sectionId: "sec_8a",

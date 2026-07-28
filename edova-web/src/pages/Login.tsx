@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Navigate, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAppStore } from "@/store/app-store"
@@ -15,12 +15,21 @@ const ROLE_TABS: { key: RoleTab; label: string }[] = [
 export default function Login() {
   const navigate = useNavigate()
   const login = useAppStore((s) => s.login)
+  const continueAsGuest = useAppStore((s) => s.continueAsGuest)
+  const session = useAppStore((s) => s.session)
+  const guestMode = useAppStore((s) => s.guestMode)
 
   const [role, setRole] = useState<RoleTab>("student")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [submitting, setSubmitting] = useState(false)
+
+  // Already signed in (persisted) or already chose Guest this page load --
+  // skip straight into the app instead of re-prompting.
+  if (session || guestMode) {
+    return <Navigate to="/" replace />
+  }
 
   const isStudent = role === "student"
 
@@ -40,6 +49,7 @@ export default function Login() {
   }
 
   function handleGuest() {
+    continueAsGuest()
     navigate("/")
   }
 
