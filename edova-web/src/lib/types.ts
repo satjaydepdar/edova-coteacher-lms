@@ -72,6 +72,11 @@ export type AssignmentType = "written" | "pdf" | "mcq" | "media" | "coding"
 export interface AssignmentAttachment {
   name: string
   size: string
+  // Present when attached from the real Learning Resources library instead
+  // of the (still-fake) local file upload tab — lets the attachment chip
+  // link to the actual video/PDF via getResourceUrl().
+  s3Key?: string | null
+  externalUrl?: string | null
 }
 
 // Assessment Builder content types — a Section is a group of questions of

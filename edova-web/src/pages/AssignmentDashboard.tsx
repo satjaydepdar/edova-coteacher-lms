@@ -5,6 +5,7 @@ import { CLASSES, APP_TODAY } from "@/data/seed"
 import { parseShortDate } from "@/lib/dates"
 import { useSchoolStore } from "@/store/school-store"
 import { assignmentTypeOf } from "@/lib/assignment-types"
+import { getResourceUrl } from "@/lib/media"
 import type { Assignment } from "@/lib/types"
 
 function dueDiffDays(due: string): number {
@@ -99,17 +100,22 @@ export default function AssignmentDashboard() {
               <div className="mt-6">
                 <div className="text-[12px] font-bold uppercase tracking-wide text-text-secondary">Attachments</div>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {assignment.attachments.map((att) => (
-                    <div
-                      key={att.name}
-                      className="inline-flex h-10 items-center gap-2 rounded-[12px] border border-card-border bg-white px-3 text-[13px]"
-                    >
-                      <div className="grid h-8 w-8 place-items-center rounded-[8px] border border-[var(--okf-border)] bg-[var(--okf-bg)] text-[var(--okf-text)]">
-                        <File size={16} />
-                      </div>
-                      {att.name} <span className="text-[11px] text-text-muted">{att.size}</span>
-                    </div>
-                  ))}
+                  {assignment.attachments.map((att) => {
+                    const url = getResourceUrl({ s3_key: att.s3Key ?? null, external_url: att.externalUrl })
+                    const Tag = url ? "a" : "div"
+                    return (
+                      <Tag
+                        key={att.name}
+                        {...(url ? { href: url, target: "_blank", rel: "noreferrer" } : {})}
+                        className="inline-flex h-10 items-center gap-2 rounded-[12px] border border-card-border bg-white px-3 text-[13px]"
+                      >
+                        <div className="grid h-8 w-8 place-items-center rounded-[8px] border border-[var(--okf-border)] bg-[var(--okf-bg)] text-[var(--okf-text)]">
+                          <File size={16} />
+                        </div>
+                        {att.name} <span className="text-[11px] text-text-muted">{att.size}</span>
+                      </Tag>
+                    )
+                  })}
                 </div>
               </div>
             )}
