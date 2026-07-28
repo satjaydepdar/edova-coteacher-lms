@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { ChevronDown, ChevronRight, Upload } from "lucide-react"
+import { ChevronDown, ChevronRight, FileText, Upload } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -23,9 +23,27 @@ const CLASS_OPTIONS = ["LKG", "UKG", ...Array.from({ length: 10 }, (_, i) => `Cl
 const BOARD_OPTIONS = ["CBSE", "ICSE", "State"]
 const DOC_TYPES = ["chapter_content", "worksheet", "video", "quiz"]
 
+// Per-unit accent (soft header background + matching left border/gradient,
+// reused as the chapter-card left accent bar) — cycles for subjects with
+// more units than colors. Colors are an explicit client spec, not brand
+// tokens: don't fold these into index.css.
+const UNIT_PALETTE = [
+  { bg: "#EBF5FB", accent: "#2980B9", fade: "rgba(41,128,185,0.05)" },
+  { bg: "#E8F8F5", accent: "#1ABC9C", fade: "rgba(26,188,156,0.05)" },
+  { bg: "#FEF5E7", accent: "#F39C12", fade: "rgba(243,156,18,0.05)" },
+  { bg: "#F5EEF8", accent: "#9B59B6", fade: "rgba(155,89,182,0.05)" },
+  { bg: "#FEF9E7", accent: "#F1C40F", fade: "rgba(241,196,15,0.05)" },
+  { bg: "#EAF2F8", accent: "#3498DB", fade: "rgba(52,152,219,0.05)" },
+  { bg: "#EBEDEF", accent: "#7F8C8D", fade: "rgba(127,140,141,0.05)" },
+]
+const AMBIGUOUS_DOT = "#F39C12"
+const HAS_RESOURCES_DOT = "#27AE60"
+const EMPTY_DOT = "#E74C3C"
+
 interface SubjectRow { id: string; subject_name: string }
 interface CurriculumResponse { id: string; subjects: SubjectRow[] }
-interface ChapterOut { id: string; number: number | null; name: string }
+interface TopicOut { id: string; title: string }
+interface ChapterOut { id: string; number: number | null; name: string; topics: TopicOut[] }
 interface UnitOut { id: string; name: string; chapters: ChapterOut[] }
 interface SyllabusResponse { units: UnitOut[] }
 
@@ -35,6 +53,7 @@ interface CatalogResource {
   type: OkfResourceType
   doc_type?: string
   chapter_number: number
+  topic_id?: string | null
   s3_key?: string
   preview_s3_key?: string
   status: string
@@ -58,6 +77,7 @@ export default function ResourceLibrary() {
   const [uploadingChapter, setUploadingChapter] = useState<number | null>(null)
   const [uploadTitle, setUploadTitle] = useState("")
   const [uploadDocType, setUploadDocType] = useState(DOC_TYPES[0])
+  const [uploadTopicId, setUploadTopicId] = useState("")
   const [uploading, setUploading] = useState(false)
 
   const subjects = useMemo(() => curriculum?.subjects ?? [], [curriculum])
@@ -146,6 +166,7 @@ export default function ResourceLibrary() {
     setUploadingChapter(chapterNumber)
     setUploadTitle("")
     setUploadDocType(DOC_TYPES[0])
+    setUploadTopicId("")
   }
 
   const submitUpload = async (file: File | undefined) => {
@@ -158,6 +179,7 @@ export default function ResourceLibrary() {
         subject: subjectName,
         chapter: `Chapter ${uploadingChapter}`,
         docType: uploadDocType,
+        topicId: uploadTopicId || undefined,
       })
       showFlash("resource", "Uploaded — cataloguing complete.")
       setUploadingChapter(null)
@@ -170,7 +192,8 @@ export default function ResourceLibrary() {
   }
 
   const labelCls = "mb-1.5 text-[12px] font-semibold text-text-secondary"
-  const iconBtn = "grid size-7 cursor-pointer place-items-center rounded-[8px] border border-card-border text-text-secondary hover:bg-muted"
+  const uploadBtnCls =
+    "ml-auto grid size-[22px] shrink-0 cursor-pointer place-items-center rounded-[6px] border border-card-border text-text-secondary opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 hover:bg-muted motion-reduce:transition-none"
 
   return (
     <div>
@@ -233,80 +256,133 @@ export default function ResourceLibrary() {
             </div>
           )}
 
-          {subjectId && !loading && units.map((u) => {
+          {subjectId && !loading && units.map((u, uIdx) => {
             const collapsed = collapsedUnits[u.id] ?? false
+            const accent = UNIT_PALETTE[uIdx % UNIT_PALETTE.length]
             return (
               <div key={u.id} className="mb-3 overflow-hidden rounded-[12px] border border-card-border">
-                <div className="flex items-center gap-3 bg-[#F9FAFB] px-4 py-3">
+                <div
+                  className="flex items-center gap-3 border-l-4 px-4 py-3"
+                  style={{
+                    backgroundColor: accent.bg,
+                    borderLeftColor: accent.accent,
+                    backgroundImage: `linear-gradient(135deg, ${accent.fade}, transparent)`,
+                  }}
+                >
                   <button
                     onClick={() => setCollapsedUnits((m) => ({ ...m, [u.id]: !collapsed }))}
-                    className="cursor-pointer text-text-secondary" aria-label={collapsed ? "Expand unit" : "Collapse unit"}
+                    className="cursor-pointer" style={{ color: "#2C3E50" }} aria-label={collapsed ? "Expand unit" : "Collapse unit"}
                   >
                     {collapsed ? <ChevronRight className="size-4" /> : <ChevronDown className="size-4" />}
                   </button>
-                  <span className="text-[13.5px] font-bold text-ink">{u.name}</span>
-                  <span className="text-[12px] text-text-secondary">{u.chapters.length} chapter(s)</span>
+                  <span className="text-[13.5px] font-bold" style={{ color: "#2C3E50" }}>{u.name}</span>
+                  <span className="text-[12px]" style={{ color: "#2C3E50", opacity: 0.75 }}>{u.chapters.length} chapter(s)</span>
                 </div>
 
                 {!collapsed && (
-                  <div className="px-4 py-3">
-                    {u.chapters.map((c) => {
-                      const ambiguous = c.number != null && ambiguousChapterNumbers.has(c.number)
-                      const chapterResources = c.number != null ? (resourcesByChapter.get(c.number) ?? []) : []
-                      return (
-                        <div key={c.id} className="mb-2 rounded-[10px] border border-[#F1F2F6] p-3 last:mb-0">
-                          <div className="flex items-center gap-3">
-                            <span className="w-[52px] shrink-0 font-mono text-[12.5px] font-semibold text-text-secondary">
-                              {c.number != null ? `Ch. ${c.number}` : "—"}
-                            </span>
-                            <span className="flex-1 text-[13px] font-semibold text-ink">{c.name}</span>
-                            {ambiguous ? (
-                              <span className="text-[12px] text-text-secondary" title="Another chapter in this subject shares chapter number, so resources can't be matched safely — give it a unique number in Master Data.">
-                                number reused elsewhere
+                  <div className="bg-white p-4">
+                    <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(228px, 1fr))" }}>
+                      {u.chapters.map((c) => {
+                        const ambiguous = c.number != null && ambiguousChapterNumbers.has(c.number)
+                        const chapterResources = c.number != null ? (resourcesByChapter.get(c.number) ?? []) : []
+                        const dotColor = ambiguous ? AMBIGUOUS_DOT : chapterResources.length > 0 ? HAS_RESOURCES_DOT : EMPTY_DOT
+                        return (
+                          <div
+                            key={c.id}
+                            className="group relative flex flex-col gap-1.5 rounded-[8px] border border-[#F1F2F6] bg-white p-3 transition-[box-shadow,transform] duration-150 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                            style={{ borderLeftWidth: 5, borderLeftColor: accent.accent }}
+                          >
+                            <div className="flex items-center gap-1.5">
+                              <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: dotColor }} />
+                              <span className="font-mono text-[11.5px] font-bold text-[#4A4A4A]">
+                                {c.number != null ? `Ch. ${c.number}` : "—"}
                               </span>
+                              {!ambiguous && (
+                                <span className="ml-auto text-[10.5px] text-[#4A4A4A]">{chapterResources.length} resource(s)</span>
+                              )}
+                              {c.number != null && !ambiguous && (
+                                <button onClick={() => startUpload(c.number as number)} className={uploadBtnCls} aria-label="Upload resource">
+                                  <Upload className="size-3" />
+                                </button>
+                              )}
+                            </div>
+
+                            <div className="text-[13px] font-bold leading-snug text-[#1A1A1A]">{c.name}</div>
+
+                            {ambiguous ? (
+                              <div
+                                className="text-[11px] leading-snug text-[#C0392B]"
+                                title="Another chapter in this subject shares this chapter number, so resources can't be matched safely — give it a unique number in Master Data."
+                              >
+                                Duplicate chapter number — give it a unique number in Master Data to catalogue resources.
+                              </div>
+                            ) : chapterResources.length > 0 ? (
+                              <div className="flex flex-col gap-1">
+                                {chapterResources.map((r) => (
+                                  <div key={r.id} className="flex items-baseline gap-1.5 text-[11.5px] text-[#4A4A4A]">
+                                    {r.type === "PDF" ? (
+                                      <span className="inline-flex shrink-0 items-center gap-1 rounded-[4px] bg-[#FDF2E9] px-1.5 py-0.5 font-mono text-[10.5px] font-bold text-[#D35400]">
+                                        <FileText className="size-[9px]" /> PDF
+                                      </span>
+                                    ) : (
+                                      <span className="inline-flex shrink-0 items-center rounded-[4px] bg-[#EAECEE] px-1.5 py-0.5 font-mono text-[10.5px] font-bold text-[#5D6D7E]">
+                                        {r.type}
+                                      </span>
+                                    )}
+                                    <span className="truncate">{r.title}</span>
+                                    {r.status !== "ready" && <span className="shrink-0 text-[#D97706]">({r.status})</span>}
+                                  </div>
+                                ))}
+                              </div>
                             ) : (
-                              <span className="text-[12px] text-text-secondary">{chapterResources.length} resource(s)</span>
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="inline-flex items-center self-start rounded-full bg-[#F2F3F4] px-2 py-0.5 text-[11.5px] italic text-[#ABB2B9]">
+                                  No resources yet
+                                </span>
+                                {c.number != null && (
+                                  <button
+                                    onClick={() => startUpload(c.number as number)}
+                                    className="text-[11.5px] font-bold hover:underline"
+                                    style={{ color: accent.accent }}
+                                  >
+                                    Upload
+                                  </button>
+                                )}
+                              </div>
                             )}
-                            {c.number != null && !ambiguous && (
-                              <button onClick={() => startUpload(c.number as number)} className={iconBtn} aria-label="Upload resource">
-                                <Upload className="size-3.5" />
-                              </button>
+
+                            {uploadingChapter === c.number && (
+                              <div className="mt-1 flex flex-col gap-2 rounded-[8px] bg-[#F9FAFB] p-2">
+                                <Input
+                                  value={uploadTitle} onChange={(e) => setUploadTitle(e.target.value)}
+                                  placeholder="Resource title (optional)" className="h-[30px] rounded-[7px] text-[12px]"
+                                />
+                                <Select value={uploadDocType} onValueChange={setUploadDocType}>
+                                  <SelectTrigger className="h-[30px] rounded-[7px] text-[12px]"><SelectValue /></SelectTrigger>
+                                  <SelectContent>{DOC_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                                </Select>
+                                {c.topics.length > 0 && (
+                                  <Select value={uploadTopicId} onValueChange={setUploadTopicId}>
+                                    <SelectTrigger className="h-[30px] rounded-[7px] text-[12px]"><SelectValue placeholder="No specific topic" /></SelectTrigger>
+                                    <SelectContent>
+                                      {c.topics.map((t) => <SelectItem key={t.id} value={t.id}>{t.title}</SelectItem>)}
+                                    </SelectContent>
+                                  </Select>
+                                )}
+                                <input
+                                  type="file" disabled={uploading}
+                                  onChange={(e) => submitUpload(e.target.files?.[0])}
+                                  className="text-[11.5px]"
+                                />
+                                <Button variant="outline" className="h-[30px] rounded-[7px] text-[12px]" onClick={() => setUploadingChapter(null)} disabled={uploading}>
+                                  Cancel
+                                </Button>
+                              </div>
                             )}
                           </div>
-                          {chapterResources.length > 0 && (
-                            <div className="mt-1.5 space-y-1 pl-[64px]">
-                              {chapterResources.map((r) => (
-                                <div key={r.id} className="flex items-center gap-2 text-[12px] text-text-secondary">
-                                  <span className="rounded-[4px] bg-[#F1F5F9] px-1.5 py-0.5 font-mono text-[11px]">{r.type}</span>
-                                  <span>{r.title}</span>
-                                  {r.status !== "ready" && <span className="text-[#B45309]">({r.status})</span>}
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                          {uploadingChapter === c.number && (
-                            <div className="mt-2 flex flex-wrap items-center gap-2 rounded-[8px] bg-[#F9FAFB] p-2 pl-[64px]">
-                              <Input
-                                value={uploadTitle} onChange={(e) => setUploadTitle(e.target.value)}
-                                placeholder="Resource title (optional)" className="h-[32px] w-[200px] rounded-[8px] text-[12.5px]"
-                              />
-                              <Select value={uploadDocType} onValueChange={setUploadDocType}>
-                                <SelectTrigger className="h-[32px] w-[150px] rounded-[8px] text-[12.5px]"><SelectValue /></SelectTrigger>
-                                <SelectContent>{DOC_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
-                              </Select>
-                              <input
-                                type="file" disabled={uploading}
-                                onChange={(e) => submitUpload(e.target.files?.[0])}
-                                className="text-[12.5px]"
-                              />
-                              <Button variant="outline" className="h-[32px] rounded-[8px] text-[12.5px]" onClick={() => setUploadingChapter(null)} disabled={uploading}>
-                                Cancel
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      )
-                    })}
+                        )
+                      })}
+                    </div>
                   </div>
                 )}
               </div>
