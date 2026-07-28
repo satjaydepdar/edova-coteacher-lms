@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { CLASSES, STUDENTS, APP_TODAY } from "@/data/seed"
+import { CLASSES, APP_TODAY } from "@/data/seed"
 import { parseShortDate, dayLabelForDate } from "@/lib/dates"
 import {
   assignmentStatusStyle,
@@ -12,7 +12,7 @@ import {
   SUBMISSION_LABEL,
   type DueUrgency,
 } from "@/lib/styles"
-import { useSchoolStore } from "@/store/school-store"
+import { useSchoolStore, resolveStudentDisplay } from "@/store/school-store"
 import { FlashBanner } from "@/components/common/FlashBanner"
 import type { Assignment } from "@/lib/types"
 
@@ -60,6 +60,9 @@ export default function AssignmentTracker() {
   const assignments = useSchoolStore((s) => s.assignments)
   const setSubmissionScore = useSchoolStore((s) => s.setSubmissionScore)
   const showFlash = useSchoolStore((s) => s.showFlash)
+  const realStudents = useSchoolStore((s) => s.realStudents)
+  const hydrateRealStudents = useSchoolStore((s) => s.hydrateRealStudents)
+  useEffect(() => { hydrateRealStudents() }, [hydrateRealStudents])
 
   // ---- Summary stats. Every number is derived from the live `assignments`
   // array / roster lengths — never a hardcoded count that could drift. The
@@ -91,7 +94,7 @@ export default function AssignmentTracker() {
       if (dueDiffDays(a.due) > 0) continue
       for (const sub of a.submissions) {
         if (sub.status !== "not_started" && sub.status !== "missing") continue
-        const student = STUDENTS.find((st) => st.id === sub.studentId)
+        const student = resolveStudentDisplay(sub.studentId, realStudents)
         const entry = map.get(sub.studentId) ?? {
           name: student ? student.name : sub.studentId,
           titles: [],
@@ -101,7 +104,7 @@ export default function AssignmentTracker() {
       }
     }
     return [...map.values()].sort((x, y) => y.titles.length - x.titles.length)
-  }, [assignments])
+  }, [assignments, realStudents])
 
   // Class filter pills — only classes that actually have assignments.
   const classOptions = useMemo(() => {
@@ -388,7 +391,7 @@ export default function AssignmentTracker() {
                       <div style={rosterHeaderCell}>Score / {a.totalPoints}</div>
 
                       {a.submissions.map((s) => {
-                        const student = STUDENTS.find((st) => st.id === s.studentId)
+                        const student = resolveStudentDisplay(s.studentId, realStudents)
                         const canScore = s.status === "submitted" || s.status === "late"
                         const value = s.score == null ? "" : String(s.score)
                         return (

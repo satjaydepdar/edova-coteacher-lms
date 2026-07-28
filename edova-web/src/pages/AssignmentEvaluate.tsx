@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import {
   Search,
@@ -15,8 +15,8 @@ import {
   X,
   Clock,
 } from "lucide-react"
-import { CLASSES, STUDENTS } from "@/data/seed"
-import { useSchoolStore } from "@/store/school-store"
+import { CLASSES } from "@/data/seed"
+import { useSchoolStore, resolveStudentDisplay } from "@/store/school-store"
 import { assignmentTypeOf } from "@/lib/assignment-types"
 import type { Submission } from "@/lib/types"
 
@@ -26,6 +26,9 @@ export default function AssignmentEvaluate() {
   const assignments = useSchoolStore((s) => s.assignments)
   const setSubmissionEvaluation = useSchoolStore((s) => s.setSubmissionEvaluation)
   const showFlash = useSchoolStore((s) => s.showFlash)
+  const realStudents = useSchoolStore((s) => s.realStudents)
+  const hydrateRealStudents = useSchoolStore((s) => s.hydrateRealStudents)
+  useEffect(() => { hydrateRealStudents() }, [hydrateRealStudents])
 
   const assignment = assignments.find((a) => a.id === id)
 
@@ -54,15 +57,15 @@ export default function AssignmentEvaluate() {
     const q = search.trim().toLowerCase()
     if (!q) return list
     return list.filter((s) => {
-      const student = STUDENTS.find((st) => st.id === s.studentId)
+      const student = resolveStudentDisplay(s.studentId, realStudents)
       return student ? student.name.toLowerCase().includes(q) : false
     })
-  }, [list, search])
+  }, [list, search, realStudents])
 
   const selected: Submission | undefined =
     (selectedStudentId && assignment?.submissions.find((s) => s.studentId === selectedStudentId)) ||
     (evalTab === "evaluate" ? yetToEvaluate[0] : undefined)
-  const selectedStudent = selected ? STUDENTS.find((st) => st.id === selected.studentId) : undefined
+  const selectedStudent = selected ? resolveStudentDisplay(selected.studentId, realStudents) : undefined
 
   function openMarksModal() {
     if (!selected) return
@@ -193,7 +196,7 @@ export default function AssignmentEvaluate() {
               <div className="p-4 text-center text-[12.5px] text-text-secondary">No students here.</div>
             )}
             {filteredList.map((s) => {
-              const student = STUDENTS.find((st) => st.id === s.studentId)
+              const student = resolveStudentDisplay(s.studentId, realStudents)
               const isSelected = selected?.studentId === s.studentId
               return (
                 <div

@@ -6,6 +6,7 @@ import {
   MASTER_TIMETABLE,
   ASSESSMENT_BANK_SEED,
   CLASSES,
+  STUDENTS,
 } from "@/data/seed"
 import type {
   CurriculumUnit,
@@ -16,6 +17,19 @@ import type {
 } from "@/lib/types"
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8001"
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL ?? "http://localhost:8003"
+
+// A real classroom's roster (edova-backend), keyed by student id, so any
+// page can resolve a submission's studentId to a display name/rollNo
+// regardless of whether it's one of the fake seed.ts STUDENTS or a real
+// student from a migrated classroom (currently just Class 10 -- Section A).
+export interface StudentDisplay { name: string; rollNo: string }
+export function resolveStudentDisplay(
+  studentId: string,
+  realStudents: Record<string, StudentDisplay>,
+): StudentDisplay | undefined {
+  return STUDENTS.find((st) => st.id === studentId) ?? realStudents[studentId]
+}
 
 // Current teaching focus — the one class/section/subject whose real syllabus
 // tree (clerk DB) is hydrated into the shared curriculum, so This Week /
@@ -92,6 +106,10 @@ let hydration: Promise<void> | null = null
 let hydratedKey: string | null = null
 const focusKey = (f: Focus) => `${f.year}|${f.board}|${f.classLabel}|${f.subject}|${f.section}`
 
+// realStudents needs no focus-keying (unlike hydrateCurriculum) -- it's one
+// flat, app-wide roster lookup, fetched once and shared by every page.
+let realStudentsHydration: Promise<void> | null = null
+
 // Shared mutable "schoolConfig" — mirrors the mockup Component's schoolConfig
 // state so mutations persist across navigation and propagate cross-view
 // (e.g. a topic ticked in Lesson Planner updates Syllabus Map + Course Progress).
@@ -135,6 +153,12 @@ interface SchoolState {
   setFocus: (next: Partial<Focus>) => void
   focusSectionId: string | null
   hydrateCurriculum: () => Promise<void>
+
+  // Real classroom rosters (edova-backend), keyed by student id -- see
+  // resolveStudentDisplay(). Currently just Class 10 -- Section A; grows as
+  // more classrooms migrate off seed.ts's STUDENTS.
+  realStudents: Record<string, StudentDisplay>
+  hydrateRealStudents: () => Promise<void>
 
   // Assignments (app.js:submitNewAssignment / handleScoreChange).
   publishAssignment: (assignment: Assignment) => void
@@ -261,6 +285,34 @@ export const useSchoolStore = create<SchoolState>()((set, get) => ({
       })
     }
     return hydration
+  },
+
+  realStudents: {},
+  hydrateRealStudents: () => {
+    if (!realStudentsHydration) {
+      realStudentsHydration = (async () => {
+        const classrooms: { id: string }[] = await fetch(`${BACKEND_API_URL}/api/classrooms`).then((r) => {
+          if (!r.ok) throw new Error(`API ${r.status}`)
+          return r.json()
+        })
+        const rosters = await Promise.all(
+          classrooms.map((c) =>
+            fetch(`${BACKEND_API_URL}/api/classrooms/${c.id}/students`).then((r) => (r.ok ? r.json() : []))
+          )
+        )
+        const map: Record<string, StudentDisplay> = {}
+        for (const roster of rosters as { id: string; student_number: string; first_name: string; last_name: string }[][]) {
+          for (const s of roster) {
+            map[s.id] = { name: `${s.first_name} ${s.last_name}`, rollNo: s.student_number }
+          }
+        }
+        set({ realStudents: map })
+      })().catch((err) => {
+        realStudentsHydration = null // retry on next call
+        console.warn("real students hydration failed, falling back to seed data:", err)
+      })
+    }
+    return realStudentsHydration
   },
 
   publishAssignment: (assignment) =>
