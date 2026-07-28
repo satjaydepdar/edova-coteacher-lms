@@ -177,10 +177,8 @@ def logout(authorization: Optional[str] = Header(None)):
     return {"status": "ok"}
 
 
-# Read-only for now, no auth gate -- matches the rest of this app today (no
-# login exists anywhere yet). Real teacher auth now exists (/auth/*, above)
-# but hasn't been wired in front of these yet -- that lands with the next
-# roadmap item (assignment persistence), not this one.
+# Read-only, no auth gate -- classroom/roster reads stay open; assignment
+# writes below are the first endpoint that actually requires a session.
 @app.get("/api/classrooms", response_model=List[ClassroomOut])
 def list_classrooms():
     conn = _get_conn()
@@ -227,5 +225,102 @@ def list_classroom_students(classroom_id: str):
                 (classroom_id,),
             )
             return cur.fetchall()
+    finally:
+        conn.close()
+
+
+class AssignmentIn(BaseModel):
+    title: str
+    description: str = ""
+    due_date: Optional[str] = None  # ISO 8601
+    points_possible: float = 100
+    # The frontend's submission-method concept (written/pdf/mcq/media/coding)
+    # -- a distinct idea from assignments.type's category enum
+    # (homework/quiz/exam/...), so it's kept in `settings` JSONB rather than
+    # force-fit into that column.
+    submission_type: str = "written"
+    attachments: List[dict] = []
+
+
+class AssignmentOut(BaseModel):
+    id: str
+    title: str
+    description: str
+    due_date: Optional[str]
+    points_possible: float
+    submission_type: str
+    attachments: List[dict]
+    created_at: str
+
+
+def _assignment_out(row) -> AssignmentOut:
+    return AssignmentOut(
+        id=row["id"],
+        title=row["title"],
+        description=row["description"] or "",
+        due_date=row["due_date"].isoformat() if row["due_date"] else None,
+        points_possible=float(row["points_possible"]),
+        submission_type=(row["settings"] or {}).get("submission_type", "written"),
+        attachments=row["attachments"] or [],
+        created_at=row["created_at"].isoformat(),
+    )
+
+
+def _require_classroom(cur, classroom_id: str) -> None:
+    try:
+        uuid.UUID(classroom_id)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="classroom not found")
+    cur.execute("SELECT 1 FROM classrooms WHERE id = %s AND deleted_at IS NULL", (classroom_id,))
+    if cur.fetchone() is None:
+        raise HTTPException(status_code=404, detail="classroom not found")
+
+
+@app.post("/api/classrooms/{classroom_id}/assignments", response_model=AssignmentOut, status_code=201)
+def create_assignment(classroom_id: str, body: AssignmentIn, authorization: Optional[str] = Header(None)):
+    user, _ = _authenticated_user(authorization)
+    conn = _get_conn()
+    try:
+        with conn.cursor() as cur:
+            _require_classroom(cur, classroom_id)
+            new_id = str(uuid.uuid4())
+            cur.execute(
+                """
+                INSERT INTO assignments
+                    (id, classroom_id, created_by, title, description, type,
+                     points_possible, due_date, attachments, settings, status)
+                VALUES (%s, %s, %s, %s, %s, 'homework', %s, %s, %s, %s, 'published')
+                RETURNING id, title, description, due_date, points_possible, attachments, settings, created_at
+                """,
+                (
+                    new_id, classroom_id, user["id"], body.title, body.description,
+                    body.points_possible, body.due_date,
+                    psycopg2.extras.Json(body.attachments),
+                    psycopg2.extras.Json({"submission_type": body.submission_type}),
+                ),
+            )
+            row = cur.fetchone()
+            conn.commit()
+            return _assignment_out(row)
+    finally:
+        conn.close()
+
+
+@app.get("/api/classrooms/{classroom_id}/assignments", response_model=List[AssignmentOut])
+def list_assignments(classroom_id: str):
+    conn = _get_conn()
+    try:
+        with conn.cursor() as cur:
+            _require_classroom(cur, classroom_id)
+            cur.execute(
+                """
+                SELECT id, title, description, due_date, points_possible, attachments, settings, created_at
+                FROM assignments
+                WHERE classroom_id = %s AND deleted_at IS NULL
+                ORDER BY created_at DESC
+                """,
+                (classroom_id,),
+            )
+            return [_assignment_out(r) for r in cur.fetchall()]
     finally:
         conn.close()
