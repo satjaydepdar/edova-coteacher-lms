@@ -14,3 +14,7 @@ ncert_rag/clerk/clerk.db
 ncert_rag/clerk/*.log
 edova-third-brain/okf-bundle/cache/
 graphify-out/cache/
+
+# Slated for deletion — don't pick up any new/uncommitted content here.
+# Already-committed files under instructions/ are untouched by this.
+instructions/
