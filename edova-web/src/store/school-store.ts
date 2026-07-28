@@ -154,10 +154,13 @@ interface SchoolState {
   focusSectionId: string | null
   hydrateCurriculum: () => Promise<void>
 
-  // Real classroom rosters (edova-backend), keyed by student id -- see
-  // resolveStudentDisplay(). Currently just Class 10 -- Section A; grows as
-  // more classrooms migrate off seed.ts's STUDENTS.
+  // Real classroom rosters (edova-backend). realStudents is keyed by student
+  // id for resolveStudentDisplay(); realStudentsList is the same data as a
+  // flat array for pages that render a whole roster (e.g. Attendance).
+  // Currently just Class 10 -- Section A; grows as more classrooms migrate
+  // off seed.ts's STUDENTS.
   realStudents: Record<string, StudentDisplay>
+  realStudentsList: (StudentDisplay & { id: string })[]
   hydrateRealStudents: () => Promise<void>
 
   // Assignments (app.js:submitNewAssignment / handleScoreChange).
@@ -288,6 +291,7 @@ export const useSchoolStore = create<SchoolState>()((set, get) => ({
   },
 
   realStudents: {},
+  realStudentsList: [],
   hydrateRealStudents: () => {
     if (!realStudentsHydration) {
       realStudentsHydration = (async () => {
@@ -301,12 +305,15 @@ export const useSchoolStore = create<SchoolState>()((set, get) => ({
           )
         )
         const map: Record<string, StudentDisplay> = {}
+        const list: (StudentDisplay & { id: string })[] = []
         for (const roster of rosters as { id: string; student_number: string; first_name: string; last_name: string }[][]) {
           for (const s of roster) {
-            map[s.id] = { name: `${s.first_name} ${s.last_name}`, rollNo: s.student_number }
+            const entry = { name: `${s.first_name} ${s.last_name}`, rollNo: s.student_number }
+            map[s.id] = entry
+            list.push({ id: s.id, ...entry })
           }
         }
-        set({ realStudents: map })
+        set({ realStudents: map, realStudentsList: list })
       })().catch((err) => {
         realStudentsHydration = null // retry on next call
         console.warn("real students hydration failed, falling back to seed data:", err)
