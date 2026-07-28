@@ -1,11 +1,17 @@
 import { useState } from "react"
-import { NavLink } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
+import { LogOut } from "lucide-react"
 import { NAV_GROUPS } from "@/lib/nav"
-import { useAppStore, TEACHER_IDENTITY, ADMIN_IDENTITY } from "@/store/app-store"
+import { useAppStore, TEACHER_IDENTITY, ADMIN_IDENTITY, identityFromUser } from "@/store/app-store"
 
 export function Sidebar() {
+  const navigate = useNavigate()
   const role = useAppStore((s) => s.role)
-  const identity = role === "admin" ? ADMIN_IDENTITY : TEACHER_IDENTITY
+  const session = useAppStore((s) => s.session)
+  const logout = useAppStore((s) => s.logout)
+  const identity = session
+    ? identityFromUser(session.user)
+    : role === "admin" ? ADMIN_IDENTITY : TEACHER_IDENTITY
   const groups = NAV_GROUPS.filter((g) => !g.adminOnly || role === "admin")
 
   // Main modules are collapsed by default; clicking a module header reveals
@@ -78,6 +84,15 @@ export function Sidebar() {
           </div>
           <div className="text-[13px] text-white/45">{identity.roleLabel}</div>
         </div>
+        {session && (
+          <button
+            onClick={() => { logout(); navigate("/login") }}
+            aria-label="Log out"
+            className="grid size-8 shrink-0 cursor-pointer place-items-center rounded-[8px] text-white/45 transition-colors hover:bg-white/8 hover:text-sidebar-text"
+          >
+            <LogOut size={16} />
+          </button>
+        )}
       </div>
     </aside>
   )

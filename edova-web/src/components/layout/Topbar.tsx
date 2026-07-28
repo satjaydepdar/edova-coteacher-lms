@@ -1,12 +1,15 @@
 import { useLocation, useNavigate } from "react-router-dom"
 import { Bell, Search } from "lucide-react"
-import { useAppStore, TEACHER_IDENTITY, ADMIN_IDENTITY } from "@/store/app-store"
+import { useAppStore, TEACHER_IDENTITY, ADMIN_IDENTITY, identityFromUser } from "@/store/app-store"
 import type { Role } from "@/lib/types"
 
 export function Topbar() {
   const role = useAppStore((s) => s.role)
   const setRole = useAppStore((s) => s.setRole)
-  const identity = role === "admin" ? ADMIN_IDENTITY : TEACHER_IDENTITY
+  const session = useAppStore((s) => s.session)
+  const identity = session
+    ? identityFromUser(session.user)
+    : role === "admin" ? ADMIN_IDENTITY : TEACHER_IDENTITY
   const navigate = useNavigate()
   const location = useLocation()
 

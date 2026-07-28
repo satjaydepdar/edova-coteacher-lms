@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate } from "react-router-dom"
 import { AppLayout } from "@/components/layout/AppLayout"
+import Login from "@/pages/Login"
 import Calendar from "@/pages/Calendar"
 import Settings from "@/pages/Settings"
 import KnowledgeGraph from "@/pages/KnowledgeGraph"
@@ -19,6 +20,7 @@ import LearningHub from "@/pages/LearningHub"
 import WikiPage from "@/pages/WikiPage"
 
 export const router = createBrowserRouter([
+  { path: "/login", element: <Login /> },
   {
     path: "/",
     element: <AppLayout />,
