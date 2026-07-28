@@ -11,5 +11,9 @@ class Settings:
     API_CORS_ORIGINS = os.getenv(
         "API_CORS_ORIGINS", "http://localhost:5173,http://localhost:5174")
 
+    # Dev-only default -- change in production (set JWT_SECRET in the real env).
+    JWT_SECRET = os.getenv("JWT_SECRET", "edova-dev-secret-change-in-production")
+    JWT_EXPIRY_HOURS = int(os.getenv("JWT_EXPIRY_HOURS", "168"))  # 7 days
+
 
 settings = Settings()
