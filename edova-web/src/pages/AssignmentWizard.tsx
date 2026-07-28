@@ -25,7 +25,7 @@ import { CLASSES, STUDENTS } from "@/data/seed"
 import { useSchoolStore } from "@/store/school-store"
 import { useAppStore } from "@/store/app-store"
 import { ASSIGNMENT_TYPES } from "@/lib/assignment-types"
-import { getSubjects, getResources, type LearningResource } from "@/lib/learning-api"
+import { getSubjects, getResources, getSyllabus, type LearningResource, type SyllabusUnit } from "@/lib/learning-api"
 import { getResourceUrl } from "@/lib/media"
 import type { Assignment, AssignmentAttachment, AssignmentType } from "@/lib/types"
 
@@ -103,6 +103,7 @@ export default function AssignmentWizard() {
   const [uploadTab, setUploadTab] = useState("Library")
   const [libraryResources, setLibraryResources] = useState<LearningResource[]>([])
   const [libraryLoading, setLibraryLoading] = useState(false)
+  const [libraryTopicTitles, setLibraryTopicTitles] = useState<Record<string, string>>({})
 
   const [selectedClassIds, setSelectedClassIds] = useState<string[]>([CLASSES[0].id])
   const [subject, setSubject] = useState(CLASSES[0].subject)
@@ -134,8 +135,17 @@ export default function AssignmentWizard() {
     setLibraryLoading(true)
     getSubjects()
       .then(({ subjects }) => subjects.find((s) => s.subject_name === subject))
-      .then((match) => (match ? getResources(match.id) : []))
-      .then((resources) => setLibraryResources(resources))
+      .then((match) =>
+        match
+          ? Promise.all([getResources(match.id), getSyllabus(match.id)])
+          : Promise.resolve([[], { units: [] }] as [LearningResource[], { units: SyllabusUnit[] }]),
+      )
+      .then(([resources, { units }]) => {
+        setLibraryResources(resources)
+        const titles: Record<string, string> = {}
+        for (const u of units) for (const c of u.chapters) for (const t of c.topics) titles[t.id] = t.title
+        setLibraryTopicTitles(titles)
+      })
       .catch(() => setLibraryResources([]))
       .finally(() => setLibraryLoading(false))
   }, [showUpload, uploadTab, subject])
@@ -644,7 +654,9 @@ export default function AssignmentWizard() {
                         <div className="min-w-0 flex-1">
                           <div className="truncate text-[13px] font-semibold text-ink">{r.title}</div>
                           <div className="text-[11px] text-text-muted">
-                            {r.type}{r.chapter_number != null ? ` • Chapter ${r.chapter_number}` : ""}
+                            {r.type}
+                            {r.chapter_number != null ? ` • Chapter ${r.chapter_number}` : ""}
+                            {r.topic_id && libraryTopicTitles[r.topic_id] ? ` — ${libraryTopicTitles[r.topic_id]}` : ""}
                           </div>
                         </div>
                       </button>
