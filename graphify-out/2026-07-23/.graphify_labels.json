@@ -346,6 +346,7 @@
   "344": "assertion-reason.md",
   "345": "case-study.md",
   "346": "short-answer.md",
+  "347": "Worksheet – HOTS Level",
   "348": "Lesson 2: Distance Formula and Midpoint Formula",
   "349": "RootsOfQuadraticEquation",
   "350": "index.md",
@@ -398,7 +399,6 @@
   "397": "art-integration.md",
   "398": "classroom-activities.md",
   "399": "experiential-learning.md",
-  "400": "ict-integration.md",
   "401": "diagnostic-test.md",
   "402": "formative-assessment.md",
   "403": "rubrics.md",
@@ -511,7 +511,5 @@
   "510": "vite.config.js",
   "511": "start-all.ps1",
   "512": "stop-all.ps1",
-  "513": "Similarity of Triangles",
-  "514": "Worksheet – Lesson Aligned",
   "515": "okf_media"
 }

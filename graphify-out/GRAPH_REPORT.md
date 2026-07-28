@@ -1,13 +1,18 @@
-# Graph Report - edova-coteacher-v2  (2026-07-23)
+# Graph Report - edova-coteacher-v2  (2026-07-27)
 
 ## Corpus Check
-- 759 files · ~1,071,296 words
+- 809 files · ~1,022,287 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 5077 nodes · 6345 edges · 513 communities (426 shown, 87 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 283 edges (avg confidence: 0.58)
+- 5421 nodes · 6779 edges · 542 communities (449 shown, 93 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 286 edges (avg confidence: 0.58)
 - Token cost: 0 input · 0 output
+
+## Graph Freshness
+- Built from commit: `c0623abc`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - Component
@@ -405,6 +410,7 @@
 - art-integration.md
 - classroom-activities.md
 - experiential-learning.md
+- Similarity of Triangles
 - diagnostic-test.md
 - formative-assessment.md
 - rubrics.md
@@ -449,6 +455,7 @@
 - classroom-activities.md
 - experiential-learning.md
 - vite-env.d.ts
+- media.ts
 - ict-integration.md
 - diagnostic-test.md
 - Learning-resources-page.md
@@ -479,19 +486,44 @@
 - AP Class 10 concepts_39160d28.md
 - math-chapters_47eafaae.md
 - spec.md
+- useDragAndDrop.js
+- page.tsx
+- Claude_Code_Master_Prompt_Interactive_Learning_Engine.md
+- Ce
+- compilerOptions
+- compilerOptions
+- learning-api.ts
+- package.json
+- VideoPlayerWithQuiz.tsx
+- lesson-5.md
+- lesson-1.md
 - okf_media
+- .oxlintrc.json
+- Introduction
+- LearningHub.tsx
+- Heatmap.tsx
+- Edova Coteacher - Wired Package
+- React + TypeScript + Vite
+- learning-store.ts
+- tsconfig.json
+- Mindmap.tsx
+- StudyPlan.tsx
+- Introduction
+- StudyMaterial.tsx
+- be
+- StudyPlan.tsx
 
 ## God Nodes (most connected - your core abstractions)
 1. `Component` - 167 edges
 2. `IngestionPipeline` - 53 edges
-3. `PGVectorStore` - 51 edges
-4. `m()` - 50 edges
+3. `m()` - 51 edges
+4. `PGVectorStore` - 51 edges
 5. `OKFBundleParser` - 48 edges
 6. `QueryEngine` - 48 edges
 7. `PDFUtils` - 41 edges
 8. `xk()` - 34 edges
-9. `Ce()` - 21 edges
-10. `compilerOptions` - 19 edges
+9. `db()` - 23 edges
+10. `Ce()` - 21 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `NumberDNALab()` --indirect_call--> `p()`  [INFERRED]
@@ -502,17 +534,17 @@
   edova-web/src/pages/AssessmentBuilder.tsx → _decomp/mod_2.js
 - `RedoxVisualizer()` --indirect_call--> `m()`  [INFERRED]
   instructions/chemistry_plugin/src/components/chemistry/RedoxVisualizer.jsx → _decomp/mod_2.js
-- `oh()` --indirect_call--> `f()`  [INFERRED]
-  _decomp/mod_2.js → instructions/jsx files/AxiomMathematical.jsx
+- `LearningPage()` --indirect_call--> `m()`  [INFERRED]
+  instructions/edova-wired-package-student-module/src/app/(student)/learning/page.tsx → _decomp/mod_2.js
 
 ## Import Cycles
 - None detected.
 
-## Communities (513 total, 87 thin omitted)
+## Communities (542 total, 93 thin omitted)
 
 ### Community 1 - "mod_2.js"
 Cohesion: 0.05
-Nodes (45): $a(), Ab(), ah(), bh(), ch(), Ck(), dd(), Dg() (+37 more)
+Nodes (49): $a(), Ab(), bc(), Bd(), be(), dd(), di(), ec() (+41 more)
 
 ### Community 2 - "app.js"
 Cohesion: 0.03
@@ -524,11 +556,11 @@ Nodes (45): boot(), cdnScriptFor(), collectProps(), compileAttr(), compileTempla
 
 ### Community 4 - "seed.ts"
 Cohesion: 0.03
-Nodes (62): ACADEMIC_CALENDAR_SEED, ACADEMIC_YEARS, ANNOUNCEMENTS, APP_TODAY, ASSESSMENT_BANK_SEED, ASSIGNMENTS_SEED, BEHAVIOR_NOTES, CALENDAR_EVENTS (+54 more)
+Nodes (58): ACADEMIC_CALENDAR_SEED, ACADEMIC_YEARS, ANNOUNCEMENTS, APP_TODAY, ASSESSMENT_BANK_SEED, ASSIGNMENTS_SEED, BEHAVIOR_NOTES, CALENDAR_EVENTS (+50 more)
 
 ### Community 5 - "types.ts"
 Cohesion: 0.03
-Nodes (66): AcademicCalendarItem, Announcement, AssessmentBankItem, AssessmentSection, Assignment, AssignmentAttachment, AssignmentStatus, AssignmentType (+58 more)
+Nodes (65): AcademicCalendarItem, Announcement, AssessmentBankItem, AssessmentSection, Assignment, AssignmentAttachment, AssignmentStatus, AssignmentType (+57 more)
 
 ### Community 6 - "ICT Integration"
 Cohesion: 0.06
@@ -543,16 +575,16 @@ Cohesion: 0.06
 Nodes (3): dayLabelForDate(), formatShortDate(), parseShortDate()
 
 ### Community 9 - "Question Bank Answer Key"
-Cohesion: 0.06
-Nodes (47): _format_question(), lesson_plan(), LessonPlanRequest, _map_to_lesson_plan(), _parse_json(), BaseModel, FastAPI wrapper around the CAMEL lesson-planning society.  Run from the edova-ca, Best-effort JSON extraction from an agent reply (fenced, maybe truncated). (+39 more)
+Cohesion: 0.07
+Nodes (43): _format_question(), lesson_plan(), LessonPlanRequest, _map_to_lesson_plan(), _parse_json(), BaseModel, FastAPI wrapper around the CAMEL lesson-planning society.  Run from the edova-ca, Best-effort JSON extraction from an agent reply (fenced, maybe truncated). (+35 more)
 
 ### Community 10 - "index.md"
 Cohesion: 0.08
 Nodes (41): ORDER, CalendarToolbar(), CalendarToolbarProps, VIEWS, DayInsightModal(), DayInsightModalProps, EntryCard(), AtRiskStudent (+33 more)
 
 ### Community 11 - "Question Bank Answer Key"
-Cohesion: 0.07
-Nodes (56): Connection, collect(), load_json(), main(), render(), academic_years(), add_subject(), _chapter_name() (+48 more)
+Cohesion: 0.05
+Nodes (82): Connection, collect(), load_json(), main(), render(), academic_years(), add_flag(), add_mistake() (+74 more)
 
 ### Community 12 - "formula-sheet.md"
 Cohesion: 0.09
@@ -564,11 +596,11 @@ Nodes (47): Activity 1: GeoGebra — Distance Formula Exploration, Activity 2: S
 
 ### Community 14 - "dependencies"
 Cohesion: 0.06
-Nodes (35): dependencies, class-variance-authority, clsx, @fullcalendar/daygrid, @fullcalendar/interaction, @fullcalendar/react, @fullcalendar/timegrid, @hookform/resolvers (+27 more)
+Nodes (36): dependencies, class-variance-authority, clsx, @fullcalendar/daygrid, @fullcalendar/interaction, @fullcalendar/react, @fullcalendar/timegrid, @hookform/resolvers (+28 more)
 
 ### Community 15 - "ni"
-Cohesion: 0.12
-Nodes (20): Ag(), Bd(), Bg(), Cg(), di(), Hg(), If(), jb() (+12 more)
+Cohesion: 0.06
+Nodes (42): App(), lesson, BinSortAnimation(), BinSortAnimationProps, QuestionOverlay(), QuestionOverlayProps, buildChunks(), Chunk (+34 more)
 
 ### Community 16 - "Experiential Learning"
 Cohesion: 0.05
@@ -596,15 +628,15 @@ Nodes (38): Activity 1: Coordinate Picture Art — The Textbook Figure, Activity
 
 ### Community 22 - "Settings.tsx"
 Cohesion: 0.08
-Nodes (30): bodyCell, cellShell(), CLASSID_TO_SECTION_SUBJECT, classNameById(), ctxBadge(), CurriculumUnitX, examReadinessStyle(), filterCtrl (+22 more)
+Nodes (29): bodyCell, cellShell(), CLASSID_TO_SECTION_SUBJECT, classNameById(), ctxBadge(), CurriculumUnitX, examReadinessStyle(), filterCtrl (+21 more)
 
 ### Community 23 - "m"
-Cohesion: 0.09
-Nodes (36): Cc(), cd(), de(), df(), Eg(), Gc(), gj(), Gk() (+28 more)
+Cohesion: 0.12
+Nodes (25): Ag(), Cc(), cd(), de(), df(), gj(), Gk(), $h() (+17 more)
 
 ### Community 24 - "xk"
-Cohesion: 0.11
-Nodes (32): B(), bj(), Bk(), cf(), $d(), Db(), Dc(), fi() (+24 more)
+Cohesion: 0.09
+Nodes (37): B(), Bg(), bj(), Bk(), cf(), Cg(), $d(), Db() (+29 more)
 
 ### Community 25 - "CBSE_Class10_Maths_Chapter1_Module1_Part3.md"
 Cohesion: 0.05
@@ -631,8 +663,8 @@ Cohesion: 0.10
 Nodes (19): dependencies, fast-xml-parser, lucide-react, react, react-dom, devDependencies, vite, @vitejs/plugin-react (+11 more)
 
 ### Community 31 - "xa"
-Cohesion: 0.11
-Nodes (39): aa(), af(), ai(), bi(), ci(), ef(), Eh(), fb() (+31 more)
+Cohesion: 0.40
+Nodes (4): Based on Lesson 1: Similar Figures (Sections 6.1 and 6.2), Based on Lesson 2: BPT and Its Converse (Section 6.3), Based on Lesson 3: Similarity Criteria (Section 6.4), Worksheet – Lesson Aligned
 
 ### Community 32 - "compilerOptions"
 Cohesion: 0.09
@@ -703,8 +735,8 @@ Cohesion: 0.14
 Nodes (3): buildSectionQuestions(), generatePlaceholderQuestionData(), normalizeQuestion()
 
 ### Community 49 - "index.md"
-Cohesion: 0.16
-Nodes (16): TheoryPanel(), useDragAndDrop(), calculateHCF(), calculateLCM(), findCommonMultiples(), formatFactorization(), generatePrimeQuestion(), generateQuestion() (+8 more)
+Cohesion: 0.18
+Nodes (14): TheoryPanel(), calculateHCF(), calculateLCM(), findCommonMultiples(), formatFactorization(), generatePrimeQuestion(), generateQuestion(), generateQuestions() (+6 more)
 
 ### Community 50 - "Key applications"
 Cohesion: 0.15
@@ -862,10 +894,6 @@ Nodes (12): Assertion-Reason, Case Studies, Case Study 1 — Rectangular Park, C
 Cohesion: 0.27
 Nodes (3): Scene, Creates a simple train icon using VGroup, TrainQuadraticRevision
 
-### Community 90 - "Lesson Flow Suggestion"
-Cohesion: 0.17
-Nodes (7): Activities Leading to BPT, Definition, Equiangular Triangles, Master Check, Similarity of Triangles, Answers, Long Answer Questions
-
 ### Community 91 - "Chapter 4: Quadratic Equations"
 Cohesion: 0.17
 Nodes (11): 1. Goal, 2. Grounding: what the agent must already know, 3. Architecture, 4.1 Agent type, 4.2 Tools (functions the agent can call), 4.3 System prompt sketch, 4.4 Worked example (the case from your message), 4. CAMEL-AI agent design (+3 more)
@@ -911,8 +939,8 @@ Cohesion: 0.31
 Nodes (7): useChallengeStore, initialInteractiveState, useEuclidStore, generateIncorrectOptions(), generateQuestions(), getRandomInt(), calculateEuclidSteps()
 
 ### Community 102 - "Chapter 6: Triangles"
-Cohesion: 0.29
-Nodes (8): angleAtVertex(), catmullRomClosed(), describeArc(), dist(), fmt(), midpoint(), morphLoop(), updateTriangle()
+Cohesion: 0.06
+Nodes (30): dependencies, framer-motion, react, react-dom, remotion, @remotion/cli, @remotion/player, zustand (+22 more)
 
 ### Community 103 - "Question Bank Answer Key"
 Cohesion: 0.20
@@ -1028,7 +1056,7 @@ Nodes (10): Assertion-Reason, Case Study, Challenge Problems, Competency-Based, 
 
 ### Community 131 - "Basic Proportionality Theorem"
 Cohesion: 0.20
-Nodes (7): Case Study 1: Girl and Lamp-post (NCERT Example 7), Case Study 2: Pole and Tower (NCERT Exercise 6.3 Q15), Worksheet – Case Study, Based on Lesson 1: Similar Figures (Sections 6.1 and 6.2), Based on Lesson 2: BPT and Its Converse (Section 6.3), Based on Lesson 3: Similarity Criteria (Section 6.4), Worksheet – Lesson Aligned
+Nodes (7): Case Study 1: Girl and Lamp-post (NCERT Example 7), Case Study 2: Pole and Tower (NCERT Exercise 6.3 Q15), Worksheet – Case Study, Section A: Proofs Involving Medians (NCERT Example 8), Section B: Ratio and Product Relationships (NCERT Exercise 6.3), Section C: Indirect Measurement, Worksheet – HOTS Level
 
 ### Community 132 - "Common Misconceptions"
 Cohesion: 0.20
@@ -1507,8 +1535,8 @@ Cohesion: 0.33
 Nodes (7): chat(), ChatRequest, get_engine(), _log_rag_query(), query(), QueryRequest, Best-effort audit log — a logging failure must never break the actual     query/
 
 ### Community 253 - "Chapter 6: Triangles"
-Cohesion: 0.11
-Nodes (24): w(), bc(), be(), Ce(), ec(), ed(), fc(), Fg() (+16 more)
+Cohesion: 0.10
+Nodes (40): aa(), af(), ai(), bi(), ci(), Dg(), ef(), Eh() (+32 more)
 
 ### Community 254 - "Classroom Activities"
 Cohesion: 0.47
@@ -1631,8 +1659,8 @@ Cohesion: 0.33
 Nodes (5): NAV_GROUPS, PATH_BY_VIEW, VIEW_LABELS, NavGroup, ViewKey
 
 ### Community 285 - "LearningResources.tsx"
-Cohesion: 0.15
-Nodes (8): OkfResourceType, categoryForType(), CategoryStatus, LearningResources(), STATUS_CATEGORIES, STATUS_PILL_COLORS, StatusCategory, UploadTarget
+Cohesion: 0.09
+Nodes (18): OkfResourceType, BOARD_OPTIONS, CatalogResource, categoryForType(), CategoryStatus, ChapterOut, CLASS_OPTIONS, CurriculumResponse (+10 more)
 
 ### Community 287 - "Diagnostic Test"
 Cohesion: 0.33
@@ -1867,8 +1895,8 @@ Cohesion: 0.40
 Nodes (4): Chapter 6 - Triangles, Contents, Metadata, Overview
 
 ### Community 347 - "Worksheet – HOTS Level"
-Cohesion: 0.40
-Nodes (4): Section A: Proofs Involving Medians (NCERT Example 8), Section B: Ratio and Product Relationships (NCERT Exercise 6.3), Section C: Indirect Measurement, Worksheet – HOTS Level
+Cohesion: 0.17
+Nodes (10): BOARD_OPTIONS, CatalogResource, ChapterOut, CLASS_OPTIONS, CurriculumResponse, DOC_TYPES, SubjectRow, SyllabusResponse (+2 more)
 
 ### Community 348 - "Lesson 2: Distance Formula and Midpoint Formula"
 Cohesion: 0.40
@@ -2018,6 +2046,10 @@ Nodes (3): validateFactor(), validateNumber(), validateNumberPair()
 Cohesion: 0.50
 Nodes (3): Expanding the Oxlint configuration, React Compiler, React + Vite
 
+### Community 400 - "Similarity of Triangles"
+Cohesion: 0.14
+Nodes (18): Eg(), Gc(), hc(), Id(), ii(), ji(), Kk(), Li() (+10 more)
+
 ### Community 447 - "OKFBundleParser"
 Cohesion: 0.22
 Nodes (9): OKFBundleParser, Path, Try resolving `resource` relative to base_dir as authored; if that         doesn, Follow a concept's `resource:` field to its actual content, if it's         a lo, Read a raw markdown file from the linked (non-OKF) workspace. These         file, Given a concept id (e.g. "chapters/quadratic-equations/videos/quadratic-polynomi, Parses an Open Knowledge Format bundle — "fetching docs from OKF" means     gett, The exact bug class found in edova-brain/math-Knowledge/: identical         stub (+1 more)
@@ -2035,32 +2067,116 @@ Cohesion: 0.11
 Nodes (11): GeminiEmbedder, Embed a single search query, Embed multiple document chunks. `titles` (e.g. the source chapter/doc         na, gemini-embedding-2 wrapper, truncated to 768 dimensions (see settings.EMBEDDING_, LlamaParseExtractor, Process entire PDF - extract all pages.          `use_vision` is kept for interf, Extracts structured content from PDFs using LlamaParse — replaces the     old Py, Process multiple PDFs (+3 more)
 
 ### Community 455 - "db-schema-design.md"
-Cohesion: 0.11
-Nodes (29): Bf(), ea(), eb(), ei(), ff(), Fh(), mf(), mi() (+21 more)
+Cohesion: 0.09
+Nodes (35): Bf(), ea(), eb(), ei(), ff(), Fh(), gf(), Ih() (+27 more)
 
-### Community 515 - "okf_media"
+### Community 515 - "page.tsx"
+Cohesion: 0.13
+Nodes (15): FlagButton(), COLORS, DATA, Heatmap(), LABELS, LabExercise(), Mindmap(), NODES (+7 more)
+
+### Community 516 - "Claude_Code_Master_Prompt_Interactive_Learning_Engine.md"
+Cohesion: 0.08
+Nodes (23): AI Teaching Assistant, Animation Principles, Architecture, Assessment Metadata, Deliverables, Diagram Types, Feedback System, Folder Structure (+15 more)
+
+### Community 517 - "Ce"
+Cohesion: 0.12
+Nodes (21): w(), ah(), bh(), Ce(), ch(), Ck(), dh(), ed() (+13 more)
+
+### Community 518 - "compilerOptions"
+Cohesion: 0.09
+Nodes (22): compilerOptions, allowArbitraryExtensions, allowImportingTsExtensions, erasableSyntaxOnly, jsx, lib, module, moduleDetection (+14 more)
+
+### Community 519 - "compilerOptions"
+Cohesion: 0.12
+Nodes (16): compilerOptions, allowImportingTsExtensions, erasableSyntaxOnly, lib, module, moduleDetection, noEmit, noFallthroughCasesInSwitch (+8 more)
+
+### Community 520 - "learning-api.ts"
+Cohesion: 0.14
+Nodes (21): apiGet(), apiPost(), Gamification, getGamification(), getQuiz(), getResources(), getSubjects(), getSyllabus() (+13 more)
+
+### Community 521 - "package.json"
+Cohesion: 0.12
+Nodes (15): description, devDependencies, oxlint, engines, node, name, private, scripts (+7 more)
+
+### Community 522 - "VideoPlayerWithQuiz.tsx"
+Cohesion: 0.19
+Nodes (4): FlagButton(), Props, FALLBACK_QUESTIONS, Props
+
+### Community 523 - "lesson-5.md"
+Cohesion: 0.14
+Nodes (13): ACCEPTANCE CRITERIA, APIs to Develop:, Assume Stack:, CONTEXT, CORE REQUIREMENTS - DO NOT MISS ANY, DB Changes to Create:, DELIVERABLES EXPECTED FROM YOU, Frontend Tasks: (+5 more)
+
+### Community 524 - "lesson-1.md"
+Cohesion: 0.29
+Nodes (8): angleAtVertex(), catmullRomClosed(), describeArc(), dist(), fmt(), midpoint(), morphLoop(), updateTriangle()
+
+### Community 525 - "okf_media"
 Cohesion: 0.29
 Nodes (7): get_okf_parser(), okf_media(), Starlette 0.38's FileResponse (the version this app is pinned to) does     NOT i, Resolve an OKF concept's resource: field and serve it directly — for a     "watc, _serve_file_with_range(), Request, Response
 
+### Community 526 - ".oxlintrc.json"
+Cohesion: 0.33
+Nodes (5): plugins, rules, react/only-export-components, react/rules-of-hooks, $schema
+
+### Community 527 - "Introduction"
+Cohesion: 0.50
+Nodes (3): Block, NoteBlocks(), parseNotes()
+
+### Community 528 - "LearningHub.tsx"
+Cohesion: 0.33
+Nodes (6): ASSIGNMENTS, FALLBACK_CHAPTER, FALLBACK_SUBJECT, FALLBACK_TOPIC, LearningHub(), subjectCode()
+
+### Community 529 - "Heatmap.tsx"
+Cohesion: 0.40
+Nodes (3): COLORS, DATA, LABELS
+
+### Community 530 - "Edova Coteacher - Wired Package"
+Cohesion: 0.40
+Nodes (4): Design System compliance, Edova Coteacher - Wired Package, Features wired, How to install
+
+### Community 531 - "React + TypeScript + Vite"
+Cohesion: 0.50
+Nodes (3): Expanding the Oxlint configuration, React Compiler, React + TypeScript + Vite
+
+### Community 536 - "StudyPlan.tsx"
+Cohesion: 0.40
+Nodes (3): Assignment, Props, RECOMMENDED
+
+### Community 538 - "Introduction"
+Cohesion: 0.33
+Nodes (5): Activities Leading to BPT, Definition, Equiangular Triangles, Master Check, Similarity of Triangles
+
+### Community 539 - "StudyMaterial.tsx"
+Cohesion: 0.40
+Nodes (4): iconFor(), Props, StudyMaterial(), TYPE_ICONS
+
+### Community 540 - "be"
+Cohesion: 0.40
+Nodes (5): FALLBACK_CHAPTER, FALLBACK_SUBJECT, FALLBACK_TOPIC, LearningHub(), subjectCode()
+
+### Community 541 - "StudyPlan.tsx"
+Cohesion: 0.40
+Nodes (3): Assignment, Props, RECOMMENDED
+
 ## Knowledge Gaps
-- **2606 isolated node(s):** `NAV_GROUPS`, `VIEW_LABELS`, `CLASSES`, `STUDENTS`, `CALENDAR_EVENTS` (+2601 more)
+- **2790 isolated node(s):** `NAV_GROUPS`, `VIEW_LABELS`, `CLASSES`, `STUDENTS`, `CALENDAR_EVENTS` (+2785 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **87 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **93 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `v()` connect `xk` to `mod_2.js`, `mod_0.js`, `index.md`, `SyllabusMap.tsx`, `Easy Worked Examples`, `m`, `LearningResources.tsx`, `xa`?**
+- **Why does `v()` connect `xk` to `mod_2.js`, `mod_0.js`, `page.tsx`, `db-schema-design.md`, `index.md`, `SyllabusMap.tsx`, `LearningHub.tsx`, `Easy Worked Examples`, `m`, `be`, `LearningResources.tsx`?**
   _High betweenness centrality (0.012) - this node is a cross-community bridge._
-- **Why does `p()` connect `mod_1.js` to `mod_0.js`, `Summative Assessment`, `.renderVals`, `db-schema-design.md`, `Chapter 6: Triangles`?**
+- **Why does `p()` connect `mod_1.js` to `mod_0.js`, `Ce`, `Summative Assessment`, `.renderVals`, `db-schema-design.md`?**
+  _High betweenness centrality (0.011) - this node is a cross-community bridge._
+- **Why does `m()` connect `m` to `Classroom Dialogue`, `mod_2.js`, `page.tsx`, `Ce`, `db-schema-design.md`, `index.md`, `Similarity of Triangles`, `AssessmentBuilder.tsx`, `xk`, `mod_1.js`, `Chapter 6: Triangles`?**
   _High betweenness centrality (0.010) - this node is a cross-community bridge._
-- **Why does `Component` connect `Component` to `app.js`, `.renderVals`, `.confirmAssignFromBank`, `buildSectionQuestions`, `.syncGlobalContext`, `.routeChat`?**
-  _High betweenness centrality (0.008) - this node is a cross-community bridge._
 - **Are the 45 inferred relationships involving `IngestionPipeline` (e.g. with `AcademicYearOut` and `ChatRequest`) actually correct?**
   _`IngestionPipeline` has 45 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 6 inferred relationships involving `m()` (e.g. with `Ce()` and `wd()`) actually correct?**
+  _`m()` has 6 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 42 inferred relationships involving `PGVectorStore` (e.g. with `AcademicYearOut` and `ChatRequest`) actually correct?**
   _`PGVectorStore` has 42 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 5 inferred relationships involving `m()` (e.g. with `Ce()` and `wd()`) actually correct?**
-  _`m()` has 5 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 38 inferred relationships involving `OKFBundleParser` (e.g. with `AcademicYearOut` and `ChatRequest`) actually correct?**
   _`OKFBundleParser` has 38 INFERRED edges - model-reasoned connections that need verification._

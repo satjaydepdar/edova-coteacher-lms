@@ -1,11 +1,11 @@
 # Graph Report - edova-coteacher-v2  (2026-07-23)
 
 ## Corpus Check
-- 759 files · ~1,070,923 words
+- 759 files · ~1,071,296 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 5074 nodes · 6341 edges · 515 communities (426 shown, 89 thin omitted)
+- 5077 nodes · 6345 edges · 513 communities (426 shown, 87 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 283 edges (avg confidence: 0.58)
 - Token cost: 0 input · 0 output
 
@@ -353,6 +353,7 @@
 - assertion-reason.md
 - case-study.md
 - short-answer.md
+- Worksheet – HOTS Level
 - Lesson 2: Distance Formula and Midpoint Formula
 - RootsOfQuadraticEquation
 - index.md
@@ -404,7 +405,6 @@
 - art-integration.md
 - classroom-activities.md
 - experiential-learning.md
-- ict-integration.md
 - diagnostic-test.md
 - formative-assessment.md
 - rubrics.md
@@ -479,8 +479,6 @@
 - AP Class 10 concepts_39160d28.md
 - math-chapters_47eafaae.md
 - spec.md
-- Similarity of Triangles
-- Worksheet – Lesson Aligned
 - okf_media
 
 ## God Nodes (most connected - your core abstractions)
@@ -510,11 +508,11 @@
 ## Import Cycles
 - None detected.
 
-## Communities (515 total, 89 thin omitted)
+## Communities (513 total, 87 thin omitted)
 
 ### Community 1 - "mod_2.js"
 Cohesion: 0.05
-Nodes (55): $a(), Ab(), Ag(), bc(), Bd(), be(), Bg(), Cg() (+47 more)
+Nodes (45): $a(), Ab(), ah(), bh(), ch(), Ck(), dd(), Dg() (+37 more)
 
 ### Community 2 - "app.js"
 Cohesion: 0.03
@@ -569,8 +567,8 @@ Cohesion: 0.06
 Nodes (35): dependencies, class-variance-authority, clsx, @fullcalendar/daygrid, @fullcalendar/interaction, @fullcalendar/react, @fullcalendar/timegrid, @hookform/resolvers (+27 more)
 
 ### Community 15 - "ni"
-Cohesion: 0.13
-Nodes (24): aa(), af(), Eg(), hc(), ia(), Id(), ii(), ji() (+16 more)
+Cohesion: 0.12
+Nodes (20): Ag(), Bd(), Bg(), Cg(), di(), Hg(), If(), jb() (+12 more)
 
 ### Community 16 - "Experiential Learning"
 Cohesion: 0.05
@@ -601,12 +599,12 @@ Cohesion: 0.08
 Nodes (30): bodyCell, cellShell(), CLASSID_TO_SECTION_SUBJECT, classNameById(), ctxBadge(), CurriculumUnitX, examReadinessStyle(), filterCtrl (+22 more)
 
 ### Community 23 - "m"
-Cohesion: 0.11
-Nodes (25): B(), Cc(), cd(), de(), df(), gj(), Gk(), $h() (+17 more)
+Cohesion: 0.09
+Nodes (36): Cc(), cd(), de(), df(), Eg(), Gc(), gj(), Gk() (+28 more)
 
 ### Community 24 - "xk"
 Cohesion: 0.11
-Nodes (33): bj(), Bk(), cf(), $d(), Db(), Dc(), fi(), gf() (+25 more)
+Nodes (32): B(), bj(), Bk(), cf(), $d(), Db(), Dc(), fi() (+24 more)
 
 ### Community 25 - "CBSE_Class10_Maths_Chapter1_Module1_Part3.md"
 Cohesion: 0.05
@@ -622,7 +620,7 @@ Nodes (26): _check_upload_token(), complete(), CompleteRequest, CompleteResponse
 
 ### Community 28 - "mod_1.js"
 Cohesion: 0.13
-Nodes (17): B(), C(), D(), E(), fa(), N(), O(), oa() (+9 more)
+Nodes (19): B(), C(), D(), E(), fa(), M(), N(), O() (+11 more)
 
 ### Community 29 - "Chapter 2: Polynomials"
 Cohesion: 0.06
@@ -633,8 +631,8 @@ Cohesion: 0.10
 Nodes (19): dependencies, fast-xml-parser, lucide-react, react, react-dom, devDependencies, vite, @vitejs/plugin-react (+11 more)
 
 ### Community 31 - "xa"
-Cohesion: 0.08
-Nodes (43): ah(), ai(), bi(), ci(), Dg(), ef(), Eh(), fb() (+35 more)
+Cohesion: 0.11
+Nodes (39): aa(), af(), ai(), bi(), ci(), ef(), Eh(), fb() (+31 more)
 
 ### Community 32 - "compilerOptions"
 Cohesion: 0.09
@@ -705,8 +703,8 @@ Cohesion: 0.14
 Nodes (3): buildSectionQuestions(), generatePlaceholderQuestionData(), normalizeQuestion()
 
 ### Community 49 - "index.md"
-Cohesion: 0.18
-Nodes (14): TheoryPanel(), calculateHCF(), calculateLCM(), findCommonMultiples(), formatFactorization(), generatePrimeQuestion(), generateQuestion(), generateQuestions() (+6 more)
+Cohesion: 0.16
+Nodes (16): TheoryPanel(), useDragAndDrop(), calculateHCF(), calculateLCM(), findCommonMultiples(), formatFactorization(), generatePrimeQuestion(), generateQuestion() (+8 more)
 
 ### Community 50 - "Key applications"
 Cohesion: 0.15
@@ -863,6 +861,10 @@ Nodes (12): Assertion-Reason, Case Studies, Case Study 1 — Rectangular Park, C
 ### Community 89 - "Solution by Factorisation"
 Cohesion: 0.27
 Nodes (3): Scene, Creates a simple train icon using VGroup, TrainQuadraticRevision
+
+### Community 90 - "Lesson Flow Suggestion"
+Cohesion: 0.17
+Nodes (7): Activities Leading to BPT, Definition, Equiangular Triangles, Master Check, Similarity of Triangles, Answers, Long Answer Questions
 
 ### Community 91 - "Chapter 4: Quadratic Equations"
 Cohesion: 0.17
@@ -1026,7 +1028,7 @@ Nodes (10): Assertion-Reason, Case Study, Challenge Problems, Competency-Based, 
 
 ### Community 131 - "Basic Proportionality Theorem"
 Cohesion: 0.20
-Nodes (7): Case Study 1: Girl and Lamp-post (NCERT Example 7), Case Study 2: Pole and Tower (NCERT Exercise 6.3 Q15), Worksheet – Case Study, Section A: Proofs Involving Medians (NCERT Example 8), Section B: Ratio and Product Relationships (NCERT Exercise 6.3), Section C: Indirect Measurement, Worksheet – HOTS Level
+Nodes (7): Case Study 1: Girl and Lamp-post (NCERT Example 7), Case Study 2: Pole and Tower (NCERT Exercise 6.3 Q15), Worksheet – Case Study, Based on Lesson 1: Similar Figures (Sections 6.1 and 6.2), Based on Lesson 2: BPT and Its Converse (Section 6.3), Based on Lesson 3: Similarity Criteria (Section 6.4), Worksheet – Lesson Aligned
 
 ### Community 132 - "Common Misconceptions"
 Cohesion: 0.20
@@ -1505,8 +1507,8 @@ Cohesion: 0.33
 Nodes (7): chat(), ChatRequest, get_engine(), _log_rag_query(), query(), QueryRequest, Best-effort audit log — a logging failure must never break the actual     query/
 
 ### Community 253 - "Chapter 6: Triangles"
-Cohesion: 0.14
-Nodes (22): M(), bh(), Ce(), ch(), Ck(), dh(), ed(), fc() (+14 more)
+Cohesion: 0.11
+Nodes (24): w(), bc(), be(), Ce(), ec(), ed(), fc(), Fg() (+16 more)
 
 ### Community 254 - "Classroom Activities"
 Cohesion: 0.47
@@ -1797,8 +1799,8 @@ Cohesion: 0.40
 Nodes (4): ADMIN_IDENTITY, AppState, TEACHER_IDENTITY, useAppStore
 
 ### Community 329 - "school-store.ts"
-Cohesion: 0.20
-Nodes (10): ApiTreeChapter, ApiTreeTopic, ApiTreeUnit, FlashKey, flashTokens, FOCUS, SchoolState, treeToUnits() (+2 more)
+Cohesion: 0.16
+Nodes (12): ApiTreeChapter, ApiTreeTopic, ApiTreeUnit, classIdForFocus(), DEFAULT_FOCUS, FlashKey, flashTokens, Focus (+4 more)
 
 ### Community 331 - "Bloom's Taxonomy Mapping with Sample Questions"
 Cohesion: 0.40
@@ -1863,6 +1865,10 @@ Nodes (5): Chapter 6 — Triangles, Chapter Topics (based on NCERT Chapter 6), O
 ### Community 346 - "short-answer.md"
 Cohesion: 0.40
 Nodes (4): Chapter 6 - Triangles, Contents, Metadata, Overview
+
+### Community 347 - "Worksheet – HOTS Level"
+Cohesion: 0.40
+Nodes (4): Section A: Proofs Involving Medians (NCERT Example 8), Section B: Ratio and Product Relationships (NCERT Exercise 6.3), Section C: Indirect Measurement, Worksheet – HOTS Level
 
 ### Community 348 - "Lesson 2: Distance Formula and Midpoint Formula"
 Cohesion: 0.40
@@ -2029,33 +2035,25 @@ Cohesion: 0.11
 Nodes (11): GeminiEmbedder, Embed a single search query, Embed multiple document chunks. `titles` (e.g. the source chapter/doc         na, gemini-embedding-2 wrapper, truncated to 768 dimensions (see settings.EMBEDDING_, LlamaParseExtractor, Process entire PDF - extract all pages.          `use_vision` is kept for interf, Extracts structured content from PDFs using LlamaParse — replaces the     old Py, Process multiple PDFs (+3 more)
 
 ### Community 455 - "db-schema-design.md"
-Cohesion: 0.14
-Nodes (25): Bf(), ea(), eb(), ei(), ff(), Fh(), ld(), mf() (+17 more)
-
-### Community 513 - "Similarity of Triangles"
-Cohesion: 0.33
-Nodes (5): Activities Leading to BPT, Definition, Equiangular Triangles, Master Check, Similarity of Triangles
-
-### Community 514 - "Worksheet – Lesson Aligned"
-Cohesion: 0.40
-Nodes (4): Based on Lesson 1: Similar Figures (Sections 6.1 and 6.2), Based on Lesson 2: BPT and Its Converse (Section 6.3), Based on Lesson 3: Similarity Criteria (Section 6.4), Worksheet – Lesson Aligned
+Cohesion: 0.11
+Nodes (29): Bf(), ea(), eb(), ei(), ff(), Fh(), mf(), mi() (+21 more)
 
 ### Community 515 - "okf_media"
 Cohesion: 0.29
 Nodes (7): get_okf_parser(), okf_media(), Starlette 0.38's FileResponse (the version this app is pinned to) does     NOT i, Resolve an OKF concept's resource: field and serve it directly — for a     "watc, _serve_file_with_range(), Request, Response
 
 ## Knowledge Gaps
-- **2605 isolated node(s):** `NAV_GROUPS`, `VIEW_LABELS`, `CLASSES`, `STUDENTS`, `CALENDAR_EVENTS` (+2600 more)
+- **2606 isolated node(s):** `NAV_GROUPS`, `VIEW_LABELS`, `CLASSES`, `STUDENTS`, `CALENDAR_EVENTS` (+2601 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **89 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **87 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `v()` connect `xk` to `mod_2.js`, `mod_0.js`, `index.md`, `SyllabusMap.tsx`, `Easy Worked Examples`, `m`, `LearningResources.tsx`?**
+- **Why does `v()` connect `xk` to `mod_2.js`, `mod_0.js`, `index.md`, `SyllabusMap.tsx`, `Easy Worked Examples`, `m`, `LearningResources.tsx`, `xa`?**
   _High betweenness centrality (0.012) - this node is a cross-community bridge._
-- **Why does `p()` connect `mod_1.js` to `mod_0.js`, `db-schema-design.md`, `.renderVals`, `Summative Assessment`, `Chapter 6: Triangles`, `xa`?**
-  _High betweenness centrality (0.011) - this node is a cross-community bridge._
+- **Why does `p()` connect `mod_1.js` to `mod_0.js`, `Summative Assessment`, `.renderVals`, `db-schema-design.md`, `Chapter 6: Triangles`?**
+  _High betweenness centrality (0.010) - this node is a cross-community bridge._
 - **Why does `Component` connect `Component` to `app.js`, `.renderVals`, `.confirmAssignFromBank`, `buildSectionQuestions`, `.syncGlobalContext`, `.routeChat`?**
   _High betweenness centrality (0.008) - this node is a cross-community bridge._
 - **Are the 45 inferred relationships involving `IngestionPipeline` (e.g. with `AcademicYearOut` and `ChatRequest`) actually correct?**

@@ -240,8 +240,8 @@
     "semantic_hash": ""
   },
   "edova-web/src/pages/Settings.tsx": {
-    "mtime": 1784779099.441306,
-    "ast_hash": "c8db8c0e3ada85cc8b03e4f9d8b448cb",
+    "mtime": 1784780052.8744936,
+    "ast_hash": "6b2cc77f473e0a4028be459b2974a0cd",
     "semantic_hash": ""
   },
   "edova-web/src/pages/SyllabusMap.tsx": {
@@ -260,8 +260,8 @@
     "semantic_hash": ""
   },
   "edova-web/src/store/school-store.ts": {
-    "mtime": 1784733689.0647538,
-    "ast_hash": "fc0c5d8504f69210acbdb310e81b0daf",
+    "mtime": 1784780022.2458808,
+    "ast_hash": "7c2828c9dc2c974146e1c453b423cd29",
     "semantic_hash": ""
   },
   "edova-web/tsconfig.app.json": {
