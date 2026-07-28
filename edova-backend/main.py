@@ -324,3 +324,86 @@ def list_assignments(classroom_id: str):
             return [_assignment_out(r) for r in cur.fetchall()]
     finally:
         conn.close()
+
+
+class CalendarEventIn(BaseModel):
+    title: str
+    event_type: str  # meeting/holiday/exam/event (assignment due dates come from real assignments, not this)
+    start_at: str  # ISO 8601
+    end_at: Optional[str] = None
+    is_all_day: bool = False
+    visibility: str = "school"  # or "private"
+    classroom_id: Optional[str] = None
+
+
+class CalendarEventOut(BaseModel):
+    id: str
+    title: str
+    event_type: str
+    start_at: str
+    end_at: Optional[str]
+    is_all_day: bool
+    visibility: str
+    classroom_id: Optional[str]
+
+
+def _calendar_event_out(row) -> CalendarEventOut:
+    return CalendarEventOut(
+        id=row["id"],
+        title=row["title"],
+        event_type=row["event_type"],
+        start_at=row["start_at"].isoformat(),
+        end_at=row["end_at"].isoformat() if row["end_at"] else None,
+        is_all_day=row["is_all_day"],
+        visibility=row["visibility"],
+        classroom_id=row["classroom_id"],
+    )
+
+
+# Personal/school-scoped, unlike the fully-public classroom/roster reads --
+# both GET and POST require a valid session (the first authenticated read
+# endpoint; assignment writes were the first authenticated write).
+@app.post("/api/calendar-events", response_model=CalendarEventOut, status_code=201)
+def create_calendar_event(body: CalendarEventIn, authorization: Optional[str] = Header(None)):
+    user, _ = _authenticated_user(authorization)
+    conn = _get_conn()
+    try:
+        with conn.cursor() as cur:
+            new_id = str(uuid.uuid4())
+            cur.execute(
+                """
+                INSERT INTO calendar_events
+                    (id, classroom_id, created_by, title, event_type, start_at, end_at, is_all_day, visibility)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING id, title, event_type, start_at, end_at, is_all_day, visibility, classroom_id
+                """,
+                (
+                    new_id, body.classroom_id, user["id"], body.title, body.event_type,
+                    body.start_at, body.end_at, body.is_all_day, body.visibility,
+                ),
+            )
+            row = cur.fetchone()
+            conn.commit()
+            return _calendar_event_out(row)
+    finally:
+        conn.close()
+
+
+@app.get("/api/calendar-events", response_model=List[CalendarEventOut])
+def list_calendar_events(authorization: Optional[str] = Header(None)):
+    user, _ = _authenticated_user(authorization)
+    conn = _get_conn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT id, title, event_type, start_at, end_at, is_all_day, visibility, classroom_id
+                FROM calendar_events
+                WHERE deleted_at IS NULL AND (created_by = %s OR visibility = 'school')
+                ORDER BY start_at
+                """,
+                (user["id"],),
+            )
+            return [_calendar_event_out(r) for r in cur.fetchall()]
+    finally:
+        conn.close()
