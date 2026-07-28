@@ -11,5 +11,6 @@ build/
 
 # Runtime data / generated artifacts, not source.
 ncert_rag/clerk/clerk.db
+ncert_rag/clerk/*.log
 edova-third-brain/okf-bundle/cache/
 graphify-out/cache/
