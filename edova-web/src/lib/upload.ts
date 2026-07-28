@@ -32,6 +32,7 @@ export async function uploadLearningResource(args: {
   subject: string
   chapter: string
   docType: string
+  topicId?: string
 }): Promise<CompleteResult> {
   const { file } = args
 
@@ -58,5 +59,6 @@ export async function uploadLearningResource(args: {
     subject: args.subject,
     chapter: args.chapter,
     doc_type: args.docType,
+    topic_id: args.topicId ?? "",
   })
 }
