@@ -1,0 +1,253 @@
+{
+  "id": "waste-management-5rs",
+  "title": "The 5 Rs of Waste Management",
+  "subtitle": "Refuse, Reduce, Reuse, Recycle, Rot",
+  "metadata": {
+    "board": "CBSE",
+    "grade": 10,
+    "subject": "Science",
+    "chapter": "Sustainable Management of Natural Resources"
+  },
+  "chooseN": {
+    "enabled": true,
+    "answerCount": 4,
+    "ofTotal": 5,
+    "prompt": "Pick any 4 of these 5 questions to answer."
+  },
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "scenes": [
+    {
+      "id": "scene_title",
+      "type": "title",
+      "title": "The 5 Rs of Waste Management",
+      "subtitle": "Refuse - Reduce - Reuse - Recycle - Rot",
+      "durationInFrames": 90
+    },
+    {
+      "id": "scene_pyramid",
+      "type": "diagram",
+      "title": "Observe the waste management pyramid",
+      "durationInFrames": 180,
+      "diagram": {
+        "kind": "pyramid",
+        "tiers": [
+          { "id": "refuse", "label": "Refuse", "sublabel": "what you don't need", "color": "#1b5e20" },
+          { "id": "reduce", "label": "Reduce", "sublabel": "what you do need", "color": "#2e7d32" },
+          { "id": "reuse", "label": "Reuse", "sublabel": "what you consume", "color": "#43a047" },
+          { "id": "recycle", "label": "Recycle", "sublabel": "what you cannot refuse, reduce, or reuse", "color": "#66bb6a" },
+          { "id": "rot", "label": "Rot", "sublabel": "compost the rest", "color": "#a5d6a7" }
+        ]
+      }
+    },
+    {
+      "id": "scene_8_1",
+      "type": "mcq",
+      "sourceRef": "8.1",
+      "prompt": "Choose the waste management strategy that is matched with the correct example.",
+      "optionRenderStyle": "table",
+      "options": [
+        {
+          "id": "a",
+          "text": "Refuse: Choose products that use less packaging",
+          "tableRow": { "label": "Refuse", "value": "Choose products that use less packaging" },
+          "correct": false,
+          "misconception": "This example is really about Reduce, not Refuse - choosing less packaging cuts down what you consume, it doesn't turn down something you never needed in the first place."
+        },
+        {
+          "id": "b",
+          "text": "Reduce: Give unwanted toys and books to hospitals or schools",
+          "tableRow": { "label": "Reduce", "value": "Give unwanted toys and books to hospitals or schools" },
+          "correct": false,
+          "misconception": "This example is really about Reuse - giving an item a second life with a new owner keeps it in use, it doesn't lower how much you consume."
+        },
+        {
+          "id": "c",
+          "text": "Reuse: Not using single-use plastic",
+          "tableRow": { "label": "Reuse", "value": "Not using single-use plastic" },
+          "correct": false,
+          "misconception": "This example is really about Refuse - declining single-use plastic at the point of purchase means never taking it on in the first place, not reusing something you already have."
+        },
+        {
+          "id": "d",
+          "text": "Repurpose: Making a flower pot from a used plastic bottle",
+          "tableRow": { "label": "Repurpose", "value": "Making a flower pot from a used plastic bottle" },
+          "correct": true,
+          "correctRationale": "This is the one pair that actually matches: turning a used bottle into a flower pot gives a discarded object a new function, which is exactly what repurposing means - the same trick households use with jars-as-pen-holders or tyres-as-planters."
+        }
+      ]
+    },
+    {
+      "id": "scene_8_2",
+      "type": "mcq",
+      "sourceRef": "8.2",
+      "prompt": "Recycling of paper is a good practice, but recycled paper should not be used as food packaging because",
+      "optionRenderStyle": "plain",
+      "options": [
+        {
+          "id": "a",
+          "text": "recycled paper may release colour/dyes onto food items",
+          "correct": true,
+          "correctRationale": "Recycled paper carries ink and dye residue from its previous life, which can leach into food - the same reason greasy, ink-stained pizza boxes are rejected from paper recycling instead of being turned back into food packaging."
+        },
+        {
+          "id": "b",
+          "text": "recycled paper is not absorbent",
+          "correct": false,
+          "misconception": "Recycling doesn't strip paper of its absorbency - the real food-safety concern is chemical and dye contamination carried over from the paper's earlier use, not its texture."
+        },
+        {
+          "id": "c",
+          "text": "recycled paper can cause infection due to release of methane",
+          "correct": false,
+          "misconception": "Methane is released by decomposing organic waste in landfills, not by recycled paper - this option mixes up two unrelated waste-management facts."
+        },
+        {
+          "id": "d",
+          "text": "recycled paper is costly",
+          "correct": false,
+          "misconception": "Cost is the opposite problem - recycled paper is generally cheaper than virgin paper. Cost has nothing to do with why it's unsafe for direct food contact."
+        }
+      ]
+    },
+    {
+      "id": "scene_8_3",
+      "type": "scenario_mcq",
+      "sourceRef": "8.3",
+      "prompt": "According to the Solid Waste Management Rules 2016, waste should be segregated into three categories. Which row correctly sorts waste into Wet, Dry, and Hazardous?",
+      "optionRenderStyle": "table",
+      "options": [
+        {
+          "id": "a",
+          "text": "Wet: cooked food & vegetable peels | Dry: used bulbs, fluorescent lamps | Hazardous: plastic carry bags, bottles, newspaper, cardboard",
+          "correct": false,
+          "misconception": "Dry and hazardous are swapped here - bulbs and fluorescent lamps contain mercury and belong in hazardous waste, while plastic bags, bottles, newspaper, and cardboard are ordinary dry waste."
+        },
+        {
+          "id": "b",
+          "text": "Wet: coffee & tea powder, garden waste | Dry: plastic carry bags, bottles, newspaper, cardboard | Hazardous: expired medicines, razors, paint cans",
+          "correct": true,
+          "correctRationale": "This matches how municipal segregation actually works: green/wet bins for biodegradable kitchen and garden waste, blue/dry bins for recyclable plastics and paper, and red/hazardous bins for anything that can injure or poison - sharps, expired medicine, and paint."
+        },
+        {
+          "id": "c",
+          "text": "Wet: leftover food & vegetable peels | Dry: coffee & tea powder, garden waste | Hazardous: insect repellents, cleaning solutions",
+          "correct": false,
+          "misconception": "Coffee and tea powder and garden waste are wet/biodegradable waste, not dry waste - they were placed in the wrong column here."
+        },
+        {
+          "id": "d",
+          "text": "Wet: uncooked food, tea leaves | Dry: old crockery, frying pans | Hazardous: coffee & tea powder, garden waste",
+          "correct": false,
+          "misconception": "Coffee, tea powder, and garden waste are biodegradable wet waste, not hazardous - and old crockery/frying pans are general dry waste, not a hazard category."
+        }
+      ],
+      "scenarioAnimation": {
+        "bins": [
+          { "id": "wet", "label": "Wet Waste", "color": "#2e7d32" },
+          { "id": "dry", "label": "Dry Waste", "color": "#1565c0" },
+          { "id": "hazardous", "label": "Hazardous Waste", "color": "#c62828" }
+        ],
+        "items": [
+          { "id": "peels", "label": "Vegetable peels", "correctBinId": "wet" },
+          { "id": "tea_powder", "label": "Tea powder", "correctBinId": "wet" },
+          { "id": "garden_waste", "label": "Garden waste", "correctBinId": "wet" },
+          { "id": "carry_bags", "label": "Plastic carry bags", "correctBinId": "dry" },
+          { "id": "newspaper", "label": "Newspaper", "correctBinId": "dry" },
+          { "id": "medicines", "label": "Expired medicines", "correctBinId": "hazardous" },
+          { "id": "paint_cans", "label": "Paint cans", "correctBinId": "hazardous" }
+        ]
+      }
+    },
+    {
+      "id": "scene_8_4",
+      "type": "mcq",
+      "sourceRef": "8.4",
+      "prompt": "Effective segregation of waste at the point of generation is very important. Select the statements that correctly explain why: i) less waste goes to landfills, ii) it is better for public health and the environment, iii) it helps in reducing the waste generated, iv) it results in deterioration of a waste picker's health.",
+      "optionRenderStyle": "plain",
+      "options": [
+        {
+          "id": "a",
+          "text": "both i) and ii)",
+          "correct": true,
+          "correctRationale": "Segregated waste sends less to landfills (because recyclables and compostables are diverted) and reduces contamination and disease spread - both genuine, well-documented benefits of source segregation."
+        },
+        {
+          "id": "b",
+          "text": "both i) and iii)",
+          "correct": false,
+          "misconception": "Statement iii) confuses segregation with reduction. Segregating waste sorts it into streams for proper processing - it doesn't shrink the amount of waste generated in the first place; that's what the 'Reduce' R does."
+        },
+        {
+          "id": "c",
+          "text": "both ii) and iii)",
+          "correct": false,
+          "misconception": "Same mix-up as above: iii) describes reduction, not segregation. Segregation and reduction are two different Rs in the waste hierarchy."
+        },
+        {
+          "id": "d",
+          "text": "both i) and iv)",
+          "correct": false,
+          "misconception": "Statement iv) reverses the real effect. Keeping hazardous and wet waste separated from dry recyclables actually protects waste pickers by reducing their exposure to sharp, toxic, or contaminated material - it improves their safety, not deteriorates it."
+        }
+      ]
+    },
+    {
+      "id": "scene_8_5",
+      "type": "scenario_mcq",
+      "sourceRef": "8.5",
+      "prompt": "When recycling a plastic water bottle with a cap, what should you do with the cap?",
+      "optionRenderStyle": "plain",
+      "options": [
+        {
+          "id": "a",
+          "text": "Throw the cap in the garbage can and put the bottle in the recycling bin",
+          "correct": false,
+          "misconception": "Separating them sends a perfectly recyclable cap to landfill for no reason - caps are recyclable too, they just need to stay attached to make it through sorting."
+        },
+        {
+          "id": "b",
+          "text": "Screw the cap back onto the bottle, then put both in the recycling bin",
+          "correct": true,
+          "correctRationale": "Bottle caps are usually a different plastic (HDPE/PP) than the bottle body (PET) and are too small for sorting machinery to catch on their own - screwing the cap back on keeps it attached through the sorting process so both get recycled instead of the cap falling through as litter."
+        },
+        {
+          "id": "c",
+          "text": "Screw the cap back onto the bottle, then put both in the garbage can",
+          "correct": false,
+          "misconception": "This throws away a fully recyclable bottle and cap together - keeping them attached is right, but they belong in the recycling bin, not the garbage."
+        },
+        {
+          "id": "d",
+          "text": "Recycle the cap separately from the bottle",
+          "correct": false,
+          "misconception": "Small caps dropped loose onto a sorting line usually fall through the machinery's screens and end up as landfill or litter instead of being recycled - keeping the cap on the bottle is what actually gets it recycled."
+        }
+      ],
+      "scenarioAnimation": {
+        "bins": [
+          { "id": "recycling", "label": "Recycling Bin", "color": "#1565c0" },
+          { "id": "landfill", "label": "Garbage", "color": "#616161" }
+        ],
+        "items": [
+          { "id": "bottle", "label": "Bottle", "correctBinId": "recycling" },
+          { "id": "cap", "label": "Cap (screwed on)", "correctBinId": "recycling" }
+        ]
+      }
+    },
+    {
+      "id": "scene_summary",
+      "type": "summary",
+      "title": "Recap: The 5 Rs",
+      "durationInFrames": 150,
+      "recapLines": [
+        "Refuse what you don't need",
+        "Reduce what you do need",
+        "Reuse what you consume",
+        "Recycle what you can't refuse, reduce, or reuse",
+        "Rot (compost) the rest"
+      ]
+    }
+  ]
+}
