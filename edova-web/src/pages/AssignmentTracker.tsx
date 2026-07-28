@@ -63,6 +63,8 @@ export default function AssignmentTracker() {
   const realStudents = useSchoolStore((s) => s.realStudents)
   const hydrateRealStudents = useSchoolStore((s) => s.hydrateRealStudents)
   useEffect(() => { hydrateRealStudents() }, [hydrateRealStudents])
+  const hydrateAssignments = useSchoolStore((s) => s.hydrateAssignments)
+  useEffect(() => { hydrateAssignments() }, [hydrateAssignments])
 
   // ---- Summary stats. Every number is derived from the live `assignments`
   // array / roster lengths — never a hardcoded count that could drift. The

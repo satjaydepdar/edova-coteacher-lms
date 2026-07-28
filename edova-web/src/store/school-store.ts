@@ -15,9 +15,17 @@ import type {
   MasterTimetableRow,
   AssessmentBankItem,
 } from "@/lib/types"
+import { useAppStore } from "@/store/app-store"
+import { parseShortDate } from "@/lib/dates"
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8001"
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL ?? "http://localhost:8003"
+
+const MONTH_SHORT = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+]
+const formatShortDate = (d: Date) => `${MONTH_SHORT[d.getMonth()]} ${d.getDate()}`
 
 // A real classroom's roster (edova-backend), keyed by student id, so any
 // page can resolve a submission's studentId to a display name/rollNo
@@ -109,6 +117,7 @@ const focusKey = (f: Focus) => `${f.year}|${f.board}|${f.classLabel}|${f.subject
 // realStudents needs no focus-keying (unlike hydrateCurriculum) -- it's one
 // flat, app-wide roster lookup, fetched once and shared by every page.
 let realStudentsHydration: Promise<void> | null = null
+let assignmentsHydration: Promise<void> | null = null
 
 // Shared mutable "schoolConfig" — mirrors the mockup Component's schoolConfig
 // state so mutations persist across navigation and propagate cross-view
@@ -161,10 +170,22 @@ interface SchoolState {
   // off seed.ts's STUDENTS.
   realStudents: Record<string, StudentDisplay>
   realStudentsList: (StudentDisplay & { id: string })[]
+  // Real classroom backend id, keyed by the matching fake CLASSES id (e.g.
+  // { c10: "<real classroom uuid>" }) -- built by the same
+  // subject/class_level/section match AssignmentWizard.tsx already uses for
+  // its own roster fetch. Lets publishAssignment/hydrateAssignments below
+  // know which classrooms have a real backend to write to.
+  realClassroomIdByFakeId: Record<string, string>
   hydrateRealStudents: () => Promise<void>
 
   // Assignments (app.js:submitNewAssignment / handleScoreChange).
-  publishAssignment: (assignment: Assignment) => void
+  // publishAssignment writes a real row when assignment.classId is a known
+  // real classroom (currently just Class 10); any other class keeps
+  // today's in-memory-only behavior, with a graceful fallback either way.
+  hydrateAssignments: () => Promise<void>
+  // Returns the assignment's final id -- the real backend id when persisted,
+  // otherwise the same id that was passed in (fake-class fallback).
+  publishAssignment: (assignment: Assignment) => Promise<string>
   setSubmissionScore: (
     assignmentId: string,
     studentId: string,
@@ -292,13 +313,15 @@ export const useSchoolStore = create<SchoolState>()((set, get) => ({
 
   realStudents: {},
   realStudentsList: [],
+  realClassroomIdByFakeId: {},
   hydrateRealStudents: () => {
     if (!realStudentsHydration) {
       realStudentsHydration = (async () => {
-        const classrooms: { id: string }[] = await fetch(`${BACKEND_API_URL}/api/classrooms`).then((r) => {
-          if (!r.ok) throw new Error(`API ${r.status}`)
-          return r.json()
-        })
+        const classrooms: { id: string; class_level: number; section: string | null; subject: string }[] =
+          await fetch(`${BACKEND_API_URL}/api/classrooms`).then((r) => {
+            if (!r.ok) throw new Error(`API ${r.status}`)
+            return r.json()
+          })
         const rosters = await Promise.all(
           classrooms.map((c) =>
             fetch(`${BACKEND_API_URL}/api/classrooms/${c.id}/students`).then((r) => (r.ok ? r.json() : []))
@@ -313,7 +336,20 @@ export const useSchoolStore = create<SchoolState>()((set, get) => ({
             list.push({ id: s.id, ...entry })
           }
         }
-        set({ realStudents: map, realStudentsList: list })
+        // Same subject/class_level/section match AssignmentWizard.tsx's own
+        // roster fetch uses -- backend and seed.ts don't share a punctuation
+        // convention for names, so match on meaning, not exact string.
+        const classroomIds: Record<string, string> = {}
+        for (const rc of classrooms) {
+          const cls = CLASSES.find(
+            (c) =>
+              c.subject === rc.subject &&
+              c.name.includes(`Class ${rc.class_level}`) &&
+              (!rc.section || c.name.includes(rc.section)),
+          )
+          if (cls) classroomIds[cls.id] = rc.id
+        }
+        set({ realStudents: map, realStudentsList: list, realClassroomIdByFakeId: classroomIds })
       })().catch((err) => {
         realStudentsHydration = null // retry on next call
         console.warn("real students hydration failed, falling back to seed data:", err)
@@ -322,8 +358,99 @@ export const useSchoolStore = create<SchoolState>()((set, get) => ({
     return realStudentsHydration
   },
 
-  publishAssignment: (assignment) =>
-    set((s) => ({ assignments: [assignment, ...s.assignments] })),
+  hydrateAssignments: () => {
+    if (!assignmentsHydration) {
+      assignmentsHydration = (async () => {
+        // Depends on realClassroomIdByFakeId + realStudentsList being
+        // populated first (same real-classroom lookup, and each hydrated
+        // assignment's submissions are built from the real roster).
+        await get().hydrateRealStudents()
+        const classroomIds = get().realClassroomIdByFakeId
+        const roster = get().realStudentsList
+        for (const [fakeClassId, realClassroomId] of Object.entries(classroomIds)) {
+          const rows: {
+            id: string; title: string; description: string; due_date: string | null
+            points_possible: number; submission_type: string; created_at: string
+          }[] = await fetch(`${BACKEND_API_URL}/api/classrooms/${realClassroomId}/assignments`).then((r) => {
+            if (!r.ok) throw new Error(`API ${r.status}`)
+            return r.json()
+          })
+          set((s) => {
+            const existingIds = new Set(s.assignments.map((a) => a.id))
+            const cls = CLASSES.find((c) => c.id === fakeClassId)
+            const fresh: Assignment[] = rows
+              .filter((r) => !existingIds.has(r.id))
+              .map((r) => ({
+                id: r.id,
+                title: r.title,
+                classId: fakeClassId,
+                subject: cls?.subject ?? "",
+                term: "Term 2",
+                academicYear: useAppStore.getState().academicYear,
+                due: r.due_date ? formatShortDate(new Date(r.due_date)) : "",
+                totalPoints: r.points_possible,
+                status: "active",
+                sourceAssessmentId: null,
+                publishedToStudents: true,
+                createdOn: formatShortDate(new Date(r.created_at)),
+                submissions: roster.map((st) => ({
+                  studentId: st.id,
+                  status: "not_started",
+                  submittedOn: "",
+                  score: null,
+                  feedback: "",
+                })),
+                type: r.submission_type as Assignment["type"],
+                description: r.description,
+                attachments: [],
+              }))
+            // Only add, never overwrite -- don't clobber session-local edits
+            // to an assignment already present.
+            return fresh.length ? { assignments: [...fresh, ...s.assignments] } : {}
+          })
+        }
+      })().catch((err) => {
+        assignmentsHydration = null // retry on next call
+        console.warn("assignment hydration failed, falling back to seed data:", err)
+      })
+    }
+    return assignmentsHydration
+  },
+
+  publishAssignment: async (assignment) => {
+    // Callers (e.g. AssignmentWizard) don't all hydrate the real-classroom
+    // map themselves -- this action is self-sufficient regardless of which
+    // page triggered it. Cheap: hydrateRealStudents is cached after its
+    // first successful call.
+    await get().hydrateRealStudents()
+    const realClassroomId = get().realClassroomIdByFakeId[assignment.classId]
+    const token = useAppStore.getState().session?.token
+    if (realClassroomId && token) {
+      try {
+        const res = await fetch(`${BACKEND_API_URL}/api/classrooms/${realClassroomId}/assignments`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({
+            title: assignment.title,
+            description: assignment.description ?? "",
+            due_date: assignment.due ? parseShortDate(assignment.due).toISOString() : null,
+            points_possible: assignment.totalPoints,
+            submission_type: assignment.type ?? "written",
+            attachments: [],
+          }),
+        })
+        if (!res.ok) throw new Error(`API ${res.status}`)
+        const row: { id: string; created_at: string } = await res.json()
+        const persisted = { ...assignment, id: row.id, createdOn: formatShortDate(new Date(row.created_at)) }
+        set((s) => ({ assignments: [persisted, ...s.assignments] }))
+        return persisted.id
+      } catch (err) {
+        console.warn("assignment publish failed, keeping it local-only:", err)
+      }
+    }
+    set((s) => ({ assignments: [assignment, ...s.assignments] }))
+    return assignment.id
+  },
   setSubmissionScore: (assignmentId, studentId, value) =>
     set((s) => ({
       assignments: s.assignments.map((a) => {

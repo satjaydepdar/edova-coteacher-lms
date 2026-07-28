@@ -171,12 +171,12 @@ export default function AssignmentWizard() {
     }
   }
 
-  function handlePublish() {
+  async function handlePublish() {
     if (!title.trim() || selectedClassIds.length === 0) return
     const due = `${MONTH_SHORT[APP_TODAY.getMonth()]} ${dueDay}`
     const totalPoints = Number(marks) || 20
     let firstId = ""
-    selectedClassIds.forEach((classId, idx) => {
+    for (const [idx, classId] of selectedClassIds.entries()) {
       const cls = CLASSES.find((c) => c.id === classId)
       const realRoster = realRosterByClassId[classId]
       const roster = realRoster && realRoster.length > 0
@@ -190,7 +190,6 @@ export default function AssignmentWizard() {
         feedback: "",
       }))
       const id = `a_${Date.now()}_${idx}`
-      if (idx === 0) firstId = id
       const assignment: Assignment = {
         id,
         title,
@@ -209,8 +208,9 @@ export default function AssignmentWizard() {
         description,
         attachments,
       }
-      publishAssignment(assignment)
-    })
+      const finalId = await publishAssignment(assignment)
+      if (idx === 0) firstId = finalId
+    }
     showFlash("homework", `"${title}" published to ${selectedClassIds.length} class${selectedClassIds.length > 1 ? "es" : ""}.`)
     navigate(`/assignment-tracker/${firstId}`)
   }
