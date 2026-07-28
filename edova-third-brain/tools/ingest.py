@@ -87,7 +87,8 @@ def write_json(path: Path, data):
     path.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
 
-def ingest(subject: str, chapter_id: str, chapter_name: str, doc_type: str, file_path: Path):
+def ingest(subject: str, chapter_id: str, chapter_name: str, doc_type: str, file_path: Path,
+           trust: dict | None = None, topic_id: str | None = None):
     config = load_config()
     bundle = ROOT / config["paths"]["okf_bundle"]
 
@@ -114,16 +115,26 @@ def ingest(subject: str, chapter_id: str, chapter_name: str, doc_type: str, file
     now = datetime.now(timezone.utc).isoformat()
 
     # 1. node
+    # trust tells a consumer how this filing decision was made:
+    #   unverified       - no signal at all (default; e.g. direct CLI use)
+    #   auto_classified  - classify.py picked subject/chapter/type; carries
+    #                      its confidence score so a low-confidence guess
+    #                      can be told apart from a fairly sure one
+    #   teacher_reviewed - a person confirmed it (either an app upload,
+    #                      where a teacher chose subject/chapter/type
+    #                      themselves, or a later explicit review)
     node = {
         "doc_id": doc_id,
         "title": file_path.stem,
         "subject": subject,
         "chapter_id": chapter_id,
         "chapter_name": chapter_name,
+        "topic_id": topic_id,
         "doc_type": doc_type,
         "source_path": file_path.relative_to(ROOT).as_posix(),
         "file_hash": h,
         "ingested_at": now,
+        "trust": trust or {"status": "unverified"},
     }
     write_json(node_path, node)
 

@@ -97,7 +97,8 @@ def file_document(decision, src: Path, chapters_by_id, bundle):
 
     with contextlib.redirect_stdout(io.StringIO()):
         result = ingest(decision["subject"], decision["chapter_id"],
-                        chapter["chapter_name"], doc_type, dest)
+                        chapter["chapter_name"], doc_type, dest,
+                        trust={"status": "auto_classified", "confidence": decision.get("confidence")})
     return result, doc_type, dest
 
 

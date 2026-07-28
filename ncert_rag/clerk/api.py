@@ -23,9 +23,21 @@ Implements exactly the contract edova-web expects from VITE_API_URL:
     GET    /api/class-sections/{section_id}/progress
     PUT    /api/class-sections/{section_id}/topics/{topic_id}
 
+  Student gamification + quiz (LearningHub.tsx)
+    GET    /api/students/{student_id}/gamification   (xp/streak + mistake notebook)
+    POST   /api/students/{student_id}/xp             (streak rollover on daily activity)
+    POST   /api/students/{student_id}/mistakes
+    POST   /api/students/{student_id}/flags
+    GET    /api/learning/quiz?topic_id=              (empty questions when unseeded, never 404)
+
+  Student personal wiki (PdfViewerWithNotes.tsx, WikiPage.tsx)
+    GET    /api/students/{student_id}/wiki            (lazy-create-or-fetch)
+    POST   /api/students/{student_id}/wiki/notes      (append a chapter note block)
+
   Teacher uploads (lib/upload.ts): presign -> browser PUT to S3 -> complete
     POST   /uploads/presign
     POST   /uploads/complete
+    POST   /api/resources/{doc_id}/verify   (mark a resource teacher_reviewed)
 
 Storage: SQLite (clerk.db, created next to this file, seeded on first run with
 the 2026–27 CBSE Class 10 Mathematics + Science curriculum matching the OKF
@@ -41,7 +53,7 @@ import sqlite3
 import sys
 import uuid
 from contextlib import contextmanager
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -142,6 +154,34 @@ CREATE TABLE IF NOT EXISTS section_topic_progress (
   topic_id TEXT REFERENCES syllabus_topics(id) ON DELETE CASCADE,
   taught_on TEXT, UNIQUE(section_id, topic_id)
 );
+CREATE TABLE IF NOT EXISTS students (
+  id TEXT PRIMARY KEY, name TEXT NOT NULL, xp INTEGER NOT NULL DEFAULT 0,
+  streak INTEGER NOT NULL DEFAULT 0, last_activity TEXT  -- ISO date YYYY-MM-DD
+);
+CREATE TABLE IF NOT EXISTS student_mistakes (
+  id TEXT PRIMARY KEY, student_id TEXT NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  topic_id TEXT, chapter TEXT NOT NULL, question TEXT NOT NULL,
+  your_answer TEXT NOT NULL, correct_answer TEXT NOT NULL,
+  solution TEXT NOT NULL, created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS student_flags (
+  id TEXT PRIMARY KEY, student_id TEXT NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  context TEXT NOT NULL, created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS quizzes (
+  id TEXT PRIMARY KEY, topic_id TEXT NOT NULL REFERENCES syllabus_topics(id) ON DELETE CASCADE,
+  questions TEXT NOT NULL  -- JSON array [{q, opts:[str], ans:int, exp:str}]
+);
+CREATE TABLE IF NOT EXISTS student_wiki_pages (
+  id TEXT PRIMARY KEY, student_id TEXT NOT NULL UNIQUE, slug TEXT NOT NULL UNIQUE,
+  title TEXT NOT NULL, content_markdown TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS student_chapter_notes (
+  id TEXT PRIMARY KEY, student_id TEXT NOT NULL,
+  chapter_number INTEGER, chapter_name TEXT NOT NULL,
+  note_text TEXT NOT NULL, created_at TEXT NOT NULL
+);
 """
 
 # Seed: 2026–27 CBSE Class 10 with the two subjects whose textbook chapters
@@ -215,6 +255,45 @@ def seed(conn: sqlite3.Connection):
                         (new_id("top"), ch_id, t_no, title))
 
 
+# Gamification seed is separate from the one-shot syllabus seed() above:
+# clerk.db already exists in the wild, so seed()'s academic_years count guard
+# skips — this runs on every boot, idempotently (INSERT OR IGNORE, fixed ids).
+SEED_QUIZ_QUESTIONS = [
+    {"q": "What is the law of reflection?", "opts": ["i = r", "i > r", "i < r"], "ans": 0,
+     "exp": "Angle of incidence equals angle of reflection"},
+    {"q": "Type of reflection on smooth surface?", "opts": ["Diffuse", "Regular", "Scattered"],
+     "ans": 1, "exp": "Smooth surface gives regular reflection"},
+    {"q": "Incident ray 45°, reflected?", "opts": ["30°", "45°", "90°"], "ans": 1,
+     "exp": "i = r so 45°"},
+]
+
+
+def seed_gamification(conn: sqlite3.Connection):
+    conn.execute(
+        "INSERT OR IGNORE INTO students (id, name, xp, streak, last_activity)"
+        " VALUES ('stu_demo', 'Aarav Sharma', 1240, 7, NULL)")
+    conn.execute(
+        "INSERT OR IGNORE INTO student_mistakes"
+        " (id, student_id, topic_id, chapter, question, your_answer, correct_answer, solution, created_at)"
+        " VALUES ('mis_seed_reflection', 'stu_demo', NULL, ?, ?, ?, ?, ?, '2026-07-24')",
+        ("Light — Reflection and Refraction", "Angle of incidence = ?", "30°", "45°",
+         "Use law: i = r. Mirror angle was 45°"))
+    # Resolve the quiz topic at seed time: 'Laws of Reflection' under the
+    # Science chapter numbered 9 ('Light — Reflection and Refraction').
+    topic = conn.execute(
+        "SELECT t.id FROM syllabus_topics t"
+        " JOIN syllabus_chapters c ON t.chapter_id = c.id"
+        " JOIN syllabus_units u ON c.unit_id = u.id"
+        " JOIN subjects s ON u.subject_id = s.id"
+        " WHERE t.title = 'Laws of Reflection' AND c.number = 9"
+        " AND c.name = 'Light — Reflection and Refraction' AND s.subject_name = 'Science'"
+    ).fetchone()
+    if topic:
+        conn.execute(
+            "INSERT OR IGNORE INTO quizzes (id, topic_id, questions) VALUES ('quiz_seed_reflection', ?, ?)",
+            (topic["id"], json.dumps(SEED_QUIZ_QUESTIONS)))
+
+
 def _ensure_column(conn: sqlite3.Connection, table: str, col: str, coltype: str):
     cols = [r[1] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()]
     if col not in cols:
@@ -225,6 +304,7 @@ with db() as _conn:
     _conn.executescript(SCHEMA)
     _ensure_column(_conn, "syllabus_units", "number", "INTEGER")
     seed(_conn)
+    seed_gamification(_conn)
 
 
 # ---------- serializers ----------
@@ -277,6 +357,14 @@ def plan_row(r: sqlite3.Row) -> dict:
         "objective": r["objective"], "materials": json.loads(r["materials"] or "[]"),
         "warmup": r["warmup"], "instruction": r["instruction"], "activity": r["activity"],
         "assessment": r["assessment"], "homework": r["homework"], "created_at": r["created_at"],
+    }
+
+
+def mistake_row(r: sqlite3.Row) -> dict:
+    return {
+        "id": r["id"], "q": r["question"], "yourAns": r["your_answer"],
+        "correct": r["correct_answer"], "chapter": r["chapter"],
+        "date": r["created_at"], "solution": r["solution"],
     }
 
 
@@ -459,8 +547,19 @@ def get_subject_resources(subject_id: str):
         out.append({
             "id": r["id"], "title": r["title"], "type": r["type"],
             "doc_type": r.get("doc_type"), "chapter_number": ref[1],
+            "topic_id": r.get("topic_id"),
             "s3_key": r.get("s3_key"), "preview_s3_key": r.get("previewS3Key"),
             "status": r.get("status", "ready"),
+            # Not produced by the ingest pipeline yet — no manifest entry
+            # carries one today — but passed through so a YouTube/podcast/
+            # external-reference resource is openable the moment one exists,
+            # with no API change needed.
+            "external_url": r.get("external_url"),
+            # unverified / auto_classified (carries a confidence score) /
+            # teacher_reviewed — see ingest.py's node docstring for the
+            # meaning of each. Missing on resources catalogued before this
+            # field existed, hence the fallback.
+            "trust": r.get("trust", {"status": "unverified"}),
         })
     return out
 
@@ -661,6 +760,186 @@ def tick_topic(section_id: str, topic_id: str, body: TopicTickIn):
         return {"section_id": section_id, "topic_id": topic_id, "done": body.done}
 
 
+# ---------- student gamification + quiz (Learning Hub) ----------
+
+@app.get("/api/students/{student_id}/gamification")
+def get_gamification(student_id: str):
+    with db() as conn:
+        stu = conn.execute("SELECT * FROM students WHERE id=?", (student_id,)).fetchone()
+        if not stu:
+            raise HTTPException(status_code=404, detail="student not found")
+        rows = conn.execute(
+            "SELECT * FROM student_mistakes WHERE student_id=?"
+            " ORDER BY created_at DESC, rowid DESC", (student_id,)).fetchall()
+        return {"student_id": stu["id"], "xp": stu["xp"], "streak": stu["streak"],
+                "mistakes": [mistake_row(r) for r in rows]}
+
+
+class XpIn(BaseModel):
+    delta: int
+
+
+@app.post("/api/students/{student_id}/xp")
+def add_xp(student_id: str, body: XpIn):
+    """Add XP and roll the daily streak: same day -> unchanged, yesterday ->
+    +1, anything else (gap or first activity) -> reset to 1."""
+    with db() as conn:
+        stu = conn.execute("SELECT * FROM students WHERE id=?", (student_id,)).fetchone()
+        if not stu:
+            raise HTTPException(status_code=404, detail="student not found")
+        today = date.today().isoformat()
+        if stu["last_activity"] == today:
+            streak = stu["streak"]
+        elif stu["last_activity"] == (date.today() - timedelta(days=1)).isoformat():
+            streak = stu["streak"] + 1
+        else:
+            streak = 1
+        xp = stu["xp"] + body.delta
+        conn.execute("UPDATE students SET xp=?, streak=?, last_activity=? WHERE id=?",
+                     (xp, streak, today, student_id))
+        return {"xp": xp, "streak": streak}
+
+
+class MistakeIn(BaseModel):
+    topic_id: Optional[str] = None
+    q: str
+    yourAns: str
+    correct: str
+    chapter: str
+    solution: str
+
+
+@app.post("/api/students/{student_id}/mistakes")
+def add_mistake(student_id: str, body: MistakeIn):
+    with db() as conn:
+        stu = conn.execute("SELECT 1 FROM students WHERE id=?", (student_id,)).fetchone()
+        if not stu:
+            raise HTTPException(status_code=404, detail="student not found")
+        mid = new_id("mis")
+        conn.execute(
+            "INSERT INTO student_mistakes"
+            " (id, student_id, topic_id, chapter, question, your_answer, correct_answer, solution, created_at)"
+            " VALUES (?,?,?,?,?,?,?,?,?)",
+            (mid, student_id, body.topic_id, body.chapter, body.q, body.yourAns,
+             body.correct, body.solution, date.today().isoformat()))
+        return mistake_row(
+            conn.execute("SELECT * FROM student_mistakes WHERE id=?", (mid,)).fetchone())
+
+
+class FlagIn(BaseModel):
+    context: str
+
+
+@app.post("/api/students/{student_id}/flags")
+def add_flag(student_id: str, body: FlagIn):
+    with db() as conn:
+        stu = conn.execute("SELECT 1 FROM students WHERE id=?", (student_id,)).fetchone()
+        if not stu:
+            raise HTTPException(status_code=404, detail="student not found")
+        conn.execute(
+            "INSERT INTO student_flags (id, student_id, context, created_at) VALUES (?,?,?,?)",
+            (new_id("flg"), student_id, body.context, now_iso()))
+        return {"status": "ok"}
+
+
+@app.get("/api/learning/quiz")
+def get_quiz(topic_id: str):
+    """Quiz questions for a topic; empty list (not 404) when no quiz is
+    seeded — the frontend hides the quiz on empty."""
+    with db() as conn:
+        row = conn.execute("SELECT * FROM quizzes WHERE topic_id=?", (topic_id,)).fetchone()
+        return {"topic_id": topic_id,
+                "questions": json.loads(row["questions"]) if row else []}
+
+
+# ---------- student personal wiki (My Notes -> Saved to Wiki) ----------
+#
+# One wiki page per student, lazy-created on first GET. content_markdown is
+# append-only: each save adds one "### [DD-MM-YYYY] Ch-N Chapter Name" block
+# followed by the note text, never rewritten or edited in place — nothing
+# else in the app edits markdown, so there is no update/delete path here.
+
+MAX_NOTE_CHARS = 1000
+# CBSE/India-only app — the note heading date is stamped in IST, not server
+# UTC, so a save made between 00:00-05:30 IST doesn't land under yesterday.
+IST = timezone(timedelta(hours=5, minutes=30))
+
+
+def wiki_row(r: sqlite3.Row, truncated: Optional[bool] = None) -> dict:
+    out = {"slug": r["slug"], "title": r["title"],
+           "content_markdown": r["content_markdown"], "updated_at": r["updated_at"]}
+    # Only meaningful right after a save — omitted (not just False) on every
+    # other read so callers can tell "this response reports a save" apart
+    # from "this wiki page happens to have no truncated notes".
+    if truncated is not None:
+        out["truncated"] = truncated
+    return out
+
+
+def _get_or_create_wiki(conn: sqlite3.Connection, student_id: str, student_name: str) -> sqlite3.Row:
+    row = conn.execute(
+        "SELECT * FROM student_wiki_pages WHERE student_id=?", (student_id,)).fetchone()
+    if row:
+        return row
+    ts = now_iso()
+    conn.execute(
+        "INSERT INTO student_wiki_pages"
+        " (id, student_id, slug, title, content_markdown, created_at, updated_at)"
+        " VALUES (?,?,?,?,?,?,?)"
+        " ON CONFLICT(student_id) DO NOTHING",
+        (new_id("wiki"), student_id, f"student-{student_id}",
+         f"{student_name}'s Learning Wiki", "", ts, ts))
+    return conn.execute(
+        "SELECT * FROM student_wiki_pages WHERE student_id=?", (student_id,)).fetchone()
+
+
+@app.get("/api/students/{student_id}/wiki")
+def get_wiki(student_id: str):
+    with db() as conn:
+        stu = conn.execute("SELECT * FROM students WHERE id=?", (student_id,)).fetchone()
+        if not stu:
+            raise HTTPException(status_code=404, detail="student not found")
+        return wiki_row(_get_or_create_wiki(conn, student_id, stu["name"]))
+
+
+class WikiNoteIn(BaseModel):
+    chapter_number: Optional[int] = None
+    chapter_name: str
+    note_text: str
+
+
+@app.post("/api/students/{student_id}/wiki/notes")
+def add_wiki_note(student_id: str, body: WikiNoteIn):
+    text = body.note_text.strip()
+    if not text:
+        raise HTTPException(status_code=422, detail="note_text is required")
+    truncated = len(text) > MAX_NOTE_CHARS
+    text = text[:MAX_NOTE_CHARS]
+    with db() as conn:
+        stu = conn.execute("SELECT * FROM students WHERE id=?", (student_id,)).fetchone()
+        if not stu:
+            raise HTTPException(status_code=404, detail="student not found")
+        _get_or_create_wiki(conn, student_id, stu["name"])
+        nid = new_id("note")
+        created = now_iso()
+        conn.execute(
+            "INSERT INTO student_chapter_notes"
+            " (id, student_id, chapter_number, chapter_name, note_text, created_at)"
+            " VALUES (?,?,?,?,?,?)",
+            (nid, student_id, body.chapter_number, body.chapter_name, text, created))
+        chapter_label = (f"Ch-{body.chapter_number} {body.chapter_name}"
+                         if body.chapter_number is not None else body.chapter_name)
+        block = (f"\n\n### [{datetime.now(IST).strftime('%d-%m-%Y')}] {chapter_label}\n"
+                 f"{text}\n")
+        conn.execute(
+            "UPDATE student_wiki_pages SET content_markdown = content_markdown || ?,"
+            " updated_at = ? WHERE student_id = ?",
+            (block, created, student_id))
+        row = conn.execute(
+            "SELECT * FROM student_wiki_pages WHERE student_id=?", (student_id,)).fetchone()
+        return wiki_row(row, truncated=truncated)
+
+
 # ---------- teacher uploads (presign -> S3 PUT -> complete) ----------
 
 def s3_client():
@@ -694,6 +973,7 @@ class CompleteIn(BaseModel):
     subject: str = "Uncategorized"
     chapter: str = "general"
     doc_type: str = "document"
+    topic_id: str = ""
 
 
 def _clean_segment(s: str) -> str:
@@ -738,6 +1018,28 @@ def _chapter_name(subject_slug: str, chapter_id: str, fallback: str) -> str:
     return row["name"] if row else fallback
 
 
+def _refresh_manifest(s3) -> None:
+    """Rebuild manifest.json from the current node files and push it to
+    local disk + S3 + the standalone dashboard. Shared by anything that
+    changes a node — a new upload, or a trust update from /verify — so the
+    app's resource list reflects it immediately."""
+    config = okf_ingest.load_config()
+    manifest = okf_shelf.build_manifest(okf_shelf.collect_plan(config), config)
+    manifest_path = THIRD_BRAIN / "okf-bundle" / "manifest" / "manifest.json"
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    s3.put_object(Bucket=S3_BUCKET, Key=f"{S3_PREFIX}/manifest.json",
+                  Body=json.dumps(manifest, indent=2).encode("utf-8"),
+                  ContentType="application/json")
+    # Refresh the shareable standalone health map too (the live /okf/dashboard
+    # endpoint always regenerates, but this keeps the on-disk file current).
+    try:
+        dash = okf_dashboard.render(okf_dashboard.collect(OKF_BUNDLE), fragment=False)
+        (Path(OKF_BUNDLE) / "okf_dashboard.html").write_text(dash, encoding="utf-8")
+    except Exception as exc:
+        print(f"[_refresh_manifest] dashboard refresh skipped: {exc}", file=sys.stderr)
+
+
 def _okf_catalog(s3, body: "CompleteIn", filename: str) -> tuple[str, str]:
     """Catalogue an uploaded file into the OKF bundle and shelve it at the
     pipeline's derived key. Returns (doc_id, final_s3_key)."""
@@ -753,7 +1055,12 @@ def _okf_catalog(s3, body: "CompleteIn", filename: str) -> tuple[str, str]:
     local_path = local_dir / filename
     s3.download_file(S3_BUCKET, body.staging_key, str(local_path))
 
-    result = okf_ingest.ingest(subject_slug, chapter_id, chapter_name, doc_type, local_path)
+    # A teacher chose subject/chapter/type themselves via the upload form
+    # (no AI classifier involved here — that only runs in the separate
+    # auto_ingest.py pipeline) so this starts already teacher_reviewed.
+    result = okf_ingest.ingest(subject_slug, chapter_id, chapter_name, doc_type, local_path,
+                               trust={"status": "teacher_reviewed", "reviewed_at": now_iso()},
+                               topic_id=body.topic_id or None)
     doc_id = result["doc_id"]
 
     # Shelve at the SAME key s3_push would derive, so later pipeline runs see
@@ -768,23 +1075,7 @@ def _okf_catalog(s3, body: "CompleteIn", filename: str) -> tuple[str, str]:
     node["s3_uploaded_at"] = now_iso()
     node_path.write_text(json.dumps(node, indent=2), encoding="utf-8")
 
-    # Refresh the consumer manifest (local + S3) so the app lists it at once.
-    config = okf_ingest.load_config()
-    manifest = okf_shelf.build_manifest(okf_shelf.collect_plan(config), config)
-    manifest_path = THIRD_BRAIN / "okf-bundle" / "manifest" / "manifest.json"
-    manifest_path.parent.mkdir(parents=True, exist_ok=True)
-    manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
-    s3.put_object(Bucket=S3_BUCKET, Key=f"{S3_PREFIX}/manifest.json",
-                  Body=json.dumps(manifest, indent=2).encode("utf-8"),
-                  ContentType="application/json")
-
-    # Refresh the shareable standalone health map too (the live /okf/dashboard
-    # endpoint always regenerates, but this keeps the on-disk file current).
-    try:
-        dash = okf_dashboard.render(okf_dashboard.collect(OKF_BUNDLE), fragment=False)
-        (Path(OKF_BUNDLE) / "okf_dashboard.html").write_text(dash, encoding="utf-8")
-    except Exception as exc:
-        print(f"[complete] dashboard refresh skipped: {exc}", file=sys.stderr)
+    _refresh_manifest(s3)
     return doc_id, final_key
 
 
@@ -814,6 +1105,22 @@ def complete(body: CompleteIn):
     # edova-web getAssetUrl convention: spaces as '+' in the preview key.
     preview_key = "/".join(seg.replace(" ", "+") for seg in final_key.split("/"))
     return {"doc_id": doc_id, "s3_key": final_key, "preview_s3_key": preview_key}
+
+
+@app.post("/api/resources/{doc_id}/verify")
+def verify_resource(doc_id: str):
+    """Teacher marks a resource as reviewed — the only way a resource
+    reaches the top trust tier. Works for any resource regardless of how it
+    was catalogued (teacher upload, already teacher_reviewed; or the
+    auto_ingest.py pipeline's auto_classified guess)."""
+    node_path = THIRD_BRAIN / "okf-bundle" / "nodes" / f"{doc_id}.json"
+    if not node_path.exists():
+        raise HTTPException(status_code=404, detail="resource not found")
+    node = json.loads(node_path.read_text(encoding="utf-8"))
+    node["trust"] = {"status": "teacher_reviewed", "reviewed_at": now_iso()}
+    node_path.write_text(json.dumps(node, indent=2), encoding="utf-8")
+    _refresh_manifest(s3_client())
+    return {"doc_id": doc_id, "trust": node["trust"]}
 
 
 @app.get("/okf/dashboard", response_class=HTMLResponse)

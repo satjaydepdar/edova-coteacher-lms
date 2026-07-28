@@ -101,10 +101,12 @@ def build_manifest(plan: list, config: dict) -> dict:
             "subject": node["subject"],
             "chapter_id": node["chapter_id"],
             "chapter_name": node["chapter_name"],
+            "topic_id": node.get("topic_id"),
             "doc_type": node["doc_type"],
             "s3_key": node["s3_key"],
             "previewS3Key": web_key(node["s3_key"]),
             "status": "ready",
+            "trust": node.get("trust", {"status": "unverified"}),
         })
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
