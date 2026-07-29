@@ -1,8 +1,0 @@
-{
-  "id": "chemistry",
-  "name": "Chemistry Learning Plugin",
-  "subject": "Chemistry",
-  "version": "1.0.0",
-  "entry": "plugin-entry.js",
-  "type": "microfrontend"
-}
