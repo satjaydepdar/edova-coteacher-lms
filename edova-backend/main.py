@@ -326,6 +326,296 @@ def list_assignments(classroom_id: str):
         conn.close()
 
 
+def _student_id_for_user(cur, user_id: str) -> str:
+    """The roster identity (students.id) behind a logged-in student account
+    -- distinct from users.id, which is what the JWT/session carries. Every
+    seeded student login has a matching students.user_id row; a 404 here
+    means the account isn't actually a student profile."""
+    cur.execute("SELECT id FROM students WHERE user_id = %s AND deleted_at IS NULL", (user_id,))
+    row = cur.fetchone()
+    if row is None:
+        raise HTTPException(status_code=404, detail="not a student profile")
+    return row["id"]
+
+
+class MyAssignmentOut(BaseModel):
+    id: str
+    title: str
+    description: str
+    due_date: Optional[str]
+    points_possible: float
+    submission_type: str
+    classroom_name: str
+    submission_status: str  # not_started | submitted | late | graded
+    submitted_at: Optional[str]
+    text_response: Optional[str]
+    points_earned: Optional[float]
+    feedback: Optional[str]
+
+
+@app.get("/api/students/me/assignments", response_model=List[MyAssignmentOut])
+def list_my_assignments(authorization: Optional[str] = Header(None)):
+    user, _ = _authenticated_user(authorization)
+    conn = _get_conn()
+    try:
+        with conn.cursor() as cur:
+            student_id = _student_id_for_user(cur, user["id"])
+            cur.execute(
+                """
+                SELECT a.id, a.title, a.description, a.due_date, a.points_possible, a.settings,
+                       c.class_level, c.section, s.name AS subject,
+                       sub.status AS sub_status, sub.submitted_at, sub.is_late, sub.text_response,
+                       g.points_earned, g.feedback
+                FROM assignments a
+                JOIN classrooms c ON c.id = a.classroom_id
+                JOIN subjects s ON s.id = c.subject_id
+                JOIN enrollments e ON e.classroom_id = a.classroom_id
+                    AND e.student_id = %s AND e.status = 'active'
+                LEFT JOIN submissions sub ON sub.assignment_id = a.id AND sub.student_id = %s
+                LEFT JOIN grades g ON g.assignment_id = a.id AND g.student_id = %s
+                WHERE a.deleted_at IS NULL
+                ORDER BY a.due_date NULLS LAST, a.created_at DESC
+                """,
+                (student_id, student_id, student_id),
+            )
+            out = []
+            for r in cur.fetchall():
+                if r["points_earned"] is not None:
+                    status = "graded"
+                elif r["sub_status"] is not None:
+                    status = "late" if r["is_late"] else "submitted"
+                else:
+                    status = "not_started"
+                out.append(MyAssignmentOut(
+                    id=r["id"],
+                    title=r["title"],
+                    description=r["description"] or "",
+                    due_date=r["due_date"].isoformat() if r["due_date"] else None,
+                    points_possible=float(r["points_possible"]),
+                    submission_type=(r["settings"] or {}).get("submission_type", "written"),
+                    classroom_name=f"Class {r['class_level']} — {r['section']} · {r['subject']}",
+                    submission_status=status,
+                    submitted_at=r["submitted_at"].isoformat() if r["submitted_at"] else None,
+                    text_response=r["text_response"],
+                    points_earned=float(r["points_earned"]) if r["points_earned"] is not None else None,
+                    feedback=r["feedback"],
+                ))
+            return out
+    finally:
+        conn.close()
+
+
+class SubmissionIn(BaseModel):
+    text_response: str = ""
+
+
+class SubmissionOut(BaseModel):
+    assignment_id: str
+    status: str
+    submitted_at: str
+    is_late: bool
+    text_response: str
+
+
+@app.put("/api/assignments/{assignment_id}/submissions/me", response_model=SubmissionOut)
+def submit_my_assignment(assignment_id: str, body: SubmissionIn, authorization: Optional[str] = Header(None)):
+    user, _ = _authenticated_user(authorization)
+    conn = _get_conn()
+    try:
+        with conn.cursor() as cur:
+            student_id = _student_id_for_user(cur, user["id"])
+            cur.execute(
+                "SELECT a.classroom_id, a.due_date, c.academic_year FROM assignments a"
+                " JOIN classrooms c ON c.id = a.classroom_id WHERE a.id = %s AND a.deleted_at IS NULL",
+                (assignment_id,),
+            )
+            row = cur.fetchone()
+            if row is None:
+                raise HTTPException(status_code=404, detail="assignment not found")
+            cur.execute(
+                "SELECT 1 FROM enrollments WHERE classroom_id = %s AND student_id = %s AND status = 'active'",
+                (row["classroom_id"], student_id),
+            )
+            if cur.fetchone() is None:
+                raise HTTPException(status_code=403, detail="not enrolled in this assignment's class")
+
+            is_late = bool(row["due_date"] and datetime.now(timezone.utc) > row["due_date"])
+            cur.execute(
+                "SELECT id FROM submissions WHERE assignment_id = %s AND student_id = %s",
+                (assignment_id, student_id),
+            )
+            existing = cur.fetchone()
+            if existing:
+                cur.execute(
+                    """
+                    UPDATE submissions SET text_response = %s, submitted_at = NOW(), is_late = %s,
+                        status = 'submitted', attempt_number = attempt_number + 1
+                    WHERE id = %s
+                    RETURNING assignment_id, status, submitted_at, is_late, text_response
+                    """,
+                    (body.text_response, is_late, existing["id"]),
+                )
+            else:
+                cur.execute(
+                    """
+                    INSERT INTO submissions
+                        (id, assignment_id, student_id, submission_type, text_response,
+                         submitted_at, is_late, status, academic_year)
+                    VALUES (%s, %s, %s, 'final', %s, NOW(), %s, 'submitted', %s)
+                    RETURNING assignment_id, status, submitted_at, is_late, text_response
+                    """,
+                    (str(uuid.uuid4()), assignment_id, student_id, body.text_response, is_late, row["academic_year"]),
+                )
+            r = cur.fetchone()
+            conn.commit()
+            return SubmissionOut(
+                assignment_id=r["assignment_id"],
+                status=r["status"],
+                submitted_at=r["submitted_at"].isoformat(),
+                is_late=r["is_late"],
+                text_response=r["text_response"] or "",
+            )
+    finally:
+        conn.close()
+
+
+class RosterSubmissionOut(BaseModel):
+    student_id: str
+    status: str
+    submitted_at: Optional[str]
+    is_late: bool
+    text_response: str
+
+
+@app.get("/api/assignments/{assignment_id}/submissions", response_model=List[RosterSubmissionOut])
+def list_submissions(assignment_id: str):
+    conn = _get_conn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT student_id, status, submitted_at, is_late, text_response
+                FROM submissions WHERE assignment_id = %s
+                """,
+                (assignment_id,),
+            )
+            return [
+                RosterSubmissionOut(
+                    student_id=r["student_id"],
+                    status=r["status"],
+                    submitted_at=r["submitted_at"].isoformat() if r["submitted_at"] else None,
+                    is_late=r["is_late"],
+                    text_response=r["text_response"] or "",
+                )
+                for r in cur.fetchall()
+            ]
+    finally:
+        conn.close()
+
+
+class GradeIn(BaseModel):
+    points_earned: Optional[float] = None
+    feedback: str = ""
+
+
+class GradeOut(BaseModel):
+    assignment_id: str
+    student_id: str
+    points_earned: Optional[float]
+    points_possible: float
+    feedback: str
+    status: str
+
+
+def _grade_out(row) -> GradeOut:
+    return GradeOut(
+        assignment_id=row["assignment_id"],
+        student_id=row["student_id"],
+        points_earned=float(row["points_earned"]) if row["points_earned"] is not None else None,
+        points_possible=float(row["points_possible"]),
+        feedback=row["feedback"] or "",
+        status=row["status"],
+    )
+
+
+# Grading, independent of any submission row -- there is no real student
+# submission flow yet (Student portal, separate roadmap item), so a grade
+# here is keyed directly on (assignment_id, student_id) rather than gating
+# on a "submitted" status nothing can ever set.
+@app.put("/api/assignments/{assignment_id}/grades/{student_id}", response_model=GradeOut)
+def upsert_grade(
+    assignment_id: str, student_id: str, body: GradeIn, authorization: Optional[str] = Header(None)
+):
+    user, _ = _authenticated_user(authorization)
+    conn = _get_conn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT a.points_possible, c.academic_year FROM assignments a
+                JOIN classrooms c ON c.id = a.classroom_id
+                WHERE a.id = %s AND a.deleted_at IS NULL
+                """,
+                (assignment_id,),
+            )
+            row = cur.fetchone()
+            if row is None:
+                raise HTTPException(status_code=404, detail="assignment not found")
+            points_possible, academic_year = row["points_possible"], row["academic_year"]
+
+            cur.execute(
+                "SELECT id FROM grades WHERE assignment_id = %s AND student_id = %s",
+                (assignment_id, student_id),
+            )
+            existing = cur.fetchone()
+            if existing:
+                cur.execute(
+                    """
+                    UPDATE grades SET points_earned = %s, points_possible = %s, feedback = %s,
+                        grader_id = %s, status = 'published', published_at = NOW()
+                    WHERE id = %s
+                    RETURNING assignment_id, student_id, points_earned, points_possible, feedback, status
+                    """,
+                    (body.points_earned, points_possible, body.feedback, user["id"], existing["id"]),
+                )
+            else:
+                cur.execute(
+                    """
+                    INSERT INTO grades
+                        (id, assignment_id, student_id, grader_id, points_earned, points_possible,
+                         feedback, academic_year, status, published_at)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'published', NOW())
+                    RETURNING assignment_id, student_id, points_earned, points_possible, feedback, status
+                    """,
+                    (
+                        str(uuid.uuid4()), assignment_id, student_id, user["id"], body.points_earned,
+                        points_possible, body.feedback, academic_year,
+                    ),
+                )
+            row = cur.fetchone()
+            conn.commit()
+            return _grade_out(row)
+    finally:
+        conn.close()
+
+
+@app.get("/api/assignments/{assignment_id}/grades", response_model=List[GradeOut])
+def list_grades(assignment_id: str):
+    conn = _get_conn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT assignment_id, student_id, points_earned, points_possible, feedback, status
+                FROM grades WHERE assignment_id = %s
+                """,
+                (assignment_id,),
+            )
+            return [_grade_out(r) for r in cur.fetchall()]
+    finally:
+        conn.close()
+
+
 class CalendarEventIn(BaseModel):
     title: str
     event_type: str  # meeting/holiday/exam/event (assignment due dates come from real assignments, not this)

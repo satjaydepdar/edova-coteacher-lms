@@ -128,6 +128,27 @@ let realStudentsHydration: Promise<void> | null = null
 let assignmentsHydration: Promise<void> | null = null
 let calendarEventsHydration: Promise<void> | null = null
 
+// Best-effort write to the real grades table. Silently no-ops for a
+// fake seed assignment/student (assignment_id/student_id aren't real
+// backend UUIDs, so the request 404s) -- the local score above still
+// shows either way, same graceful-fallback posture as publishAssignment.
+function persistGrade(
+  assignmentId: string,
+  studentId: string,
+  pointsEarned: number | null,
+  feedback?: string
+): void {
+  const token = useAppStore.getState().session?.token
+  if (!token) return
+  fetch(`${BACKEND_API_URL}/api/assignments/${assignmentId}/grades/${studentId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ points_earned: pointsEarned, feedback: feedback ?? "" }),
+  }).catch(() => {
+    /* not a real assignment/student -- local score still shows */
+  })
+}
+
 // Shared mutable "schoolConfig" — mirrors the mockup Component's schoolConfig
 // state so mutations persist across navigation and propagate cross-view
 // (e.g. a topic ticked in Lesson Planner updates Syllabus Map + Course Progress).
@@ -396,35 +417,70 @@ export const useSchoolStore = create<SchoolState>()((set, get) => ({
             if (!r.ok) throw new Error(`API ${r.status}`)
             return r.json()
           })
+          // Grades entered in an earlier session -- fetched per assignment
+          // so a reload shows them instead of every score resetting to null.
+          const gradesByAssignment = new Map<string, Map<string, { score: number | null; feedback: string }>>()
+          // Real student submissions (Student Module) -- lets the roster show
+          // "Submitted"/"Late" instead of always "not_started" once a student
+          // has actually turned work in.
+          const submissionsByAssignment = new Map<string, Map<string, { late: boolean; submittedOn: string }>>()
+          await Promise.all(
+            rows.map(async (r) => {
+              const grades: { student_id: string; points_earned: number | null; feedback: string }[] =
+                await fetch(`${BACKEND_API_URL}/api/assignments/${r.id}/grades`).then((res) => (res.ok ? res.json() : []))
+              gradesByAssignment.set(
+                r.id,
+                new Map(grades.map((g) => [g.student_id, { score: g.points_earned, feedback: g.feedback }]))
+              )
+              const subs: { student_id: string; is_late: boolean; submitted_at: string | null }[] =
+                await fetch(`${BACKEND_API_URL}/api/assignments/${r.id}/submissions`).then((res) => (res.ok ? res.json() : []))
+              submissionsByAssignment.set(
+                r.id,
+                new Map(
+                  subs
+                    .filter((s) => s.submitted_at)
+                    .map((s) => [s.student_id, { late: s.is_late, submittedOn: formatShortDate(new Date(s.submitted_at as string)) }])
+                )
+              )
+            })
+          )
           set((s) => {
             const existingIds = new Set(s.assignments.map((a) => a.id))
             const cls = CLASSES.find((c) => c.id === fakeClassId)
             const fresh: Assignment[] = rows
               .filter((r) => !existingIds.has(r.id))
-              .map((r) => ({
-                id: r.id,
-                title: r.title,
-                classId: fakeClassId,
-                subject: cls?.subject ?? "",
-                term: "Term 2",
-                academicYear: useAppStore.getState().academicYear,
-                due: r.due_date ? formatShortDate(new Date(r.due_date)) : "",
-                totalPoints: r.points_possible,
-                status: "active",
-                sourceAssessmentId: null,
-                publishedToStudents: true,
-                createdOn: formatShortDate(new Date(r.created_at)),
-                submissions: roster.map((st) => ({
-                  studentId: st.id,
-                  status: "not_started",
-                  submittedOn: "",
-                  score: null,
-                  feedback: "",
-                })),
-                type: r.submission_type as Assignment["type"],
-                description: r.description,
-                attachments: [],
-              }))
+              .map((r) => {
+                const grades = gradesByAssignment.get(r.id)
+                const subs = submissionsByAssignment.get(r.id)
+                const allGraded = roster.length > 0 && roster.every((st) => grades?.get(st.id)?.score != null)
+                return {
+                  id: r.id,
+                  title: r.title,
+                  classId: fakeClassId,
+                  subject: cls?.subject ?? "",
+                  term: "Term 2",
+                  academicYear: useAppStore.getState().academicYear,
+                  due: r.due_date ? formatShortDate(new Date(r.due_date)) : "",
+                  totalPoints: r.points_possible,
+                  status: allGraded ? "graded" : "active",
+                  sourceAssessmentId: null,
+                  publishedToStudents: true,
+                  createdOn: formatShortDate(new Date(r.created_at)),
+                  submissions: roster.map((st) => {
+                    const sub = subs?.get(st.id)
+                    return {
+                      studentId: st.id,
+                      status: sub ? (sub.late ? "late" : "submitted") : "not_started",
+                      submittedOn: sub?.submittedOn ?? "",
+                      score: grades?.get(st.id)?.score ?? null,
+                      feedback: grades?.get(st.id)?.feedback ?? "",
+                    }
+                  }),
+                  type: r.submission_type as Assignment["type"],
+                  description: r.description,
+                  attachments: [],
+                }
+              })
             // Only add, never overwrite -- don't clobber session-local edits
             // to an assignment already present.
             return fresh.length ? { assignments: [...fresh, ...s.assignments] } : {}
@@ -526,7 +582,12 @@ export const useSchoolStore = create<SchoolState>()((set, get) => ({
     }))
   },
 
-  setSubmissionScore: (assignmentId, studentId, value) =>
+  // A grade no longer requires "submitted"/"late" status first -- there is
+  // no real student-submission flow yet (separate future roadmap item), so
+  // gating scoring on a status nothing can ever set would make every real
+  // assignment ungradeable forever. allGraded now looks at the whole
+  // roster instead of just the submitted subset.
+  setSubmissionScore: (assignmentId, studentId, value) => {
     set((s) => ({
       assignments: s.assignments.map((a) => {
         if (a.id !== assignmentId) return a
@@ -535,36 +596,34 @@ export const useSchoolStore = create<SchoolState>()((set, get) => ({
             ? { ...sub, score: value === "" ? null : Number(value) }
             : sub
         )
-        const scored = submissions.filter(
-          (sub) => sub.status === "submitted" || sub.status === "late"
-        )
-        const allGraded = scored.length > 0 && scored.every((sub) => sub.score != null)
+        const allGraded = submissions.length > 0 && submissions.every((sub) => sub.score != null)
         return {
           ...a,
           submissions,
           status: allGraded ? "graded" : a.status === "graded" ? "closed" : a.status,
         }
       }),
-    })),
+    }))
+    persistGrade(assignmentId, studentId, value === "" ? null : Number(value))
+  },
 
-  setSubmissionEvaluation: (assignmentId, studentId, score, feedback) =>
+  setSubmissionEvaluation: (assignmentId, studentId, score, feedback) => {
     set((s) => ({
       assignments: s.assignments.map((a) => {
         if (a.id !== assignmentId) return a
         const submissions = a.submissions.map((sub) =>
           sub.studentId === studentId ? { ...sub, score, feedback } : sub
         )
-        const scored = submissions.filter(
-          (sub) => sub.status === "submitted" || sub.status === "late"
-        )
-        const allGraded = scored.length > 0 && scored.every((sub) => sub.score != null)
+        const allGraded = submissions.length > 0 && submissions.every((sub) => sub.score != null)
         return {
           ...a,
           submissions,
           status: allGraded ? "graded" : a.status === "graded" ? "closed" : a.status,
         }
       }),
-    })),
+    }))
+    persistGrade(assignmentId, studentId, score, feedback)
+  },
 
   postAnnouncement: (announcement) =>
     set((s) => ({ announcements: [announcement, ...s.announcements] })),

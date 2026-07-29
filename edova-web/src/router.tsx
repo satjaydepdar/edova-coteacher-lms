@@ -19,6 +19,7 @@ import ParentCommunication from "@/pages/ParentCommunication"
 import Reports from "@/pages/Reports"
 import LearningHub from "@/pages/LearningHub"
 import WikiPage from "@/pages/WikiPage"
+import StudentAssignments from "@/pages/StudentAssignments"
 
 // Bare "/" lands a student on the Learning Hub, everyone else on Calendar.
 function IndexRedirect() {
@@ -52,6 +53,7 @@ export const router = createBrowserRouter([
       { path: "parent-communication", element: <ParentCommunication /> },
       { path: "reports", element: <Reports /> },
       { path: "learning", element: <LearningHub /> },
+      { path: "my-assignments", element: <StudentAssignments /> },
       { path: "wiki/:slug", element: <WikiPage /> },
       { path: "*", element: <Navigate to="/calendar" replace /> },
     ],

@@ -3,13 +3,30 @@
 // (subjects → syllabus units/chapters/topics → chapter resources) behind the
 // breadcrumb dropdowns. Field names follow the clerk API exactly
 // (subject_name, chapter_number, s3_key, …).
+import { useAppStore } from "@/store/app-store"
 import type { Mistake, NewMistake, QuizQuestion } from "@/lib/types"
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8001"
 
-// Fixed demo student — there is no auth anywhere and the students table is a
-// single-row demo seed.
+// Fixed demo student — used for Guest mode / no real student session.
 export const STUDENT_ID = "stu_demo"
+
+// A real logged-in student gets their own gamification/wiki data (keyed on
+// their real edova-backend id) instead of everyone sharing the one demo
+// student above. `name` is passed to the clerk API so it can lazy-create
+// the student's row there on first touch (clerk's local "students" table
+// only ever had the one seeded demo row) — undefined for Guest/demo, which
+// keeps get_gamification/get_wiki 404ing on any other unknown id.
+function currentStudent(): { id: string; name?: string } {
+  const user = useAppStore.getState().session?.user
+  return user?.role === "student" ? { id: user.id, name: user.name } : { id: STUDENT_ID }
+}
+
+// For callers that need to detect a student switch (e.g. learning-store's
+// hydration guard) without pulling in the name-resolution logic above.
+export function currentStudentId(): string {
+  return currentStudent().id
+}
 
 export interface Gamification {
   student_id: string
@@ -84,15 +101,17 @@ async function apiPost<T>(path: string, body: unknown): Promise<T> {
 
 // ---- Gamification ----
 
-export function getGamification(studentId: string = STUDENT_ID) {
-  return apiGet<Gamification>(`/api/students/${studentId}/gamification`)
+export function getGamification(studentId: string = currentStudent().id) {
+  const name = studentId === currentStudent().id ? currentStudent().name : undefined
+  const q = name ? `?name=${encodeURIComponent(name)}` : ""
+  return apiGet<Gamification>(`/api/students/${studentId}/gamification${q}`)
 }
 
-export function postXP(delta: number, studentId: string = STUDENT_ID) {
+export function postXP(delta: number, studentId: string = currentStudent().id) {
   return apiPost<{ xp: number; streak: number }>(`/api/students/${studentId}/xp`, { delta })
 }
 
-export function postMistake(m: NewMistake & { topic_id?: string | null }, studentId: string = STUDENT_ID) {
+export function postMistake(m: NewMistake & { topic_id?: string | null }, studentId: string = currentStudent().id) {
   return apiPost<Mistake>(`/api/students/${studentId}/mistakes`, {
     topic_id: m.topic_id ?? null,
     q: m.q,
@@ -103,7 +122,7 @@ export function postMistake(m: NewMistake & { topic_id?: string | null }, studen
   })
 }
 
-export function postFlag(context: string, studentId: string = STUDENT_ID) {
+export function postFlag(context: string, studentId: string = currentStudent().id) {
   return apiPost<{ status: string }>(`/api/students/${studentId}/flags`, { context })
 }
 
@@ -150,13 +169,15 @@ export interface WikiPage {
   truncated?: boolean
 }
 
-export function getWiki(studentId: string = STUDENT_ID) {
-  return apiGet<WikiPage>(`/api/students/${studentId}/wiki`)
+export function getWiki(studentId: string = currentStudent().id) {
+  const name = studentId === currentStudent().id ? currentStudent().name : undefined
+  const q = name ? `?name=${encodeURIComponent(name)}` : ""
+  return apiGet<WikiPage>(`/api/students/${studentId}/wiki${q}`)
 }
 
 export function saveWikiNote(
   note: { chapter_number: number | null; chapter_name: string; note_text: string },
-  studentId: string = STUDENT_ID,
+  studentId: string = currentStudent().id,
 ) {
   return apiPost<WikiPage>(`/api/students/${studentId}/wiki/notes`, note)
 }

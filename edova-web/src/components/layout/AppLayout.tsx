@@ -1,4 +1,4 @@
-import { Navigate, Outlet, useNavigate } from "react-router-dom"
+import { Navigate, Outlet, useNavigate, Link, useLocation } from "react-router-dom"
 import { LogOut } from "lucide-react"
 import { Sidebar } from "./Sidebar"
 import { Topbar } from "./Topbar"
@@ -11,10 +11,16 @@ import { useAppStore, identityFromUser } from "@/store/app-store"
 // manually types a teacher URL) is a later hardening pass, not this one.
 function StudentShell() {
   const navigate = useNavigate()
+  const location = useLocation()
   const session = useAppStore((s) => s.session)
   const logout = useAppStore((s) => s.logout)
   if (!session) return null
   const identity = identityFromUser(session.user)
+  const studentNav = [
+    { label: "Learning Hub", path: "/learning" },
+    { label: "My Assignments", path: "/my-assignments" },
+    { label: "My Wiki", path: `/wiki/student-${session.user.id}` },
+  ]
 
   return (
     <div className="min-h-screen bg-white text-ink">
@@ -25,6 +31,19 @@ function StudentShell() {
           </div>
           <span className="font-display text-[14px] font-bold text-ink">Edova</span>
         </div>
+        <nav className="flex items-center gap-4">
+          {studentNav.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`text-[13px] font-semibold transition-colors hover:text-ink ${
+                location.pathname === item.path ? "text-ink" : "text-text-secondary"
+              }`}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
         <div className="flex items-center gap-3">
           <span className="text-[13px] font-semibold text-text-secondary">{identity.name}</span>
           <button

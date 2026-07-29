@@ -394,7 +394,9 @@ export default function AssignmentTracker() {
 
                       {a.submissions.map((s) => {
                         const student = resolveStudentDisplay(s.studentId, realStudents)
-                        const canScore = s.status === "submitted" || s.status === "late"
+                        // Any roster student can be scored directly -- there's no
+                        // real student-submission flow yet, so gating on
+                        // "submitted"/"late" would make grading impossible.
                         const value = s.score == null ? "" : String(s.score)
                         return (
                           <div key={s.studentId} style={{ display: "contents" }}>
@@ -422,19 +424,15 @@ export default function AssignmentTracker() {
                               className="flex items-center"
                               style={{ padding: "9px 12px", borderBottom: "1px solid #F1F5F9" }}
                             >
-                              {canScore ? (
-                                <input
-                                  type="number"
-                                  min={0}
-                                  value={value}
-                                  onChange={(e) =>
-                                    setSubmissionScore(a.id, s.studentId, e.target.value)
-                                  }
-                                  className="h-8 w-[70px] rounded-[6px] border border-[#E5E7EB] px-2 text-[14px] outline-none"
-                                />
-                              ) : (
-                                <span className="text-[13.5px] text-[#D1D5DB]">—</span>
-                              )}
+                              <input
+                                type="number"
+                                min={0}
+                                value={value}
+                                onChange={(e) =>
+                                  setSubmissionScore(a.id, s.studentId, e.target.value)
+                                }
+                                className="h-8 w-[70px] rounded-[6px] border border-[#E5E7EB] px-2 text-[14px] outline-none"
+                              />
                             </div>
                           </div>
                         )

@@ -67,6 +67,7 @@ export function submissionStatusStyle(status: string): CSSProperties {
     not_started: ["#64748B", "#F1F5F9"],
     late: ["#B45309", "#FEF3C7"],
     missing: ["#DC2626", "#FEE2E2"],
+    graded: ["#166534", "#DCFCE7"],
   }
   const [c, bg] = map[status] || ["#6B7280", "#F9FAFB"]
   return { fontSize: 13, fontWeight: 600, color: c, background: bg, padding: "3px 9px", borderRadius: 999, whiteSpace: "nowrap" }
@@ -133,6 +134,7 @@ export const SUBMISSION_LABEL: Record<string, string> = {
   submitted: "Submitted",
   late: "Late",
   missing: "Missing",
+  graded: "Graded",
 }
 
 // ---- Planner card theme (Saved Plans + any future planner cards) ----

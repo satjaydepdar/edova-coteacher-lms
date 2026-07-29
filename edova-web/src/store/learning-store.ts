@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import type { Mistake, NewMistake } from "@/lib/types"
-import { getGamification, postFlag, postMistake, postXP } from "@/lib/learning-api"
+import { currentStudentId, getGamification, postFlag, postMistake, postXP } from "@/lib/learning-api"
 
 // Student Learning Hub gamification state, backed by the clerk API (:8001).
 // hydrate() pulls the server's xp/streak/mistakes once; every mutation is
@@ -12,7 +12,6 @@ interface LearningState {
   xp: number
   streak: number
   mistakes: Mistake[]
-  hydrated: boolean
   hydrate: () => void
   addXP: (v: number) => void
   addMistake: (m: NewMistake) => void
@@ -21,7 +20,14 @@ interface LearningState {
 
 const today = () => new Date().toISOString().slice(0, 10)
 
-export const useLearningStore = create<LearningState>()((set, get) => ({
+// Which student id the store currently holds data for. A boolean "hydrated
+// once" guard (the original approach) is wrong once STUDENT_ID can vary --
+// switching from one real student login to another within the same SPA
+// session (no full page reload) must re-hydrate, not keep showing the
+// previous student's XP/streak/mistakes.
+let hydratedFor: string | null = null
+
+export const useLearningStore = create<LearningState>()((set) => ({
   xp: 1240,
   streak: 7,
   mistakes: [
@@ -35,13 +41,17 @@ export const useLearningStore = create<LearningState>()((set, get) => ({
       solution: "Use law: i = r. Mirror angle was 45°",
     },
   ],
-  hydrated: false,
   hydrate: () => {
-    if (get().hydrated) return
-    set({ hydrated: true })
+    const id = currentStudentId()
+    if (hydratedFor === id) return
+    // Clear the previous student's numbers immediately on a real switch —
+    // only skip this on the very first hydrate of the session, so the seed
+    // above (matching the server's demo seed) still avoids a flash there.
+    if (hydratedFor !== null) set({ xp: 0, streak: 0, mistakes: [] })
+    hydratedFor = id
     getGamification()
       .then((g) => set({ xp: g.xp, streak: g.streak, mistakes: g.mistakes }))
-      .catch(() => { /* API down — keep the seed state above */ })
+      .catch(() => { hydratedFor = null /* API down — retry next hydrate() call */ })
   },
   addXP: (v) => {
     set((s) => ({ xp: s.xp + v }))

@@ -40,11 +40,11 @@ export default function AssignmentEvaluate() {
   const [givenMarks, setGivenMarks] = useState("")
   const [feedback, setFeedback] = useState("")
 
+  // Ungraded, regardless of status -- there's no real student-submission
+  // flow yet, so a real assignment's roster is always "not_started" and
+  // gating evaluation on "submitted"/"late" would make it permanently empty.
   const yetToEvaluate = useMemo(
-    () =>
-      (assignment?.submissions ?? []).filter(
-        (s) => (s.status === "submitted" || s.status === "late") && s.score == null
-      ),
+    () => (assignment?.submissions ?? []).filter((s) => s.score == null),
     [assignment]
   )
   const yetToSubmit = useMemo(
@@ -223,7 +223,11 @@ export default function AssignmentEvaluate() {
                     </div>
                     {evalTab === "evaluate" ? (
                       <div className="mt-1.5 inline-flex rounded-full border border-[#FCD34D] bg-[#FEF3C7] px-2 py-0.5 text-[10px] font-semibold text-[#92400E]">
-                        {s.status === "late" ? "Submitted late" : `Submitted ${s.submittedOn || ""}`}
+                        {s.status === "late"
+                          ? "Submitted late"
+                          : s.status === "submitted"
+                            ? `Submitted ${s.submittedOn || ""}`
+                            : "Awaiting grade"}
                       </div>
                     ) : (
                       <div className="mt-1.5 text-[11px] text-text-muted">
