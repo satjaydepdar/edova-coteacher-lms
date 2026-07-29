@@ -1,9 +1,0 @@
-node_modules/
-dist/
-coverage/
-*.log
-.env
-
-# Generated transcripts - keep the directory, ignore its contents
-output/*
-!output/.gitkeep

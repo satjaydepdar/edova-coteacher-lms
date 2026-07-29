@@ -15,6 +15,14 @@ ncert_rag/clerk/*.log
 edova-third-brain/okf-bundle/cache/
 graphify-out/cache/
 
-# Slated for deletion — don't pick up any new/uncommitted content here.
-# Already-committed files under instructions/ are untouched by this.
+# Not required to run the app — reference material, tooling output, or
+# standalone/unwired sub-projects. Keep the repo scoped to the 4 runtime
+# services (edova-web, edova-camel, edova-backend, ncert_rag) + db/ +
+# edova-third-brain/okf-bundle (read at runtime by edova-camel grounding).
+.claude/
 instructions/
+Learning-resources/
+innuxai-edova-coteacher_S3/
+edova-interactive-learning-engine/
+_decomp/
+graphify-out/
