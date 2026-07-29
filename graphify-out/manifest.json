@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "edova-web/package.json": {
-    "mtime": 1785066342.3798566,
-    "ast_hash": "559fadb709d0d4587526cda54d318d7e",
+    "mtime": 1785209721.351485,
+    "ast_hash": "36f565705176befcd57277cf8279543c",
     "semantic_hash": ""
   },
   "edova-web/src/components/chat/ChatWidget.tsx": {
@@ -60,18 +60,18 @@
     "semantic_hash": ""
   },
   "edova-web/src/components/layout/AppLayout.tsx": {
-    "mtime": 1783626719.468488,
-    "ast_hash": "2c48d3e3ec1436693d32f7ef745e612f",
+    "mtime": 1785243947.702587,
+    "ast_hash": "d87a9b72093546925619683fd6e8962f",
     "semantic_hash": ""
   },
   "edova-web/src/components/layout/Sidebar.tsx": {
-    "mtime": 1784402518.3274932,
-    "ast_hash": "ca6116b765b41915e95b3a05b81c781d",
+    "mtime": 1785233011.449294,
+    "ast_hash": "99da990a26790f4b061e2324a7ae5c84",
     "semantic_hash": ""
   },
   "edova-web/src/components/layout/Topbar.tsx": {
-    "mtime": 1784033570.5284557,
-    "ast_hash": "9e3b67e630d8122a95f0c237d61801fa",
+    "mtime": 1785233022.6119561,
+    "ast_hash": "6c3ec9c321320192001297197f503156",
     "semantic_hash": ""
   },
   "edova-web/src/components/ui/avatar.tsx": {
@@ -165,8 +165,8 @@
     "semantic_hash": ""
   },
   "edova-web/src/data/seed.ts": {
-    "mtime": 1784789565.3463082,
-    "ast_hash": "8d9f647a00c4e9b8927615ee5a3b8c42",
+    "mtime": 1785262274.93605,
+    "ast_hash": "1c977d47bc16bc00a52c6aee1d216a5c",
     "semantic_hash": ""
   },
   "edova-web/src/lib/dates.ts": {
@@ -175,18 +175,18 @@
     "semantic_hash": ""
   },
   "edova-web/src/lib/nav.ts": {
-    "mtime": 1785066589.5232103,
-    "ast_hash": "620042d7663d29de7f5e21c3fc51b8ca",
+    "mtime": 1785209721.3574913,
+    "ast_hash": "beec84f6d6e74aa904cdabcb82e74b42",
     "semantic_hash": ""
   },
   "edova-web/src/lib/styles.ts": {
-    "mtime": 1784441827.8116038,
-    "ast_hash": "cfae5dad31579c267118671422dcdc46",
+    "mtime": 1785243886.7629886,
+    "ast_hash": "0da16ee94126fa1dc383f5bd2eed5f50",
     "semantic_hash": ""
   },
   "edova-web/src/lib/types.ts": {
-    "mtime": 1785066584.5737402,
-    "ast_hash": "259c84709d566753f16640994f38a373",
+    "mtime": 1785235707.6083071,
+    "ast_hash": "4f90b93294aa4778f17dbd7e2cdced27",
     "semantic_hash": ""
   },
   "edova-web/src/lib/utils.ts": {
@@ -210,8 +210,8 @@
     "semantic_hash": ""
   },
   "edova-web/src/pages/Calendar.tsx": {
-    "mtime": 1784395145.2562702,
-    "ast_hash": "980e552ca057f19e5bcdf2b9e3d54710",
+    "mtime": 1785239405.0013442,
+    "ast_hash": "cad97e650f2b59f6a20893f398184625",
     "semantic_hash": ""
   },
   "edova-web/src/pages/LearningResources.tsx": {
@@ -245,18 +245,18 @@
     "semantic_hash": ""
   },
   "edova-web/src/router.tsx": {
-    "mtime": 1785066578.46144,
-    "ast_hash": "a8d6ad9c1a271c29a126db6952cabc51",
+    "mtime": 1785243933.8679004,
+    "ast_hash": "73d8a88e0104d3250d4e2a75b5836daf",
     "semantic_hash": ""
   },
   "edova-web/src/store/app-store.ts": {
-    "mtime": 1783626531.3537886,
-    "ast_hash": "57108ecae8c74aca494fbae88605ff04",
+    "mtime": 1785235720.3782966,
+    "ast_hash": "885087f759c4353947c09e2317d4212e",
     "semantic_hash": ""
   },
   "edova-web/src/store/school-store.ts": {
-    "mtime": 1784789517.9338849,
-    "ast_hash": "b6aa61a258f66f0d4b28e863af13c7db",
+    "mtime": 1785243991.1217551,
+    "ast_hash": "d41e7780b99bf824c369dabbef2af0a2",
     "semantic_hash": ""
   },
   "edova-web/tsconfig.app.json": {
@@ -485,8 +485,8 @@
     "semantic_hash": ""
   },
   "edova-web/src/pages/Attendance.tsx": {
-    "mtime": 1783691122.6697192,
-    "ast_hash": "ab764fdcc591d87b0c28bb6266d81290",
+    "mtime": 1785234457.194363,
+    "ast_hash": "a618f9d9700df2a28d3006e5e17a989a",
     "semantic_hash": ""
   },
   "ncert_rag/api/__init__.py": {
@@ -495,8 +495,8 @@
     "semantic_hash": ""
   },
   "ncert_rag/api/app.py": {
-    "mtime": 1784575856.8110664,
-    "ast_hash": "66e6de14880717d32e6b713a809c40a4",
+    "mtime": 1785262261.9974227,
+    "ast_hash": "a1eacb23fa3cef64c621b6e1f164c3d4",
     "semantic_hash": ""
   },
   "ncert_rag/embedding/gemini_embedder.py": {
@@ -600,8 +600,8 @@
     "semantic_hash": ""
   },
   "edova-web/src/lib/media.ts": {
-    "mtime": 1785110599.0938373,
-    "ast_hash": "6694a27b7ff4b74aabd938e78ac6df6e",
+    "mtime": 1785209721.3541093,
+    "ast_hash": "2860ef15d664f640d3f4c7439dbd7260",
     "semantic_hash": ""
   },
   "edova-web/src/vite-env.d.ts": {
@@ -635,8 +635,8 @@
     "semantic_hash": ""
   },
   "edova-web/src/pages/AssignmentTracker.tsx": {
-    "mtime": 1784208829.5628216,
-    "ast_hash": "773cdf7c77e6c50ba1ebd729c91df965",
+    "mtime": 1785242101.3888466,
+    "ast_hash": "ce1690aa246769c2c61bba3d77e0aa0a",
     "semantic_hash": ""
   },
   "innuxai-edova-coteacher_S3/package.json": {
@@ -750,8 +750,8 @@
     "semantic_hash": ""
   },
   "edova-camel/camel_society/grounding.py": {
-    "mtime": 1784618220.6869879,
-    "ast_hash": "a8cff08bd11482109f88d5a0e0395a8d",
+    "mtime": 1785259333.6186523,
+    "ast_hash": "7c300b56d1f3f6d4a9206c481def96b8",
     "semantic_hash": ""
   },
   "edova-camel/camel_society/tasks.py": {
@@ -940,7 +940,7 @@
     "semantic_hash": ""
   },
   "edova-third-brain/okf-bundle/edges/math-ch1_to_subject_math.json": {
-    "mtime": 1784259344.630795,
+    "mtime": 1785261363.2699428,
     "ast_hash": "ba48bdf4e33a0d38acbc5f3cc0240956",
     "semantic_hash": ""
   },
@@ -990,7 +990,7 @@
     "semantic_hash": ""
   },
   "edova-third-brain/okf-bundle/indexes/by_chapter/math_math-ch1.json": {
-    "mtime": 1784258537.0463178,
+    "mtime": 1785261363.2344613,
     "ast_hash": "73a15d71e201215aebb096ab4e2c8466",
     "semantic_hash": ""
   },
@@ -1080,8 +1080,8 @@
     "semantic_hash": ""
   },
   "edova-third-brain/okf-bundle/indexes/by_subject/math.json": {
-    "mtime": 1784788761.0576565,
-    "ast_hash": "1c3d10cf14db3b0dbf590e69cad17c11",
+    "mtime": 1785261363.2221262,
+    "ast_hash": "7aaa37b57b68ac8e6d6672dca5b4ab6d",
     "semantic_hash": ""
   },
   "edova-third-brain/okf-bundle/indexes/by_subject/science.json": {
@@ -1090,138 +1090,33 @@
     "semantic_hash": ""
   },
   "edova-third-brain/okf-bundle/indexes/by_type/chapter_content.json": {
-    "mtime": 1784788761.0622137,
+    "mtime": 1785222323.8354962,
     "ast_hash": "0e2a0db14a8867a1d2e023b3a8f5b890",
     "semantic_hash": ""
   },
   "edova-third-brain/okf-bundle/indexes/by_type/video.json": {
-    "mtime": 1784714369.4425356,
-    "ast_hash": "db7b62f7e1193c72ff528e9b2df6f684",
+    "mtime": 1785260651.1175988,
+    "ast_hash": "d6ee23fbe210f63fa0d6110bdd7c05bd",
     "semantic_hash": ""
   },
   "edova-third-brain/okf-bundle/indexes/by_type/worksheet.json": {
-    "mtime": 1784726698.9167585,
+    "mtime": 1785261363.2484608,
     "ast_hash": "2c5f6dbe51f3ab8b639014637420c97d",
     "semantic_hash": ""
   },
   "edova-third-brain/okf-bundle/indexes/fulltext.json": {
-    "mtime": 1784788761.1249478,
+    "mtime": 1785261363.2679265,
     "ast_hash": "5c7e1a613ec031b6c219b92366f80fe6",
     "semantic_hash": ""
   },
   "edova-third-brain/okf-bundle/manifest/bundle.json": {
-    "mtime": 1784788761.1279466,
-    "ast_hash": "13a71c87fdc046df4ce94c210958dbb7",
+    "mtime": 1785261363.2839441,
+    "ast_hash": "84a35b5c7af02bd9f69ff8348b130217",
     "semantic_hash": ""
   },
   "edova-third-brain/okf-bundle/manifest/manifest.json": {
-    "mtime": 1785118206.3862462,
-    "ast_hash": "e161c009d30acd53e594f7a160aa71c7",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/math_math-ch1_chapter_content_dc88ce76.json": {
-    "mtime": 1784714069.0694673,
-    "ast_hash": "5cf553122f9ff470ca423ff629803688",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/math_math-ch2_chapter_content_028c9038.json": {
-    "mtime": 1784714069.351495,
-    "ast_hash": "14b4e487d41f549f576f009e115c2199",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/math_math-ch3_chapter_content_f3f6c6b9.json": {
-    "mtime": 1784714069.458149,
-    "ast_hash": "b2dcbe0517eba7132c5d5e5ac5fce9f3",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/math_math-ch4_chapter_content_8beaf15b.json": {
-    "mtime": 1784714069.544391,
-    "ast_hash": "c6ec543ea12b7f0388873295da28ad08",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/math_math-ch5_chapter_content_24f46175.json": {
-    "mtime": 1784714069.6392438,
-    "ast_hash": "620fcb0bdeb759d8d4ae4c269a1b39f8",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/math_math-ch5_worksheet_ebc73e89.json": {
-    "mtime": 1784714069.7127752,
-    "ast_hash": "bae37e2c82490c6f3b441f1ce185af8b",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/math_math-ch6_chapter_content_73d3ce06.json": {
-    "mtime": 1784714069.8533144,
-    "ast_hash": "2a2438b62c0bb7675cfd5c96803edb07",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/math_math-ch7_chapter_content_82f7b6ba.json": {
-    "mtime": 1784714069.95856,
-    "ast_hash": "ec1ebe47fcb3ee52e146bcf34a1c17df",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/science_biology-ch1_chapter_content_685ec722.json": {
-    "mtime": 1784714072.4896953,
-    "ast_hash": "eaaf4626690877cba27823b0fd8d555d",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/science_biology-ch1_video_47497fa9.json": {
-    "mtime": 1784714392.3343709,
-    "ast_hash": "dabadd183871994460b1e3513c1d1d1b",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/science_biology-ch1_video_8239d1b8.json": {
-    "mtime": 1784714397.9508886,
-    "ast_hash": "5b29d6c97133ba32d5ff4b81db73f6a0",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/science_biology-ch2_chapter_content_bf4ddfa1.json": {
-    "mtime": 1784714072.958105,
-    "ast_hash": "02bbf80cd2092c55376d01eb39672270",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/science_biology-ch3_chapter_content_575cb5a5.json": {
-    "mtime": 1784714073.6561098,
-    "ast_hash": "36c897fc010cec34d7883afb189f58b8",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/science_biology-ch4_chapter_content_b0357c0b.json": {
-    "mtime": 1784714075.4990344,
-    "ast_hash": "cebbaa74147617c232e82b1006585ade",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/science_chemistry-ch1_chapter_content_9d58fa61.json": {
-    "mtime": 1784714076.1251636,
-    "ast_hash": "431b2cea89931c9793030def857a8c25",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/science_chemistry-ch2_chapter_content_8ce001e9.json": {
-    "mtime": 1784714076.7175505,
-    "ast_hash": "8256b714885d014da8edd381b90e4085",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/science_chemistry-ch3_chapter_content_cda8ac2d.json": {
-    "mtime": 1784714077.1786776,
-    "ast_hash": "bf5b05a742ff842ef8f29829648bd06d",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/science_chemistry-ch4_chapter_content_efbb053e.json": {
-    "mtime": 1784714078.4508593,
-    "ast_hash": "5d01a7f66f0af7ab07c103c74bea84a6",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/science_physics-ch1_chapter_content_a647d66c.json": {
-    "mtime": 1785118205.3195992,
-    "ast_hash": "5e962f73b8d0512d0fe421e680ff35e5",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/science_physics-ch2_chapter_content_c8ed49fa.json": {
-    "mtime": 1784714079.0647473,
-    "ast_hash": "354031008c08737d93b3fed5d2a6c0d9",
-    "semantic_hash": ""
-  },
-  "edova-third-brain/okf-bundle/nodes/science_physics-ch3_chapter_content_640a680a.json": {
-    "mtime": 1784714079.4174707,
-    "ast_hash": "b67cca3c09d1d729ec48c128d2785645",
+    "mtime": 1785262290.5899513,
+    "ast_hash": "b924aa2b46036b33ce70abdd202612a4",
     "semantic_hash": ""
   },
   "edova-third-brain/subjects/math/chapters/chapter-4-quadratic-equations/assets/concept-videos/quadratic_tutorial.py": {
@@ -1240,13 +1135,13 @@
     "semantic_hash": ""
   },
   "edova-third-brain/tools/auto_ingest.py": {
-    "mtime": 1785117825.650401,
-    "ast_hash": "41bb2e9ef3e0151c84629b96f43d4a95",
+    "mtime": 1785259260.915069,
+    "ast_hash": "011c54905233176d8f839b460ce5340d",
     "semantic_hash": ""
   },
   "edova-third-brain/tools/check_okf.py": {
-    "mtime": 1784266071.8787167,
-    "ast_hash": "c87cba662d2110536ce82fc168798dfc",
+    "mtime": 1785259250.5101526,
+    "ast_hash": "fdc8076e190345a4542b5f830f88bc4a",
     "semantic_hash": ""
   },
   "edova-third-brain/tools/classify.py": {
@@ -1255,28 +1150,28 @@
     "semantic_hash": ""
   },
   "edova-third-brain/tools/generate_metadata.py": {
-    "mtime": 1784267432.3690684,
-    "ast_hash": "c550ea579e66a9a574d67f9fd2e66fce",
+    "mtime": 1785259290.7267294,
+    "ast_hash": "d1244993f77e21b829c77d5a92eeb485",
     "semantic_hash": ""
   },
   "edova-third-brain/tools/ingest.py": {
-    "mtime": 1785117814.4333835,
-    "ast_hash": "1e8881985e7c574432b5c6cc13495c7f",
+    "mtime": 1785259447.0387206,
+    "ast_hash": "4e74a16f4f0bddcb18f9ac70aa2b554b",
     "semantic_hash": ""
   },
   "edova-third-brain/tools/okf_dashboard.py": {
-    "mtime": 1784727490.3196895,
-    "ast_hash": "014230439385940631f45fd4a73a4ae8",
+    "mtime": 1785259226.972523,
+    "ast_hash": "c6fa0709fc2d28ae2b8c8eaa377aceaa",
     "semantic_hash": ""
   },
   "edova-third-brain/tools/s3_push.py": {
-    "mtime": 1785117833.6822522,
-    "ast_hash": "8e0a187ac04b98719deeb0a4b3ca4fa8",
+    "mtime": 1785262239.1374364,
+    "ast_hash": "ba626e52c5290b13eac90b11444b920f",
     "semantic_hash": ""
   },
   "edova-third-brain/tools/visualize_okf.py": {
-    "mtime": 1784259332.8655968,
-    "ast_hash": "46768334756cd5801c64865c1c970fce",
+    "mtime": 1785259238.0009596,
+    "ast_hash": "6e4c0c1d5a47e070c5920c9c6e9be22a",
     "semantic_hash": ""
   },
   "edova-web/src/components/calendar/CalendarLegend.tsx": {
@@ -1285,8 +1180,8 @@
     "semantic_hash": ""
   },
   "edova-web/src/components/calendar/CalendarToolbar.tsx": {
-    "mtime": 1784383405.8106565,
-    "ast_hash": "37f82dd189df5ab6b97cd9844cd07489",
+    "mtime": 1785239256.258148,
+    "ast_hash": "7472b7a0cbdf70c108dd863d9a649595",
     "semantic_hash": ""
   },
   "edova-web/src/components/calendar/DayInsightModal.tsx": {
@@ -1345,23 +1240,23 @@
     "semantic_hash": ""
   },
   "edova-web/src/lib/upload.ts": {
-    "mtime": 1784296002.5012066,
-    "ast_hash": "32d48e3a4817c1e736d9128e26a5c43c",
+    "mtime": 1785221540.764179,
+    "ast_hash": "8de76a13c567a503288072649154b9ab",
     "semantic_hash": ""
   },
   "edova-web/src/pages/AssignmentDashboard.tsx": {
-    "mtime": 1784208692.4066048,
-    "ast_hash": "a46242614aa021dc913f4d85b7ba0924",
+    "mtime": 1785209721.3633773,
+    "ast_hash": "68e40373af528f061e51bf9426e0eaa2",
     "semantic_hash": ""
   },
   "edova-web/src/pages/AssignmentEvaluate.tsx": {
-    "mtime": 1784208744.8149283,
-    "ast_hash": "23ecbec40d608d5eade6a93b82a3249b",
+    "mtime": 1785242111.3102126,
+    "ast_hash": "22d9f397283561dc7042f93573835248",
     "semantic_hash": ""
   },
   "edova-web/src/pages/AssignmentWizard.tsx": {
-    "mtime": 1784208631.7744434,
-    "ast_hash": "a64f11219c05a54b90d9534c63e169ff",
+    "mtime": 1785237883.618442,
+    "ast_hash": "98468e214f1a2ae2e72f17f73744bd92",
     "semantic_hash": ""
   },
   "edova-web/src/pages/Curriculum.tsx": {
@@ -1715,8 +1610,8 @@
     "semantic_hash": ""
   },
   "ncert_rag/clerk/api.py": {
-    "mtime": 1785117921.199086,
-    "ast_hash": "c344a6746d5811620b647725a400113b",
+    "mtime": 1785262254.6173706,
+    "ast_hash": "f25c2fa3e484299c4bcf6971e5cf1fdb",
     "semantic_hash": ""
   },
   "ncert_rag/edova-coteacher-rag/agent.py": {
@@ -2060,8 +1955,8 @@
     "semantic_hash": ""
   },
   "edova-third-brain/okf-bundle/okf_dashboard.html": {
-    "mtime": 1785118206.8824348,
-    "ast_hash": "abeabbdc0b6dc54f88b1508ca7056224",
+    "mtime": 1785261335.5259228,
+    "ast_hash": "6e923a59850091967710d35f39eee9b5",
     "semantic_hash": ""
   },
   "edova-third-brain/requirements.txt": {
@@ -4094,31 +3989,6 @@
     "ast_hash": "b8a45c63817a40997cc4349e90026846",
     "semantic_hash": ""
   },
-  "instructions/overview/edova_teacher_my_calendar.html": {
-    "mtime": 1784000729.492946,
-    "ast_hash": "1e0e158f7b784d05a4397154db959250",
-    "semantic_hash": ""
-  },
-  "instructions/overview/teacher_app_combined_interactive.html": {
-    "mtime": 1783999723.5430293,
-    "ast_hash": "d831fc2013db6ae137d1816365d19337",
-    "semantic_hash": ""
-  },
-  "instructions/overview/teacher_calendar_month_view (1).html": {
-    "mtime": 1783999835.5925558,
-    "ast_hash": "a0d31c7bc09dada9b5ff19d0c122edea",
-    "semantic_hash": ""
-  },
-  "instructions/overview/teacher_calendar_month_view.html": {
-    "mtime": 1783999681.4892912,
-    "ast_hash": "a0d31c7bc09dada9b5ff19d0c122edea",
-    "semantic_hash": ""
-  },
-  "instructions/overview/teacher_calendar_overflow_popover.html": {
-    "mtime": 1783999698.65719,
-    "ast_hash": "5f43aa04ede6d38ba2e7b0b4c18e4a2f",
-    "semantic_hash": ""
-  },
   "instructions/settings-timetable-scope.md": {
     "mtime": 1784394156.3317282,
     "ast_hash": "668db3b10e8ede8c3a2bc0c02d836234",
@@ -4674,24 +4544,14 @@
     "ast_hash": "6a62d2e0dc3fbd0ecaf3932201be8cfc",
     "semantic_hash": ""
   },
-  "instructions/explainer-video-math-right-triangle.mp4": {
-    "mtime": 1784689370.1581588,
-    "ast_hash": "b63ace5f72bc092aef53164108a69f26",
-    "semantic_hash": ""
-  },
   "db/migrations/20260101000020_syllabus_unit_number.sql": {
     "mtime": 1784771407.5549288,
     "ast_hash": "9c4ea0dd2a01893cce8d53d78c79dd72",
     "semantic_hash": ""
   },
-  "edova-third-brain/okf-bundle/nodes/math_math-ch4_chapter_content_dea48ae5.json": {
-    "mtime": 1784788761.3009315,
-    "ast_hash": "a382b31cfa9e90d64c28f668f127f8bd",
-    "semantic_hash": ""
-  },
   "edova-web/src/pages/ResourceLibrary.tsx": {
-    "mtime": 1784816415.4610145,
-    "ast_hash": "094831a92e45917541a4c75e23f5633d",
+    "mtime": 1785221512.1178148,
+    "ast_hash": "e7ea888d6005a4315789c36ef0e26316",
     "semantic_hash": ""
   },
   "edova-third-brain/okf-bundle/attachments/math/math-ch4/test-worksheet.txt": {
@@ -4850,18 +4710,18 @@
     "semantic_hash": ""
   },
   "edova-web/src/lib/learning-api.ts": {
-    "mtime": 1785117968.7497756,
-    "ast_hash": "1875a3f4e3e0f879b81efba3aa215c32",
+    "mtime": 1785243433.8530512,
+    "ast_hash": "17ab98023078282b81c513f7d270e23b",
     "semantic_hash": ""
   },
   "edova-web/src/pages/LearningHub.tsx": {
-    "mtime": 1785124687.1393862,
-    "ast_hash": "94907b0c1a2806eb57bbadb733c061a8",
+    "mtime": 1785221777.69311,
+    "ast_hash": "e9d9067fd4b98aa79b7385c2d604badd",
     "semantic_hash": ""
   },
   "edova-web/src/store/learning-store.ts": {
-    "mtime": 1785041583.7762072,
-    "ast_hash": "c72fbb074ef093eff07a80980d8c463e",
+    "mtime": 1785243479.8188708,
+    "ast_hash": "c189cab81e02c8bf548eea899a44f6c6",
     "semantic_hash": ""
   },
   "instructions/edova-wired-package-student-module/src/app/(student)/learning/components/FlagButton.tsx": {
@@ -4989,11 +4849,6 @@
     "ast_hash": "25ae76d744ef9c7bca02ee5d8f99f9e8",
     "semantic_hash": ""
   },
-  "instructions/trignometry-distance.mp4": {
-    "mtime": 1784816446.3635654,
-    "ast_hash": "e0b0bd46e0f64fc605f1bde040527a4f",
-    "semantic_hash": ""
-  },
   "edova-web/src/pages/WikiPage.tsx": {
     "mtime": 1785066569.2469826,
     "ast_hash": "68b41958e017945707b1998702fd58d9",
@@ -5032,6 +4887,236 @@
   "instructions/Video-Sidebar-Expand-Ux.html": {
     "mtime": 1785120029.4687839,
     "ast_hash": "e99124fcd63e48ecba3034a8c482934f",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000021_seed_demo_class10_roster.sql": {
+    "mtime": 1785207714.1073284,
+    "ast_hash": "6cd89b17a92300f1cb5af170d5d6d9bf",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000022_seed_login_credentials.sql": {
+    "mtime": 1785232738.6697097,
+    "ast_hash": "47862ce2b4df912784430cd8a60bb603",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000023_seed_student_login_credentials.sql": {
+    "mtime": 1785235636.3172607,
+    "ast_hash": "990e4865eca22ef8b5548f52f05f723a",
+    "semantic_hash": ""
+  },
+  "edova-backend/main.py": {
+    "mtime": 1785243704.5328712,
+    "ast_hash": "9eb8f67516f977577f0ba2c2f4cbe801",
+    "semantic_hash": ""
+  },
+  "edova-backend/settings.py": {
+    "mtime": 1785232594.5697038,
+    "ast_hash": "48d6fbb6554c36ffb9a70cdba53fe1e1",
+    "semantic_hash": ""
+  },
+  "edova-web/src/components/calendar/AddSchoolEventModal.tsx": {
+    "mtime": 1785239237.0961254,
+    "ast_hash": "1e1f32229c3a0ca6d924f3b694ac46c1",
+    "semantic_hash": ""
+  },
+  "edova-web/src/lib/auth.ts": {
+    "mtime": 1785235714.5073335,
+    "ast_hash": "79961fe39f6003fe3c661e4b7ee66172",
+    "semantic_hash": ""
+  },
+  "edova-web/src/lib/student-api.ts": {
+    "mtime": 1785243895.4977922,
+    "ast_hash": "7f847ac4c717fdb488ec31dda0c4ef47",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/Login.tsx": {
+    "mtime": 1785235757.8314116,
+    "ast_hash": "2c208fea71dd178daca937a98fbc67df",
+    "semantic_hash": ""
+  },
+  "edova-web/src/pages/StudentAssignments.tsx": {
+    "mtime": 1785243920.0387332,
+    "ast_hash": "577413f7fb2c0c1feec7cd1de45dcb92",
+    "semantic_hash": ""
+  },
+  "edova-backend/requirements.txt": {
+    "mtime": 1785232610.835782,
+    "ast_hash": "2a34984e17822b9857a2361dea6dff1e",
+    "semantic_hash": ""
+  },
+  "Learning-resources/bio-gas.mp4": {
+    "mtime": 1785141310.948253,
+    "ast_hash": "ad7a5842512de6b78cdbb2c8d6fe041c",
+    "semantic_hash": ""
+  },
+  "Learning-resources/bleaching.mp4": {
+    "mtime": 1785141311.078367,
+    "ast_hash": "300c310a029e33c4b36f9cd763e07b3a",
+    "semantic_hash": ""
+  },
+  "Learning-resources/math/math-right-triangle.mp4": {
+    "mtime": 1784689370.1581588,
+    "ast_hash": "b63ace5f72bc092aef53164108a69f26",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000024_update_demo_login_credentials.sql": {
+    "mtime": 1785285022.1850698,
+    "ast_hash": "22735fe76fd8f8124691a19cbe766cde",
+    "semantic_hash": ""
+  },
+  "db/migrations/20260101000025_update_demo_student_login.sql": {
+    "mtime": 1785285222.169629,
+    "ast_hash": "2b747722a57cb53739b395a4dfe54999",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/edges/math-ch11_to_subject_math.json": {
+    "mtime": 1785260651.1089523,
+    "ast_hash": "4d2ecac2fba215067517dc67b3282b90",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/indexes/by_chapter/math_math-ch11.json": {
+    "mtime": 1785260651.1170793,
+    "ast_hash": "1942a04ee56ae1f2fde1685788b75163",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/math_math-ch11_video_e69b2c59.md": {
+    "mtime": 1785260715.5374286,
+    "ast_hash": "164b101b10893394ed302cebacd52836",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/math_math-ch1_chapter_content_dc88ce76.md": {
+    "mtime": 1785259384.7588193,
+    "ast_hash": "27c38897e2854e448242aa6041e5d0bc",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/math_math-ch2_chapter_content_028c9038.md": {
+    "mtime": 1785259384.760821,
+    "ast_hash": "9f19bce88ac48eb441f072a7c8ca66e8",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/math_math-ch3_chapter_content_f3f6c6b9.md": {
+    "mtime": 1785259384.762818,
+    "ast_hash": "b48d2890209d3c0e9b256f416dfaadea",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/math_math-ch4_chapter_content_8beaf15b.md": {
+    "mtime": 1785259384.7648206,
+    "ast_hash": "f9b35bf16d4d1a4b6e60343c96d15400",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/math_math-ch4_chapter_content_dea48ae5.md": {
+    "mtime": 1785259384.7668195,
+    "ast_hash": "1bf91772c209928fe361ef84a77d2466",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/math_math-ch5_chapter_content_24f46175.md": {
+    "mtime": 1785259384.769819,
+    "ast_hash": "65705031540d756e8793ff7bd7b8a31e",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/math_math-ch5_worksheet_ebc73e89.md": {
+    "mtime": 1785259384.7718291,
+    "ast_hash": "3d282159b80fc517bd784aea9df95dad",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/math_math-ch6_chapter_content_73d3ce06.md": {
+    "mtime": 1785259384.7738318,
+    "ast_hash": "b1e466810f715d9ea9f1a55242b5c153",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/math_math-ch7_chapter_content_82f7b6ba.md": {
+    "mtime": 1785259384.7758312,
+    "ast_hash": "d80d16e485bc494e6f625e84ebd3ceb4",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/science_biology-ch1_chapter_content_685ec722.md": {
+    "mtime": 1785259384.777829,
+    "ast_hash": "6116be4757bba48f2ef9f3a21d804feb",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/science_biology-ch1_video_47497fa9.md": {
+    "mtime": 1785259384.779833,
+    "ast_hash": "7a53b79052c603ee02633cada2de3c49",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/science_biology-ch1_video_8239d1b8.md": {
+    "mtime": 1785259384.7828283,
+    "ast_hash": "4271d80af0c26e5583314ea35b2face5",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/science_biology-ch2_chapter_content_bf4ddfa1.md": {
+    "mtime": 1785259384.785829,
+    "ast_hash": "0d39f09be84bb0860407332f3790767a",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/science_biology-ch3_chapter_content_575cb5a5.md": {
+    "mtime": 1785259384.7879407,
+    "ast_hash": "1a3edde12c57b116656ac5d996f43e9c",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/science_biology-ch4_chapter_content_b0357c0b.md": {
+    "mtime": 1785259384.7899387,
+    "ast_hash": "0d66993729a6fa967a3a28cd1cbbb7b5",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/science_chemistry-ch1_chapter_content_9d58fa61.md": {
+    "mtime": 1785259384.791946,
+    "ast_hash": "256a44880d0c070923fab79ce17a85ec",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/science_chemistry-ch2_chapter_content_8ce001e9.md": {
+    "mtime": 1785259384.7939475,
+    "ast_hash": "04493625359df6799de1ffebcad23235",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/science_chemistry-ch3_chapter_content_cda8ac2d.md": {
+    "mtime": 1785259384.7959485,
+    "ast_hash": "fcced3624b4310b5cc7a91b259e957c5",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/science_chemistry-ch4_chapter_content_efbb053e.md": {
+    "mtime": 1785259384.7979465,
+    "ast_hash": "f20246bd5b7bcc0996a7e2c9c18762ec",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/science_physics-ch1_chapter_content_a647d66c.md": {
+    "mtime": 1785259384.8009462,
+    "ast_hash": "dce802c695d111a191709a281c0fb5b4",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/science_physics-ch2_chapter_content_c8ed49fa.md": {
+    "mtime": 1785259384.8029454,
+    "ast_hash": "c7dc07b608a6c5263785d91d0c69bdd5",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/nodes/science_physics-ch3_chapter_content_640a680a.md": {
+    "mtime": 1785259384.8049471,
+    "ast_hash": "39ec0090a4dc5b92e88ad9a9afdbd7d3",
+    "semantic_hash": ""
+  },
+  "Learning-resources/math/Finding-nth-Term.mp4": {
+    "mtime": 1785175976.2069025,
+    "ast_hash": "c74090b0bdca8ed6023c83e6c004dbad",
+    "semantic_hash": ""
+  },
+  "Learning-resources/math/area-of-rectangle.mp4": {
+    "mtime": 1785176738.197023,
+    "ast_hash": "992f863b7d29baa818131ea0fd9157c5",
+    "semantic_hash": ""
+  },
+  "Learning-resources/math/hieghts-distance-trignometrics- distance-measure.mp4": {
+    "mtime": 1784877396.3004792,
+    "ast_hash": "7ff5c20b6d70a540fbde696b01f7d8a0",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/okf-bundle/attachments/math/math-ch11/Area of a Rectangle.mp4": {
+    "mtime": 1785260651.075018,
+    "ast_hash": "992f863b7d29baa818131ea0fd9157c5",
+    "semantic_hash": ""
+  },
+  "edova-third-brain/subjects/math/uploads/Area of a Rectangle.mp4": {
+    "mtime": 1785260651.075018,
+    "ast_hash": "992f863b7d29baa818131ea0fd9157c5",
     "semantic_hash": ""
   }
 }

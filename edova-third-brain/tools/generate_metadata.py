@@ -31,7 +31,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from ingest import extract_text, load_config  # noqa: E402
+from ingest import extract_text, load_config, read_node  # noqa: E402
 
 MIN_TOPICS = 4
 SUBJECT_TITLES = {"math": "Mathematics", "science": "Science"}
@@ -75,9 +75,8 @@ def bundle_chapter_names() -> dict:
     """(subject, chapter_id) -> chapter_name from already-ingested nodes."""
     config = load_config()
     names = {}
-    for p in (ROOT / config["paths"]["okf_bundle"] / "nodes").glob("*.json"):
-        import json
-        n = json.loads(p.read_text(encoding="utf-8"))
+    for p in (ROOT / config["paths"]["okf_bundle"] / "nodes").glob("*.md"):
+        n = read_node(p)
         names[(n["subject"], n["chapter_id"])] = n["chapter_name"]
     return names
 

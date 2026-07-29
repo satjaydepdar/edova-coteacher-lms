@@ -1,0 +1,18 @@
+---
+type: chapter_content
+doc_id: math_math-ch4_chapter_content_dea48ae5
+title: test-worksheet
+subject: math
+chapter_id: math-ch4
+chapter_name: Quadratic Equations
+doc_type: chapter_content
+source_path: subjects/math/uploads/test-worksheet.txt
+file_hash: dea48ae531becd10ecfbb7560ab18bc71e34c5ceb25057b8a558b8fd21b4611d
+ingested_at: '2026-07-23T06:39:21.046261+00:00'
+s3_key: Class-10/Semester-01/Math/Chapter-04/test-worksheet.txt
+s3_uploaded_at: '2026-07-23T06:39:21.300313+00:00'
+---
+
+# test-worksheet
+
+Quadratic Equations — chapter_content for `math`.

@@ -290,7 +290,7 @@ const SCIENCE10_CHAPTERS: OkfLibraryChapter[] = [
         title: "Digestive System — Explained",
         meta: "Video",
         okf_ref: "OKF/CBSE/X/SCI/CH05/T01/R01",
-        previewS3Key: "Class-10/Semester-01/Biology/Chapter-01/digestive+system.mp4",
+        previewS3Key: "Class-10/Semester-01/Biology/Chapter-01/digestive system.mp4",
         status: "ready",
       },
     ] },

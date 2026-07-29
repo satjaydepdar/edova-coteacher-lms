@@ -1,0 +1,19 @@
+---
+type: chapter_content
+doc_id: science_biology-ch2_chapter_content_bf4ddfa1
+title: chapter 2 - Control and co-ordination
+subject: science
+chapter_id: biology-ch2
+chapter_name: Control and Coordination
+doc_type: chapter_content
+source_path: subjects/science/biology/chapter-2-control-and-coordination/chapter 2
+  - Control and co-ordination.pdf
+file_hash: bf4ddfa158e117a71a32b2f19c8fcd87140ef325e8672faad5d4a599d36ea913
+ingested_at: '2026-07-17T03:23:38.433225+00:00'
+s3_key: Class-10/Semester-01/Biology/Chapter-02/chapter 2 - Control and co-ordination.pdf
+s3_uploaded_at: '2026-07-22T09:54:28.057539+00:00'
+---
+
+# chapter 2 - Control and co-ordination
+
+Control and Coordination — chapter_content for `science`.

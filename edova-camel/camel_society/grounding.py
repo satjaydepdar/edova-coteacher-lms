@@ -84,11 +84,25 @@ def _load_subject_docs(subject: str) -> set | None:
 
 
 def _load_node(doc_id: str) -> dict | None:
-    p = _bundle_path() / "nodes" / f"{doc_id}.json"
+    """nodes/*.md: YAML frontmatter + markdown body (see edova-third-brain's
+    ingest.py). Parsed with a minimal flat key: value reader — no PyYAML
+    dependency here — since every field this module reads (subject,
+    chapter_id, title, chapter_name, source_path) is a top-level scalar."""
+    p = _bundle_path() / "nodes" / f"{doc_id}.md"
     try:
-        return json.loads(p.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+        text = p.read_text(encoding="utf-8")
+        _, front, _ = text.split("---", 2)
+    except (OSError, ValueError):
         return None
+    node = {}
+    for line in front.splitlines():
+        if ":" not in line or line.startswith((" ", "\t")):
+            continue  # blank or a nested block (e.g. under `trust:`) — flat scalars only
+        key, _, value = line.partition(":")
+        value = value.strip().strip("\"'")
+        if value and value != "null":
+            node[key.strip()] = value
+    return node
 
 
 def _idf(query_terms: list[str]) -> dict[str, float]:

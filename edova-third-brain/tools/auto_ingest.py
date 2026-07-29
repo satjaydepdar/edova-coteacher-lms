@@ -33,7 +33,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from ingest import ingest, load_config  # noqa: E402
+from ingest import ingest, load_config, read_node  # noqa: E402
 from classify import classify, list_chapters, DEFAULT_DOC_TYPE  # noqa: E402
 
 # doc_type folder -> ingest doc_type name (one live version per subject/chapter/doc_type)
@@ -51,11 +51,11 @@ DOC_TYPE_NAMES = {
 
 def resolve_doc_type(bundle, subject, chapter_id, base, filename):
     """Collision rule: if the slot is taken by a DIFFERENT file, use the filename slug."""
-    occupants = sorted((bundle / "nodes").glob(f"{subject}_{chapter_id}_{base}_*.json"))
+    occupants = sorted((bundle / "nodes").glob(f"{subject}_{chapter_id}_{base}_*.md"))
     if not occupants:
         return base
     for p in occupants:
-        node = json.loads(p.read_text(encoding="utf-8"))
+        node = read_node(p)
         if Path(node.get("source_path", "")).name == filename:
             return base  # same file re-dropped -> normal dedup/replace flow
     slug = re.sub(r"[^a-z0-9]+", "_", Path(filename).stem.lower()).strip("_")

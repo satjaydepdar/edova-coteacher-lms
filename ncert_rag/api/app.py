@@ -435,16 +435,20 @@ def complete(req: CompleteRequest, x_upload_token: Optional[str] = Header(None))
 
         _run_librarian(["tools/s3_push.py", "--upload"], third_brain)
 
-        node_path = third_brain / "okf-bundle" / "nodes" / f"{doc_id}.json"
-        import json as _json
-        node = _json.loads(node_path.read_text(encoding="utf-8"))
+        node_path = third_brain / "okf-bundle" / "nodes" / f"{doc_id}.md"
+        # nodes/*.md: YAML frontmatter + markdown body (see tools/ingest.py in
+        # third_brain, run above via _run_librarian as a subprocess).
+        import yaml as _yaml
+        _, front, _ = node_path.read_text(encoding="utf-8").split("---", 2)
+        node = _yaml.safe_load(front) or {}
         s3_key = node.get("s3_key")
         if not s3_key:
             raise HTTPException(status_code=502, detail="shelved but node has no s3_key")
 
         s3.delete_object(Bucket=settings.S3_BUCKET, Key=req.staging_key)
-        preview = "/".join(seg.replace(" ", "+") for seg in s3_key.split("/"))
-        return CompleteResponse(doc_id=doc_id, s3_key=s3_key, preview_s3_key=preview)
+        # getAssetUrl() percent-encodes the key itself; preview_s3_key must
+        # be the literal object key (see s3_push.py's build_manifest).
+        return CompleteResponse(doc_id=doc_id, s3_key=s3_key, preview_s3_key=s3_key)
     finally:
         local.unlink(missing_ok=True)
 

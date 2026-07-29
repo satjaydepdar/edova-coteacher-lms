@@ -32,7 +32,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from ingest import load_config, read_json, write_json  # noqa: E402
+from ingest import load_config, write_json, read_node, write_node  # noqa: E402
 
 
 def subject_folder(node: dict) -> str:
@@ -48,11 +48,6 @@ def chapter_folder(node: dict) -> str:
 
 def derive_s3_key(node: dict, prefix: str, filename: str) -> str:
     return f"{prefix}/{subject_folder(node)}/{chapter_folder(node)}/{filename}"
-
-
-def web_key(s3_key: str) -> str:
-    """edova-web getAssetUrl convention: spaces as '+' (S3 decodes '+' to space)."""
-    return "/".join(seg.replace(" ", "+") for seg in s3_key.split("/"))
 
 
 def resource_type(filename: str) -> str:
@@ -71,8 +66,8 @@ def collect_plan(config: dict) -> list:
     bundle = ROOT / config["paths"]["okf_bundle"]
     prefix = config["s3"]["prefix"]
     plan = []
-    for node_path in sorted((bundle / "nodes").glob("*.json")):
-        node = json.loads(node_path.read_text(encoding="utf-8"))
+    for node_path in sorted((bundle / "nodes").glob("*.md")):
+        node = read_node(node_path)
         attach_dir = bundle / "attachments" / node["subject"] / node["chapter_id"]
         local = attach_dir / Path(node["source_path"]).name
         if not local.is_file():
@@ -104,7 +99,12 @@ def build_manifest(plan: list, config: dict) -> dict:
             "topic_id": node.get("topic_id"),
             "doc_type": node["doc_type"],
             "s3_key": node["s3_key"],
-            "previewS3Key": web_key(node["s3_key"]),
+            # getAssetUrl() percent-encodes every path segment itself
+            # (including spaces -> %20); previewS3Key must be the literal
+            # object key, unmodified, or the two encodings compound into a
+            # URL for a key that doesn't exist (e.g. a literal "+" gets
+            # encodeURIComponent'd into "%2B", not decoded back to space).
+            "previewS3Key": node["s3_key"],
             "status": "ready",
             "trust": node.get("trust", {"status": "unverified"}),
         })
@@ -162,7 +162,7 @@ def main():
                 node = e["node"]
                 node["s3_key"] = e["s3_key"]
                 node["s3_uploaded_at"] = now
-                write_json(e["node_path"], node)
+                write_node(e["node_path"], node)
                 e["node"] = node
                 print(f"  [OK] shelved {e['s3_key']}")
         except NoCredentialsError:

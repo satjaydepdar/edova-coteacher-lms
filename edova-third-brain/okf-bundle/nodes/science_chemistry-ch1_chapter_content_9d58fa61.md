@@ -1,0 +1,20 @@
+---
+type: chapter_content
+doc_id: science_chemistry-ch1_chapter_content_9d58fa61
+title: Chapter 1 - Chemical Reaction and equation
+subject: science
+chapter_id: chemistry-ch1
+chapter_name: Chemical Reactions and Equations
+doc_type: chapter_content
+source_path: subjects/science/chemistry/chapter-1-chemical-reactions-and-equations/Chapter
+  1 - Chemical Reaction and equation.pdf
+file_hash: 9d58fa614b2d1064f4ef13423eaf85155b0efc5e74bdf3e8c5e6f15f1b742d36
+ingested_at: '2026-07-17T03:22:45.563412+00:00'
+s3_key: Class-10/Semester-01/Chemistry/Chapter-01/Chapter 1 - Chemical Reaction and
+  equation.pdf
+s3_uploaded_at: '2026-07-22T09:54:28.057539+00:00'
+---
+
+# Chapter 1 - Chemical Reaction and equation
+
+Chemical Reactions and Equations — chapter_content for `science`.

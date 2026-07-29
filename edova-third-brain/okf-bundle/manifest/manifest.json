@@ -1,9 +1,26 @@
 {
-  "generated_at": "2026-07-28T07:05:24.012231+00:00",
+  "generated_at": "2026-07-28T18:11:30.589951+00:00",
   "bucket": "innuxai-edova-coteacher",
   "prefix": "Class-10/Semester-01",
-  "count": 22,
+  "count": 23,
   "resources": [
+    {
+      "id": "math_math-ch11_video_e69b2c59",
+      "title": "AREAS  CIRCLES  RELATED  TO \u2014 Area of a Rectangle",
+      "type": "Video",
+      "subject": "math",
+      "chapter_id": "math-ch11",
+      "chapter_name": "AREAS  CIRCLES  RELATED  TO",
+      "topic_id": "top_8dc0560f2dbe",
+      "doc_type": "video",
+      "s3_key": "Class-10/Semester-01/Math/Chapter-11/Area of a Rectangle.mp4",
+      "previewS3Key": "Class-10/Semester-01/Math/Chapter-11/Area of a Rectangle.mp4",
+      "status": "ready",
+      "trust": {
+        "status": "teacher_reviewed",
+        "reviewed_at": "2026-07-28T17:44:11.077765+00:00"
+      }
+    },
     {
       "id": "math_math-ch1_chapter_content_dc88ce76",
       "title": "Real Numbers \u2014 chapter-1-real-numbers",
@@ -158,7 +175,7 @@
       "topic_id": null,
       "doc_type": "chapter_content",
       "s3_key": "Class-10/Semester-01/Biology/Chapter-01/chapter 1 - life process.pdf",
-      "previewS3Key": "Class-10/Semester-01/Biology/Chapter-01/chapter+1+-+life+process.pdf",
+      "previewS3Key": "Class-10/Semester-01/Biology/Chapter-01/chapter 1 - life process.pdf",
       "status": "ready",
       "trust": {
         "status": "unverified"
@@ -174,7 +191,7 @@
       "topic_id": null,
       "doc_type": "video",
       "s3_key": "Class-10/Semester-01/Biology/Chapter-01/digestive system.mp4",
-      "previewS3Key": "Class-10/Semester-01/Biology/Chapter-01/digestive+system.mp4",
+      "previewS3Key": "Class-10/Semester-01/Biology/Chapter-01/digestive system.mp4",
       "status": "ready",
       "trust": {
         "status": "unverified"
@@ -190,7 +207,7 @@
       "topic_id": null,
       "doc_type": "video",
       "s3_key": "Class-10/Semester-01/Biology/Chapter-01/chapter 1 bio - digestion in animals.mp4",
-      "previewS3Key": "Class-10/Semester-01/Biology/Chapter-01/chapter+1+bio+-+digestion+in+animals.mp4",
+      "previewS3Key": "Class-10/Semester-01/Biology/Chapter-01/chapter 1 bio - digestion in animals.mp4",
       "status": "ready",
       "trust": {
         "status": "unverified"
@@ -206,7 +223,7 @@
       "topic_id": null,
       "doc_type": "chapter_content",
       "s3_key": "Class-10/Semester-01/Biology/Chapter-02/chapter 2 - Control and co-ordination.pdf",
-      "previewS3Key": "Class-10/Semester-01/Biology/Chapter-02/chapter+2+-+Control+and+co-ordination.pdf",
+      "previewS3Key": "Class-10/Semester-01/Biology/Chapter-02/chapter 2 - Control and co-ordination.pdf",
       "status": "ready",
       "trust": {
         "status": "unverified"
@@ -222,7 +239,7 @@
       "topic_id": null,
       "doc_type": "chapter_content",
       "s3_key": "Class-10/Semester-01/Biology/Chapter-03/Chapter 3 - How do organisms reproduce _.pdf",
-      "previewS3Key": "Class-10/Semester-01/Biology/Chapter-03/Chapter+3+-+How+do+organisms+reproduce+_.pdf",
+      "previewS3Key": "Class-10/Semester-01/Biology/Chapter-03/Chapter 3 - How do organisms reproduce _.pdf",
       "status": "ready",
       "trust": {
         "status": "unverified"
@@ -238,7 +255,7 @@
       "topic_id": null,
       "doc_type": "chapter_content",
       "s3_key": "Class-10/Semester-01/Biology/Chapter-04/Chapter 4 - Heredity.pdf",
-      "previewS3Key": "Class-10/Semester-01/Biology/Chapter-04/Chapter+4+-+Heredity.pdf",
+      "previewS3Key": "Class-10/Semester-01/Biology/Chapter-04/Chapter 4 - Heredity.pdf",
       "status": "ready",
       "trust": {
         "status": "unverified"
@@ -254,7 +271,7 @@
       "topic_id": null,
       "doc_type": "chapter_content",
       "s3_key": "Class-10/Semester-01/Chemistry/Chapter-01/Chapter 1 - Chemical Reaction and equation.pdf",
-      "previewS3Key": "Class-10/Semester-01/Chemistry/Chapter-01/Chapter+1+-+Chemical+Reaction+and+equation.pdf",
+      "previewS3Key": "Class-10/Semester-01/Chemistry/Chapter-01/Chapter 1 - Chemical Reaction and equation.pdf",
       "status": "ready",
       "trust": {
         "status": "unverified"
@@ -270,7 +287,7 @@
       "topic_id": null,
       "doc_type": "chapter_content",
       "s3_key": "Class-10/Semester-01/Chemistry/Chapter-02/Chapter 2 - Acids, bases and salts.pdf",
-      "previewS3Key": "Class-10/Semester-01/Chemistry/Chapter-02/Chapter+2+-+Acids,+bases+and+salts.pdf",
+      "previewS3Key": "Class-10/Semester-01/Chemistry/Chapter-02/Chapter 2 - Acids, bases and salts.pdf",
       "status": "ready",
       "trust": {
         "status": "unverified"
@@ -286,7 +303,7 @@
       "topic_id": null,
       "doc_type": "chapter_content",
       "s3_key": "Class-10/Semester-01/Chemistry/Chapter-03/Chapter 3 - Metals and non metals.pdf",
-      "previewS3Key": "Class-10/Semester-01/Chemistry/Chapter-03/Chapter+3+-+Metals+and+non+metals.pdf",
+      "previewS3Key": "Class-10/Semester-01/Chemistry/Chapter-03/Chapter 3 - Metals and non metals.pdf",
       "status": "ready",
       "trust": {
         "status": "unverified"
@@ -302,7 +319,7 @@
       "topic_id": null,
       "doc_type": "chapter_content",
       "s3_key": "Class-10/Semester-01/Chemistry/Chapter-04/Chapter 4 - Carbon and compounds.pdf",
-      "previewS3Key": "Class-10/Semester-01/Chemistry/Chapter-04/Chapter+4+-+Carbon+and+compounds.pdf",
+      "previewS3Key": "Class-10/Semester-01/Chemistry/Chapter-04/Chapter 4 - Carbon and compounds.pdf",
       "status": "ready",
       "trust": {
         "status": "unverified"
@@ -318,7 +335,7 @@
       "topic_id": null,
       "doc_type": "chapter_content",
       "s3_key": "Class-10/Semester-01/Physics/Chapter-01/Chapter 1 - Light.pdf",
-      "previewS3Key": "Class-10/Semester-01/Physics/Chapter-01/Chapter+1+-+Light.pdf",
+      "previewS3Key": "Class-10/Semester-01/Physics/Chapter-01/Chapter 1 - Light.pdf",
       "status": "ready",
       "trust": {
         "status": "teacher_reviewed",
@@ -335,7 +352,7 @@
       "topic_id": null,
       "doc_type": "chapter_content",
       "s3_key": "Class-10/Semester-01/Physics/Chapter-02/Chapter 2 - Human eye and the colorful world.pdf",
-      "previewS3Key": "Class-10/Semester-01/Physics/Chapter-02/Chapter+2+-+Human+eye+and+the+colorful+world.pdf",
+      "previewS3Key": "Class-10/Semester-01/Physics/Chapter-02/Chapter 2 - Human eye and the colorful world.pdf",
       "status": "ready",
       "trust": {
         "status": "unverified"
@@ -351,7 +368,7 @@
       "topic_id": null,
       "doc_type": "chapter_content",
       "s3_key": "Class-10/Semester-01/Physics/Chapter-03/Chapter 3 - Electricity.pdf",
-      "previewS3Key": "Class-10/Semester-01/Physics/Chapter-03/Chapter+3+-+Electricity.pdf",
+      "previewS3Key": "Class-10/Semester-01/Physics/Chapter-03/Chapter 3 - Electricity.pdf",
       "status": "ready",
       "trust": {
         "status": "unverified"

@@ -1,0 +1,18 @@
+---
+type: chapter_content
+doc_id: science_biology-ch4_chapter_content_b0357c0b
+title: Chapter 4 - Heredity
+subject: science
+chapter_id: biology-ch4
+chapter_name: Heredity
+doc_type: chapter_content
+source_path: subjects/science/biology/chapter-4-heredity/Chapter 4 - Heredity.pdf
+file_hash: b0357c0bcc860190c9d3dccc7c91ee31a65012442e795be5bc00cd9f621bff5b
+ingested_at: '2026-07-17T03:23:45.798152+00:00'
+s3_key: Class-10/Semester-01/Biology/Chapter-04/Chapter 4 - Heredity.pdf
+s3_uploaded_at: '2026-07-22T09:54:28.057539+00:00'
+---
+
+# Chapter 4 - Heredity
+
+Heredity — chapter_content for `science`.

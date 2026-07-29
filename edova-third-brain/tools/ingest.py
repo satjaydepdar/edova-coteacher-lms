@@ -5,7 +5,7 @@ Minimal OKF ingestion pipeline for edova-third-brain.
 Takes one source document from subjects/ and writes it into okf-bundle/
 following the manifest/nodes/edges/attachments/indexes/history shape:
 
-  - nodes/<doc_id>.json           one node per document
+  - nodes/<doc_id>.md             one node per document (OKF frontmatter+md)
   - edges/<chapter>_to_subject_<subject>.json
   - attachments/<subject>/<chapter>/<filename>   copy of the source file
   - indexes/by_subject/<subject>.json
@@ -87,6 +87,33 @@ def write_json(path: Path, data):
     path.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
 
+# nodes/ (the concept-document layer) are OKF-shaped per the Open Knowledge
+# Format spec (https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md):
+# one file per doc, YAML frontmatter (`type` is the spec's only required
+# field) + a short markdown body, instead of the old flat JSON. Everything
+# else in the bundle (edges/indexes/manifest/history) is internal
+# bookkeeping, not spec concept documents, and stays plain JSON.
+NODE_EXT = ".md"
+
+
+def read_node(path: Path) -> dict:
+    if path.suffix == ".json":  # pre-migration leftover, if one is ever found
+        return json.loads(path.read_text(encoding="utf-8"))
+    text = path.read_text(encoding="utf-8")
+    _, front, _ = text.split("---", 2)
+    return yaml.safe_load(front) or {}
+
+
+def write_node(path: Path, node: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    front = {"type": node.get("doc_type", "document"), **node}
+    front_text = yaml.safe_dump(front, sort_keys=False, allow_unicode=True)
+    body = f"# {node.get('title', node.get('doc_id', ''))}\n"
+    if node.get("chapter_name"):
+        body += f"\n{node['chapter_name']} — {node.get('doc_type', 'document')} for `{node.get('subject', '')}`.\n"
+    path.write_text(f"---\n{front_text}---\n\n{body}", encoding="utf-8")
+
+
 def ingest(subject: str, chapter_id: str, chapter_name: str, doc_type: str, file_path: Path,
            trust: dict | None = None, topic_id: str | None = None):
     config = load_config()
@@ -96,15 +123,15 @@ def ingest(subject: str, chapter_id: str, chapter_name: str, doc_type: str, file
     h = file_hash(file_path)
     doc_id = f"{subject}_{chapter_id}_{doc_type}_{h[:8]}"
 
-    node_path = bundle / "nodes" / f"{doc_id}.json"
+    node_path = bundle / "nodes" / f"{doc_id}{NODE_EXT}"
 
     # Dedup: same subject/chapter/type already indexed with this hash -> skip.
     # Same slot AND same title (same source file, new content) -> stale version;
     # remove it before writing. A different title in the same slot is a distinct
     # document (e.g. two videos in one chapter) and coexists.
-    existing = sorted((bundle / "nodes").glob(f"{subject}_{chapter_id}_{doc_type}_*.json"))
+    existing = sorted((bundle / "nodes").glob(f"{subject}_{chapter_id}_{doc_type}_*{NODE_EXT}"))
     for e in existing:
-        node = json.loads(e.read_text(encoding="utf-8"))
+        node = read_node(e)
         if node.get("file_hash") == h:
             print(f"SKIP (duplicate, unchanged): {doc_id} already at {e.name}")
             return {"status": "skipped", "doc_id": node["doc_id"]}
@@ -136,7 +163,7 @@ def ingest(subject: str, chapter_id: str, chapter_name: str, doc_type: str, file
         "ingested_at": now,
         "trust": trust or {"status": "unverified"},
     }
-    write_json(node_path, node)
+    write_node(node_path, node)
 
     # 2. edge: chapter -> subject (doc_ids tracks every doc in the chapter)
     edge_id = f"{chapter_id}_to_subject_{subject}"
@@ -216,12 +243,12 @@ def remove(doc_id: str):
     config = load_config()
     bundle = ROOT / config["paths"]["okf_bundle"]
 
-    node_path = bundle / "nodes" / f"{doc_id}.json"
+    node_path = bundle / "nodes" / f"{doc_id}{NODE_EXT}"
     if not node_path.exists():
         print(f"NOT FOUND: {doc_id}")
         return {"status": "not_found", "doc_id": doc_id}
 
-    node = json.loads(node_path.read_text(encoding="utf-8"))
+    node = read_node(node_path)
     subject, chapter_id, doc_type = node["subject"], node["chapter_id"], node["doc_type"]
 
     node_path.unlink()

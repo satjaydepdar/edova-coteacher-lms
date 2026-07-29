@@ -10,8 +10,8 @@ plus a per-document status matrix showing, at a glance, whether every document i
   • Searchable  — indexed in fulltext (usable by grounding / the textbook chat)
   • Listed      — present in the manifest edova-web reads
 
-so you can eyeball "is everything updated?" after any upload. Stdlib only; the
-output opens in any browser and needs no server.
+so you can eyeball "is everything updated?" after any upload. The output opens
+in any browser and needs no server.
 
 Usage:
     python tools/okf_dashboard.py                    # -> okf-bundle/okf_dashboard.html
@@ -25,6 +25,8 @@ import os
 import sys
 from datetime import datetime, timezone
 
+import yaml
+
 
 def load_json(path, default=None):
     try:
@@ -34,8 +36,19 @@ def load_json(path, default=None):
         return default
 
 
+def load_node(path, default: dict | None = None) -> dict:
+    """nodes/*.md: YAML frontmatter + markdown body (see ingest.py)."""
+    default = default or {}
+    try:
+        with open(path, encoding="utf-8") as fh:
+            _, front, _ = fh.read().split("---", 2)
+        return yaml.safe_load(front) or default
+    except (OSError, ValueError, yaml.YAMLError):
+        return default
+
+
 def collect(bundle: str) -> dict:
-    nodes = [load_json(p, {}) for p in glob.glob(os.path.join(bundle, "nodes", "*.json"))]
+    nodes = [load_node(p, {}) for p in glob.glob(os.path.join(bundle, "nodes", "*.md"))]
     nodes = [n for n in nodes if n.get("doc_id")]
     edges = [load_json(p, {}) for p in glob.glob(os.path.join(bundle, "edges", "*.json"))]
     edges = [e for e in edges if e.get("from")]

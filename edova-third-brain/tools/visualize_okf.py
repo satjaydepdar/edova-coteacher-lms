@@ -7,8 +7,9 @@ Usage:
     python tools/visualize_okf.py --bundle okf-bundle --out build/okf_graph.html
     python tools/visualize_okf.py --cdn                # link vis-network from CDN instead of embedding
 
-No third-party Python dependencies (stdlib only). The output is a single
-self-contained HTML file you can open in any browser or share with the team.
+The output is a single self-contained HTML file you can open in any browser
+or share with the team. Uses PyYAML to read nodes/*.md (OKF frontmatter),
+already a dependency of the ingest pipeline this reads output from.
 """
 import argparse
 import glob
@@ -16,6 +17,8 @@ import json
 import os
 import sys
 import urllib.request
+
+import yaml
 
 VIS_CDN = "https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"
 
@@ -54,8 +57,21 @@ def load_json_dir(pattern):
     return docs
 
 
+def load_node_dir(pattern):
+    """nodes/*.md: YAML frontmatter + markdown body (see ingest.py)."""
+    docs = {}
+    for path in sorted(glob.glob(pattern, recursive=True)):
+        try:
+            with open(path, encoding="utf-8") as fh:
+                _, front, _ = fh.read().split("---", 2)
+            docs[path] = yaml.safe_load(front) or {}
+        except Exception as exc:
+            print(f"  ! skipped {path}: {exc}", file=sys.stderr)
+    return docs
+
+
 def collect_graph(bundle):
-    node_docs = load_json_dir(os.path.join(bundle, "nodes", "**", "*.json"))
+    node_docs = load_node_dir(os.path.join(bundle, "nodes", "**", "*.md"))
     edge_docs = load_json_dir(os.path.join(bundle, "edges", "**", "*.json"))
 
     nodes = {}

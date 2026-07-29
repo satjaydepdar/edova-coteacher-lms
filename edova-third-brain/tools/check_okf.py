@@ -114,11 +114,12 @@ def deep_check(bundle, errors):
     print("\ndeep integrity checks")
 
     nodes = {}
-    for p in sorted((bundle / "nodes").glob("*.json")):
+    for p in sorted((bundle / "nodes").glob("*.md")):
         try:
-            n = json.loads(p.read_text(encoding="utf-8"))
+            _, front, _ = p.read_text(encoding="utf-8").split("---", 2)
+            n = yaml.safe_load(front) or {}
             nodes[n["doc_id"]] = n
-        except (json.JSONDecodeError, KeyError) as e:
+        except (ValueError, yaml.YAMLError, KeyError) as e:
             check(f"nodes/{p.name} parses with doc_id ({e})", False, errors)
 
     manifest = json.loads((bundle / "manifest" / "bundle.json").read_text(encoding="utf-8"))

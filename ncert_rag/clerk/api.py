@@ -762,12 +762,29 @@ def tick_topic(section_id: str, topic_id: str, body: TopicTickIn):
 
 # ---------- student gamification + quiz (Learning Hub) ----------
 
+# A real logged-in student (edova-backend UUID) has no row here yet -- this
+# table only ever had the one seeded demo student. Lazy-create on first GET
+# (same idiom as _get_or_create_wiki below) instead of 404ing every real
+# student out of their own Learning Hub. `name` comes from the real session,
+# so a caller that doesn't have one (an id typed by hand, say) still 404s on
+# an unknown id rather than silently minting blank students.
+def _get_or_create_student(conn: sqlite3.Connection, student_id: str, name: Optional[str]) -> sqlite3.Row:
+    stu = conn.execute("SELECT * FROM students WHERE id=?", (student_id,)).fetchone()
+    if stu:
+        return stu
+    if name is None:
+        raise HTTPException(status_code=404, detail="student not found")
+    conn.execute(
+        "INSERT OR IGNORE INTO students (id, name, xp, streak, last_activity) VALUES (?, ?, 0, 0, NULL)",
+        (student_id, name),
+    )
+    return conn.execute("SELECT * FROM students WHERE id=?", (student_id,)).fetchone()
+
+
 @app.get("/api/students/{student_id}/gamification")
-def get_gamification(student_id: str):
+def get_gamification(student_id: str, name: Optional[str] = None):
     with db() as conn:
-        stu = conn.execute("SELECT * FROM students WHERE id=?", (student_id,)).fetchone()
-        if not stu:
-            raise HTTPException(status_code=404, detail="student not found")
+        stu = _get_or_create_student(conn, student_id, name)
         rows = conn.execute(
             "SELECT * FROM student_mistakes WHERE student_id=?"
             " ORDER BY created_at DESC, rowid DESC", (student_id,)).fetchall()
@@ -894,11 +911,9 @@ def _get_or_create_wiki(conn: sqlite3.Connection, student_id: str, student_name:
 
 
 @app.get("/api/students/{student_id}/wiki")
-def get_wiki(student_id: str):
+def get_wiki(student_id: str, name: Optional[str] = None):
     with db() as conn:
-        stu = conn.execute("SELECT * FROM students WHERE id=?", (student_id,)).fetchone()
-        if not stu:
-            raise HTTPException(status_code=404, detail="student not found")
+        stu = _get_or_create_student(conn, student_id, name)
         return wiki_row(_get_or_create_wiki(conn, student_id, stu["name"]))
 
 
@@ -1065,15 +1080,15 @@ def _okf_catalog(s3, body: "CompleteIn", filename: str) -> tuple[str, str]:
 
     # Shelve at the SAME key s3_push would derive, so later pipeline runs see
     # this node as CURRENT instead of re-uploading it elsewhere.
-    node_path = THIRD_BRAIN / "okf-bundle" / "nodes" / f"{doc_id}.json"
-    node = json.loads(node_path.read_text(encoding="utf-8"))
+    node_path = THIRD_BRAIN / "okf-bundle" / "nodes" / f"{doc_id}.md"
+    node = okf_ingest.read_node(node_path)
     final_key = okf_shelf.derive_s3_key(node, S3_PREFIX, filename)
     s3.copy_object(Bucket=S3_BUCKET, Key=final_key,
                    CopySource={"Bucket": S3_BUCKET, "Key": body.staging_key})
     s3.delete_object(Bucket=S3_BUCKET, Key=body.staging_key)
     node["s3_key"] = final_key
     node["s3_uploaded_at"] = now_iso()
-    node_path.write_text(json.dumps(node, indent=2), encoding="utf-8")
+    okf_ingest.write_node(node_path, node)
 
     _refresh_manifest(s3)
     return doc_id, final_key
@@ -1102,9 +1117,9 @@ def complete(body: CompleteIn):
             s3.delete_object(Bucket=S3_BUCKET, Key=body.staging_key)
         except Exception as exc2:
             raise HTTPException(status_code=502, detail=f"could not shelve upload: {exc2}")
-    # edova-web getAssetUrl convention: spaces as '+' in the preview key.
-    preview_key = "/".join(seg.replace(" ", "+") for seg in final_key.split("/"))
-    return {"doc_id": doc_id, "s3_key": final_key, "preview_s3_key": preview_key}
+    # getAssetUrl() percent-encodes the key itself; preview_s3_key must be
+    # the literal object key (see s3_push.py's build_manifest for why).
+    return {"doc_id": doc_id, "s3_key": final_key, "preview_s3_key": final_key}
 
 
 @app.post("/api/resources/{doc_id}/verify")
@@ -1113,12 +1128,12 @@ def verify_resource(doc_id: str):
     reaches the top trust tier. Works for any resource regardless of how it
     was catalogued (teacher upload, already teacher_reviewed; or the
     auto_ingest.py pipeline's auto_classified guess)."""
-    node_path = THIRD_BRAIN / "okf-bundle" / "nodes" / f"{doc_id}.json"
+    node_path = THIRD_BRAIN / "okf-bundle" / "nodes" / f"{doc_id}.md"
     if not node_path.exists():
         raise HTTPException(status_code=404, detail="resource not found")
-    node = json.loads(node_path.read_text(encoding="utf-8"))
+    node = okf_ingest.read_node(node_path)
     node["trust"] = {"status": "teacher_reviewed", "reviewed_at": now_iso()}
-    node_path.write_text(json.dumps(node, indent=2), encoding="utf-8")
+    okf_ingest.write_node(node_path, node)
     _refresh_manifest(s3_client())
     return {"doc_id": doc_id, "trust": node["trust"]}
 
