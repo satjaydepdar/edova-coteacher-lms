@@ -12,7 +12,14 @@ import { Card } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useLearningStore } from "@/store/learning-store"
+import { useAppStore } from "@/store/app-store"
+import { RecommendationCards } from "@/components/common/RecommendationCards"
+import { getMyAssignments, type MyAssignment } from "@/lib/student-api"
+import { getRecommendations } from "@/lib/memory-api"
+import type { RecTask } from "@/components/learning/StudyPlan"
+import { APP_TODAY } from "@/lib/dates"
 import {
+  currentStudentId,
   getQuiz,
   getResources,
   getSubjects,
@@ -37,9 +44,8 @@ const FALLBACK_CHAPTER: SyllabusChapter = {
 }
 const FALLBACK_TOPIC: SyllabusTopic = { id: "fallback-topic", title: "Laws of Reflection" }
 
-// Placeholder until teacher-assigned homework is wired into StudyPlan for
-// real — chapter name matches the seeded syllabus exactly so "Start Now"
-// genuinely jumps there instead of silently doing nothing.
+// Placeholder shown only in Guest mode (no student session) — logged-in
+// students see their real assignments instead (fetched below).
 const ASSIGNMENTS = [
   {
     id: "a1",
@@ -50,6 +56,35 @@ const ASSIGNMENTS = [
     status: "due_today" as const,
   },
 ]
+
+type StudyAssignment = {
+  id: string
+  title: string
+  subject: string
+  chapter: string
+  dueLabel: string
+  status: "overdue" | "due_today" | "due_soon"
+}
+
+// MyAssignment (backend) -> the StudyPlan strip's shape. Returns null for
+// work already turned in — the strip is a to-do list, not a history.
+function toStudyAssignment(a: MyAssignment): StudyAssignment | null {
+  if (a.submission_status !== "not_started") return null
+  const subject = a.classroom_name.split("·").pop()?.trim() ?? ""
+  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  const today = new Date(APP_TODAY.getFullYear(), APP_TODAY.getMonth(), APP_TODAY.getDate())
+  const due = a.due_date ? new Date(a.due_date) : null
+  const dueDay = due ? new Date(due.getFullYear(), due.getMonth(), due.getDate()) : null
+  const diff = dueDay ? Math.round((dueDay.getTime() - today.getTime()) / 86400000) : null
+  const status = diff !== null && diff < 0 ? ("overdue" as const) : diff === 0 ? ("due_today" as const) : ("due_soon" as const)
+  const dueLabel =
+    diff === null ? "No due date"
+    : diff < 0 ? "Overdue"
+    : diff === 0 ? "Today"
+    : diff === 1 ? "Tomorrow"
+    : `${MONTHS[dueDay!.getMonth()]} ${dueDay!.getDate()}`
+  return { id: a.id, title: a.title, subject, chapter: a.topic_label || subject, dueLabel, status }
+}
 
 function subjectCode(name: string): string {
   if (name === "Science") return "SCI"
@@ -64,6 +99,44 @@ export default function LearningHub() {
   // is what needs the room (a diagram, a worked example) rather than the text.
   const [videoFocus, setVideoFocus] = useState(false)
   const { xp, streak, mistakes, hydrate, addXP, addMistake } = useLearningStore()
+
+  // Real teacher-assigned homework for logged-in students; Guest mode keeps
+  // the placeholder above. `null` = not loaded / not a student session.
+  const session = useAppStore((s) => s.session)
+  const [realAssignments, setRealAssignments] = useState<StudyAssignment[] | null>(null)
+  useEffect(() => {
+    if (session?.user.role !== "student") return
+    getMyAssignments()
+      .then((rows) => setRealAssignments(rows.map(toStudyAssignment).filter((a) => a !== null)))
+      .catch(() => { /* keep placeholder */ })
+  }, [session])
+
+  // Real recommended tasks: memory-layer struggle cards (works for the demo
+  // student in Guest mode too) + the live mistake journal.
+  const [recTasks, setRecTasks] = useState<RecTask[]>([])
+  useEffect(() => {
+    getRecommendations(currentStudentId(), "student")
+      .then((recs) => {
+        const tasks: RecTask[] = recs
+          .filter((r) => r.kind === "struggle_remedial" && r.chapter)
+          .map((r) => ({
+            id: r.id,
+            title: `Revisit ${r.chapter}`,
+            meta: "You struggled here • High impact",
+            xp: "+30 XP",
+          }))
+        if (mistakes.length > 0) {
+          tasks.push({
+            id: "mistake-journal",
+            title: `Fix ${Math.min(3, mistakes.length)} mistake${mistakes.length === 1 ? "" : "s"} in Journal`,
+            meta: "High impact • Mistake Journal",
+            xp: "+30 XP",
+          })
+        }
+        setRecTasks(tasks.slice(0, 4))
+      })
+      .catch(() => { /* no recommendations — strip just hides */ })
+  }, [mistakes.length])
 
   // Content tree from the clerk API; each level falls back to the seeded
   // Science/Light/Laws-of-Reflection selection while unloaded or unreachable.
@@ -197,6 +270,15 @@ export default function LearningHub() {
     resources.find((r) => r.type === "Video" && r.topic_id === topicId && r.s3_key) ??
     resources.find((r) => r.type === "Video" && r.chapter_number === chapter.number && r.s3_key)
   const videoUrl = chapterVideo?.s3_key ? getAssetUrl(chapterVideo.s3_key) : undefined
+  const chapterLab =
+    resources.find((r) => r.doc_type === "lab" && r.topic_id === topicId && r.s3_key) ??
+    resources.find((r) => r.doc_type === "lab" && r.chapter_number === chapter.number && r.s3_key)
+  // Cache-bust with the upload timestamp -- a lab file gets edited in place
+  // at the same S3 key, and browsers otherwise keep serving whatever they
+  // first cached for that URL even after the object changes.
+  const labUrl = chapterLab?.s3_key
+    ? `${getAssetUrl(chapterLab.s3_key)}${chapterLab.s3_uploaded_at ? `?v=${encodeURIComponent(chapterLab.s3_uploaded_at)}` : ""}`
+    : undefined
 
   const okf = `C10.${subjectCode(subject.subject_name)}.CH${String(chapter.number ?? 0).padStart(2, "0")}`
 
@@ -205,6 +287,9 @@ export default function LearningHub() {
 
   return (
     <div>
+      {/* Proactive memory cards — struggle remedials derived from this
+          student's quiz-mistake events (fire-and-forget, never blocks) */}
+      <RecommendationCards userId={currentStudentId()} role="student" />
       {/* Breadcrumb context + gamification status (was the package's own
           topbar; AppLayout already renders the app Topbar) */}
       <Card className="flex items-center justify-between px-5 py-3">
@@ -253,7 +338,7 @@ export default function LearningHub() {
       </Card>
 
       <div className="mt-6">
-        <StudyPlan assignments={ASSIGNMENTS} onGoToChapter={goToChapter} />
+        <StudyPlan assignments={realAssignments ?? ASSIGNMENTS} recommended={recTasks} onGoToChapter={goToChapter} />
       </div>
 
       <Tabs
@@ -320,7 +405,9 @@ export default function LearningHub() {
             />
           </div>
         </TabsContent>
-        <TabsContent value="lab"><LabExercise addXP={addXP} /></TabsContent>
+        <TabsContent value="lab">
+          <LabExercise key={topic.id} addXP={addXP} onMistake={addMistake} chapter={chapter.name} labUrl={labUrl} />
+        </TabsContent>
         <TabsContent value="mindmap"><Mindmap /></TabsContent>
         <TabsContent value="journal"><MistakeJournal mistakes={mistakes} /></TabsContent>
         <TabsContent value="heatmap"><Heatmap /></TabsContent>

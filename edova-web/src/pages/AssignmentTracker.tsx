@@ -64,7 +64,15 @@ export default function AssignmentTracker() {
   const hydrateRealStudents = useSchoolStore((s) => s.hydrateRealStudents)
   useEffect(() => { hydrateRealStudents() }, [hydrateRealStudents])
   const hydrateAssignments = useSchoolStore((s) => s.hydrateAssignments)
+  const refreshAssignments = useSchoolStore((s) => s.refreshAssignments)
   useEffect(() => { hydrateAssignments() }, [hydrateAssignments])
+
+  // Live-ish updates: re-pull from the backend every 30s while the page is
+  // open, so student submissions / new assignments appear without a reload.
+  useEffect(() => {
+    const timer = setInterval(() => { refreshAssignments() }, 30000)
+    return () => clearInterval(timer)
+  }, [refreshAssignments])
 
   // ---- Summary stats. Every number is derived from the live `assignments`
   // array / roster lengths — never a hardcoded count that could drift. The
@@ -282,6 +290,14 @@ export default function AssignmentTracker() {
           placeholder="Search assignments…"
           className="ml-auto h-[36px] w-[230px] rounded-[8px] border border-[#E5E7EB] bg-white px-3 text-[14px] font-[inherit] outline-none"
         />
+        <button
+          type="button"
+          onClick={() => refreshAssignments()}
+          title="Pull the latest submissions and assignments from the server"
+          className="h-[36px] cursor-pointer rounded-[8px] border border-[#E5E7EB] bg-white px-3 text-[14px] font-semibold text-text-secondary"
+        >
+          ↻ Refresh
+        </button>
       </div>
 
       {/* ---- Assignment list (left) + roster detail (right) ---- */}

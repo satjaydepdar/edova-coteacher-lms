@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { PageHeader } from "@/components/common/PageHeader"
+import { McqQuiz } from "@/components/student/McqQuiz"
 import { submissionStatusStyle, SUBMISSION_LABEL } from "@/lib/styles"
 import { getMyAssignments, submitMyAssignment, type MyAssignment } from "@/lib/student-api"
 
@@ -98,24 +99,30 @@ export default function StudentAssignments() {
                       {a.feedback}
                     </div>
                   )}
-                  <textarea
-                    value={draft}
-                    onChange={(e) => setDraft(e.target.value)}
-                    rows={4}
-                    placeholder="Type your answer here…"
-                    className="w-full resize-none rounded-[8px] border border-card-border bg-white px-3.5 py-3 text-[14px] outline-none focus:ring-2 focus:ring-ring"
-                  />
-                  <div className="mt-3 flex justify-end">
-                    <button
-                      type="button"
-                      disabled={submitting}
-                      onClick={() => turnIn(a.id)}
-                      className="cursor-pointer rounded-[8px] px-4 py-2 text-[14px] font-semibold text-white disabled:opacity-60"
-                      style={{ background: "#16332B" }}
-                    >
-                      {a.submission_status === "not_started" ? "Turn it in" : "Update submission"}
-                    </button>
-                  </div>
+                  {a.submission_type === "mcq" && (a.sections?.length ?? 0) > 0 ? (
+                    <McqQuiz assignment={a} onSubmitted={reload} />
+                  ) : (
+                    <>
+                      <textarea
+                        value={draft}
+                        onChange={(e) => setDraft(e.target.value)}
+                        rows={4}
+                        placeholder="Type your answer here…"
+                        className="w-full resize-none rounded-[8px] border border-card-border bg-white px-3.5 py-3 text-[14px] outline-none focus:ring-2 focus:ring-ring"
+                      />
+                      <div className="mt-3 flex justify-end">
+                        <button
+                          type="button"
+                          disabled={submitting}
+                          onClick={() => turnIn(a.id)}
+                          className="cursor-pointer rounded-[8px] px-4 py-2 text-[14px] font-semibold text-white disabled:opacity-60"
+                          style={{ background: "#16332B" }}
+                        >
+                          {a.submission_status === "not_started" ? "Turn it in" : "Update submission"}
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>

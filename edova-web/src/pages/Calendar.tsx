@@ -5,6 +5,7 @@ import type { CalendarEvent } from "@/lib/types"
 import { useAppStore } from "@/store/app-store"
 import { useSchoolStore } from "@/store/school-store"
 import { CalendarToolbar } from "@/components/calendar/CalendarToolbar"
+import { RecommendationCards } from "@/components/common/RecommendationCards"
 import { CalendarLegend } from "@/components/calendar/CalendarLegend"
 import { MonthView } from "@/components/calendar/MonthView"
 import { TimeGrid } from "@/components/calendar/TimeGrid"
@@ -202,6 +203,10 @@ export default function Calendar() {
       <div className="mb-5 text-[16px] text-text-secondary">
         Teaching schedule, meetings, holidays, and exams.
       </div>
+
+      {/* Class insights — proactive digests from the behavioral memory layer
+          (students struggling per chapter, from quiz-mistake events) */}
+      <RecommendationCards userId={session?.user.id ?? "teacher_demo"} role="teacher" />
 
       <CalendarToolbar
         view={view}

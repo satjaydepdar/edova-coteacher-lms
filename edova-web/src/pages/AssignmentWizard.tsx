@@ -1,12 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {
   Check,
   ChevronDown,
   X,
   Upload,
-  Calendar as CalIcon,
-  Clock,
   Sparkles,
   Paperclip,
   Plus,
@@ -25,64 +23,17 @@ import { CLASSES, STUDENTS } from "@/data/seed"
 import { useSchoolStore } from "@/store/school-store"
 import { useAppStore } from "@/store/app-store"
 import { ASSIGNMENT_TYPES } from "@/lib/assignment-types"
-import { getSubjects, getResources, getSyllabus, type LearningResource, type SyllabusUnit } from "@/lib/learning-api"
+import { getRealRosterByClassId, type RealStudent } from "@/lib/roster-api"
+import { APP_TODAY, MONTH_SHORT } from "@/lib/dates"
+import type { LearningResource } from "@/lib/learning-api"
 import { getResourceUrl } from "@/lib/media"
-import type { Assignment, AssignmentAttachment, AssignmentType } from "@/lib/types"
+import { MiniDatePicker } from "@/components/common/MiniDatePicker"
+import { useLibraryResources } from "./assignment-wizard/useLibraryResources"
+import type { Assignment, AssessmentBankItem, AssignmentAttachment, AssignmentType } from "@/lib/types"
 
 type Step = "type" | "create1" | "create2"
 
-const MONTH_SHORT = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-]
-const APP_TODAY = new Date(2026, 6, 9)
 const SUBJECTS = Array.from(new Set(CLASSES.map((c) => c.subject)))
-
-// edova-backend (Step 3 of the real classes/students migration) -- optional.
-// Not every class has a real classroom yet (only Class 10 -- Section A --
-// Mathematics does today), and the service itself may not be running. Either
-// case is a silent, graceful fallback to the CLASSES/STUDENTS seed data
-// exactly as before -- never a crash, never a visible error.
-const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL ?? "http://localhost:8003"
-
-interface RealStudent { id: string; name: string; rollNo: string }
-
-function fetchRealRosterByClassId(): Promise<Record<string, RealStudent[]>> {
-  return fetch(`${BACKEND_API_URL}/api/classrooms`)
-    .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-    .then((classrooms: { id: string; class_level: number; section: string | null; subject: string }[]) =>
-      Promise.all(
-        classrooms.map((rc) => {
-          // Match on meaning (subject + class level + section), not exact name
-          // string -- the backend and the seed data don't share a punctuation
-          // convention ("Class 10 -- Section A" vs "Class 10 — Section A").
-          const cls = CLASSES.find(
-            (c) =>
-              c.subject === rc.subject &&
-              c.name.includes(`Class ${rc.class_level}`) &&
-              (!rc.section || c.name.includes(rc.section)),
-          )
-          if (!cls) return null
-          return fetch(`${BACKEND_API_URL}/api/classrooms/${rc.id}/students`)
-            .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-            .then(
-              (
-                students: { id: string; student_number: string; first_name: string; last_name: string }[],
-              ): [string, RealStudent[]] => [
-                cls.id,
-                students.map((s) => ({ id: s.id, name: `${s.first_name} ${s.last_name}`, rollNo: s.student_number })),
-              ],
-            )
-            .catch(() => null)
-        }),
-      ),
-    )
-    .then((pairs) => Object.fromEntries(pairs.filter((p): p is [string, RealStudent[]] => p !== null)))
-    .catch((err) => {
-      console.warn("real classroom roster fetch failed, falling back to seed data:", err)
-      return {}
-    })
-}
 
 const fieldLabel = "text-[13.5px] font-semibold text-text-secondary"
 const fieldInput =
@@ -91,64 +42,55 @@ const fieldInput =
 export default function AssignmentWizard() {
   const navigate = useNavigate()
   const publishAssignment = useSchoolStore((s) => s.publishAssignment)
+  const assessmentBank = useSchoolStore((s) => s.assessmentBank)
+  const hydrateAssessments = useSchoolStore((s) => s.hydrateAssessments)
   const showFlash = useSchoolStore((s) => s.showFlash)
   const academicYear = useAppStore((s) => s.academicYear)
 
+  // Saved Assessments (Assessment Builder bank) — the "pick from saved" path.
+  useEffect(() => { hydrateAssessments() }, [hydrateAssessments])
+
   const [step, setStep] = useState<Step>("type")
   const [selectedType, setSelectedType] = useState<AssignmentType>("written")
+  const [pickedBankId, setPickedBankId] = useState<string | null>(null)
+  const pickedBank = assessmentBank.find((b) => b.id === pickedBankId) ?? null
+
+  // Picking a saved assessment pre-fills everything the builder already
+  // knows — title, objective, points, questions, and the MCQ submission
+  // type when the assessment has choice sections. The teacher only chooses
+  // class + due date.
+  function pickFromBank(item: AssessmentBankItem) {
+    setPickedBankId(item.id)
+    setSelectedType(item.sections.some((s) => s.type === "multiple_choice") ? "mcq" : "written")
+    setTitle(item.title)
+    setDescription(item.objective ?? "")
+    setMarks(String(item.totalPoints))
+    setStep("create1")
+  }
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [attachments, setAttachments] = useState<AssignmentAttachment[]>([])
   const [showUpload, setShowUpload] = useState(false)
   const [uploadTab, setUploadTab] = useState("Library")
-  const [libraryResources, setLibraryResources] = useState<LearningResource[]>([])
-  const [libraryLoading, setLibraryLoading] = useState(false)
-  const [libraryTopicTitles, setLibraryTopicTitles] = useState<Record<string, string>>({})
 
   const [selectedClassIds, setSelectedClassIds] = useState<string[]>([CLASSES[0].id])
   const [subject, setSubject] = useState(CLASSES[0].subject)
   const [marks, setMarks] = useState("20")
   const [schedule, setSchedule] = useState(false)
   const [dueDay, setDueDay] = useState<number>(APP_TODAY.getDate() + 7)
-  const [showCalendar, setShowCalendar] = useState(false)
+
+  const { resources: libraryResources, loading: libraryLoading, topicTitles: libraryTopicTitles } =
+    useLibraryResources(showUpload && uploadTab === "Library", subject)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [realRosterByClassId, setRealRosterByClassId] = useState<Record<string, RealStudent[]>>({})
 
   useEffect(() => {
-    fetchRealRosterByClassId().then(setRealRosterByClassId)
+    getRealRosterByClassId().then(setRealRosterByClassId)
   }, [])
 
   const selectedTypeObj = ASSIGNMENT_TYPES.find((t) => t.id === selectedType)!
   const availableClasses = CLASSES.filter((c) => !selectedClassIds.includes(c.id))
-
-  const monthLabel = `${MONTH_SHORT[APP_TODAY.getMonth()]} ${APP_TODAY.getFullYear()}`
-  const daysInMonth = new Date(APP_TODAY.getFullYear(), APP_TODAY.getMonth() + 1, 0).getDate()
-  const leadingBlanks = useMemo(() => {
-    const firstOfMonth = new Date(APP_TODAY.getFullYear(), APP_TODAY.getMonth(), 1).getDay()
-    return (firstOfMonth + 6) % 7 // Monday-first
-  }, [])
-  const dueLabel = `${dueDay} ${MONTH_SHORT[APP_TODAY.getMonth()]}, 11:59 PM`
-
-  useEffect(() => {
-    if (!showUpload || uploadTab !== "Library") return
-    setLibraryLoading(true)
-    getSubjects()
-      .then(({ subjects }) => subjects.find((s) => s.subject_name === subject))
-      .then((match) =>
-        match
-          ? Promise.all([getResources(match.id), getSyllabus(match.id)])
-          : Promise.resolve([[], { units: [] }] as [LearningResource[], { units: SyllabusUnit[] }]),
-      )
-      .then(([resources, { units }]) => {
-        setLibraryResources(resources)
-        const titles: Record<string, string> = {}
-        for (const u of units) for (const c of u.chapters) for (const t of c.topics) titles[t.id] = t.title
-        setLibraryTopicTitles(titles)
-      })
-      .catch(() => setLibraryResources([]))
-      .finally(() => setLibraryLoading(false))
-  }, [showUpload, uploadTab, subject])
 
   function handleAttach() {
     setAttachments([{ name: "Worksheet Attachment.pdf", size: "342.33KB" }])
@@ -200,13 +142,15 @@ export default function AssignmentWizard() {
         due,
         totalPoints,
         status: "active",
-        sourceAssessmentId: null,
+        sourceAssessmentId: pickedBank?.id ?? null,
         publishedToStudents: true,
         createdOn: "Just now",
         submissions,
         type: selectedType,
         description,
         attachments,
+        sections: pickedBank?.sections,
+        topicLabel: pickedBank?.topicLabel,
       }
       const finalId = await publishAssignment(assignment)
       if (idx === 0) firstId = finalId
@@ -317,6 +261,41 @@ export default function AssignmentWizard() {
             })}
           </div>
 
+          {/* Pick from Saved Assessments — pre-fills title/questions/points */}
+          <div className="mt-10">
+            <div className="mb-3 flex items-center gap-3">
+              <div className="h-px flex-1 bg-card-border" />
+              <span className="text-[13px] font-semibold text-text-secondary">Or pick from your Saved Assessments</span>
+              <div className="h-px flex-1 bg-card-border" />
+            </div>
+            {assessmentBank.length === 0 ? (
+              <div className="rounded-[12px] border border-dashed border-card-border px-4 py-5 text-center text-[13px] text-text-muted">
+                No saved assessments yet — build one in the Assessment Builder, then assign it here.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                {assessmentBank.map((b) => (
+                  <button
+                    key={b.id}
+                    onClick={() => pickFromBank(b)}
+                    className="flex items-center gap-3 rounded-[14px] border border-card-border bg-white p-4 text-left shadow-card transition-all hover:shadow"
+                  >
+                    <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-[#E9F1EC] text-[#16332B]">
+                      <Library size={17} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-[14px] font-semibold text-ink">{b.title}</div>
+                      <div className="mt-0.5 text-[12px] text-text-secondary">
+                        {b.questionCount} questions · {b.totalPoints} pts · {b.subject}
+                      </div>
+                    </div>
+                    <span className="shrink-0 text-[12px] font-semibold text-[#16332B]">Use →</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           <div className="mt-8 flex justify-end">
             <button
               onClick={() => setStep("create1")}
@@ -354,6 +333,15 @@ export default function AssignmentWizard() {
             </div>
 
             <div className="space-y-6 bg-white p-5 md:p-7">
+              {pickedBank && (
+                <div className="flex items-center gap-2 rounded-[10px] border border-[#BFE0D3] bg-[#E9F1EC] px-3.5 py-2.5 text-[13px] font-semibold text-[#16332B]">
+                  <Library size={14} />
+                  <span className="flex-1">
+                    From saved assessment — {pickedBank.questionCount} questions included
+                  </span>
+                  <X size={14} className="cursor-pointer opacity-60 hover:opacity-100" onClick={() => setPickedBankId(null)} />
+                </div>
+              )}
               <div>
                 <label className={fieldLabel}>Assignment Title</label>
                 <input
@@ -507,56 +495,7 @@ export default function AssignmentWizard() {
 
                 <div>
                   <label className={fieldLabel}>End Date &amp; Time</label>
-                  <div className="relative mt-2">
-                    <button
-                      onClick={() => setShowCalendar((v) => !v)}
-                      className="flex h-11 w-full items-center justify-between rounded-[8px] border border-card-border bg-white px-3.5 text-left text-[13.5px]"
-                    >
-                      <span className="inline-flex items-center gap-2">
-                        <CalIcon size={16} className="text-text-secondary" /> {dueLabel}
-                      </span>
-                      <Clock size={16} className="text-text-muted" />
-                    </button>
-
-                    {showCalendar && (
-                      <div className="absolute right-0 z-20 mt-2 w-[300px] rounded-[16px] border border-card-border bg-white p-4 shadow-lg">
-                        <div className="mb-3 flex items-center justify-between">
-                          <div className="text-[13px] font-semibold">{monthLabel}</div>
-                        </div>
-                        <div className="mb-1 grid grid-cols-7 gap-1 text-center text-[11px] text-text-muted">
-                          {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((d) => (
-                            <div key={d} className="grid h-7 place-items-center">{d}</div>
-                          ))}
-                        </div>
-                        <div className="grid grid-cols-7 gap-1">
-                          {Array.from({ length: leadingBlanks }).map((_, i) => (
-                            <div key={`b${i}`} />
-                          ))}
-                          {Array.from({ length: daysInMonth }).map((_, i) => {
-                            const day = i + 1
-                            const selected = day === dueDay
-                            return (
-                              <button
-                                key={i}
-                                onClick={() => {
-                                  setDueDay(day)
-                                  setShowCalendar(false)
-                                }}
-                                className="grid h-8 place-items-center rounded-full text-[12px] transition hover:bg-cream"
-                                style={
-                                  selected
-                                    ? { background: "#16332B", color: "#fff", fontWeight: 600 }
-                                    : { color: "#111827" }
-                                }
-                              >
-                                {day}
-                              </button>
-                            )
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <MiniDatePicker day={dueDay} onChange={setDueDay} />
                 </div>
               </div>
 
