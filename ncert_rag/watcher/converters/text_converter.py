@@ -27,3 +27,7 @@ def convert(path: Path) -> ConversionResult:
         text = path.read_text(encoding="utf-8", errors="replace").strip()
 
     return ConversionResult(text_content=text, suggested_okf_type="Module")
+
+from watcher.converters.base import ConverterSpec, register
+
+register(ConverterSpec(extension_kinds=((".txt", "text"), (".md", "text")), convert=convert))

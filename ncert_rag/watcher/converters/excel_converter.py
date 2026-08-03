@@ -32,3 +32,7 @@ def _rows_to_markdown_table(rows: list) -> str:
     ]
     lines += ["| " + " | ".join(r) + " |" for r in body]
     return "\n".join(lines)
+
+from watcher.converters.base import ConverterSpec, register
+
+register(ConverterSpec(extension_kinds=((".xlsx", "excel"), (".xls", "excel")), convert=convert))

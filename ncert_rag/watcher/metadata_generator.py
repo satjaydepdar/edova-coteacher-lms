@@ -16,6 +16,20 @@ from config.settings import settings
 
 _client = None
 
+
+def _build_client() -> OpenAI:
+    return OpenAI(api_key=settings.NEMOTRON_API_KEY, base_url=settings.NEMOTRON_BASE_URL)
+
+
+def _get_client() -> OpenAI:
+    """Lazily create and cache the Nemotron client (same caching behavior as
+    before, now behind a factory tests can monkeypatch or reset)."""
+    global _client
+    if _client is None:
+        _client = _build_client()
+    return _client
+
+
 _SYSTEM_PROMPT = (
     "You generate metadata for an educational knowledge base (Open Knowledge Format). "
     "Given extracted content from a teacher's uploaded document, respond with ONLY a JSON object: "
@@ -33,9 +47,7 @@ def generate_metadata(text_content: str, filename_hint: str = "", chapter_hint: 
     call fails or returns unparseable JSON — a broken metadata call
     shouldn't block the whole ingestion pipeline.
     """
-    global _client
-    if _client is None:
-        _client = OpenAI(api_key=settings.DEEPSEEK_API_KEY, base_url=settings.DEEPSEEK_BASE_URL)
+    client = _get_client()
 
     context = f"Filename: {filename_hint}\n" if filename_hint else ""
     context += f"Chapter: {chapter_hint}\n" if chapter_hint else ""
@@ -45,8 +57,8 @@ def generate_metadata(text_content: str, filename_hint: str = "", chapter_hint: 
     truncated = text_content[:6000]
 
     try:
-        response = _client.chat.completions.create(
-            model=settings.DEEPSEEK_MODEL,
+        response = client.chat.completions.create(
+            model=settings.NEMOTRON_MODEL,
             messages=[
                 {"role": "system", "content": _SYSTEM_PROMPT},
                 {"role": "user", "content": f"{context}\nContent:\n{truncated}"},

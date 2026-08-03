@@ -1,22 +1,13 @@
 from pathlib import Path
 from typing import Optional
 
-# Extension -> converter kind. Deterministic dispatch, no LLM involved —
-# there's nothing to "decide" about what a .pdf is.
-SUPPORTED_TYPES = {
-    ".pdf": "pdf",
-    ".docx": "docx",
-    ".doc": "docx",
-    ".mp4": "video",
-    ".mov": "video",
-    ".jpg": "image",
-    ".jpeg": "image",
-    ".png": "image",
-    ".xlsx": "excel",
-    ".xls": "excel",
-    ".txt": "text",
-    ".md": "text",
-}
+from watcher.converters.base import supported_extensions
+import watcher.converters  # noqa: F401 — importing the package registers all converter specs
+
+# Extension -> converter kind, BUILT from each converter's self-declared
+# ConverterSpec (watcher/converters/*). Deterministic dispatch, no LLM
+# involved — there's nothing to "decide" about what a .pdf is.
+SUPPORTED_TYPES = supported_extensions()
 
 # Reserved/system filenames and bundle-internal files that should never be
 # treated as a new document to convert (e.g. a file the pipeline itself

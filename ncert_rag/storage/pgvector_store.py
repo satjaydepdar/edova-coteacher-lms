@@ -17,12 +17,25 @@ class PGVectorStore:
     what the migrations describe.
     """
 
-    def __init__(self, connection_string: str = None):
+    def __init__(self, connection_string: str = None, pool=None):
         self.conn_string = connection_string or settings.DATABASE_URL
         self.dimension = settings.EMBEDDING_DIM
+        # Optional psycopg2-style connection pool (anything exposing
+        # getconn/putconn, e.g. psycopg2.pool.ThreadedConnectionPool). When
+        # omitted, each call opens and closes its own connection, exactly as
+        # before — no behavior change for current callers.
+        self._pool = pool
 
     def _get_connection(self):
+        if self._pool is not None:
+            return self._pool.getconn()
         return psycopg2.connect(self.conn_string)
+
+    def _release_connection(self, conn):
+        if self._pool is not None:
+            self._pool.putconn(conn)
+        else:
+            conn.close()
 
     def insert_documents(self, documents: List[Dict]):
         """
@@ -68,7 +81,7 @@ class PGVectorStore:
                 conn.commit()
                 print(f"Inserted {len(documents)} chunks")
         finally:
-            conn.close()
+            self._release_connection(conn)
 
     def similarity_search(
         self,
@@ -114,7 +127,7 @@ class PGVectorStore:
                     })
                 return results
         finally:
-            conn.close()
+            self._release_connection(conn)
 
     def get_document_count(self) -> int:
         """Get total chunk count"""
@@ -124,7 +137,7 @@ class PGVectorStore:
                 cur.execute("SELECT COUNT(*) FROM knowledge_chunks")
                 return cur.fetchone()[0]
         finally:
-            conn.close()
+            self._release_connection(conn)
 
     def clear_collection(self, doc_id: Optional[str] = None):
         """Clear chunks — by source_ref if given, otherwise all of them"""
@@ -137,4 +150,4 @@ class PGVectorStore:
                     cur.execute("DELETE FROM knowledge_chunks")
                 conn.commit()
         finally:
-            conn.close()
+            self._release_connection(conn)

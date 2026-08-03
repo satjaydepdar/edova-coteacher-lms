@@ -1,7 +1,8 @@
-from typing import List, Dict
+from typing import Dict, List, Optional
 from extraction.llamaparse_extractor import LlamaParseExtractor
 from embedding.gemini_embedder import GeminiEmbedder
 from ingestion.okf_bundle_parser import OKFBundleParser
+from ports import Embedder, Extractor, VectorStore
 from storage.pgvector_store import PGVectorStore
 from utils.pdf_utils import PDFUtils
 from config.settings import settings
@@ -11,14 +12,25 @@ import json
 class IngestionPipeline:
     """
     End-to-end pipeline: PDF/OKF bundle -> Extract -> Embed -> Store
+
+    Collaborators are constructor-injected; every parameter defaults to the
+    production concrete, so existing no-arg callers (api/app.py, main.py)
+    behave exactly as before.
     """
 
-    def __init__(self):
-        self.extractor = LlamaParseExtractor()
-        self.embedder = GeminiEmbedder()
-        self.okf_parser = OKFBundleParser()
-        self.store = PGVectorStore()
-        self.pdf_utils = PDFUtils()
+    def __init__(
+        self,
+        extractor: Optional[Extractor] = None,
+        embedder: Optional[Embedder] = None,
+        okf_parser: Optional[OKFBundleParser] = None,
+        store: Optional[VectorStore] = None,
+        pdf_utils: Optional[PDFUtils] = None,
+    ):
+        self.extractor = extractor if extractor is not None else LlamaParseExtractor()
+        self.embedder = embedder if embedder is not None else GeminiEmbedder()
+        self.okf_parser = okf_parser if okf_parser is not None else OKFBundleParser()
+        self.store = store if store is not None else PGVectorStore()
+        self.pdf_utils = pdf_utils if pdf_utils is not None else PDFUtils()
 
     def chunk_content(self, content: str, chunk_size: int = 512, overlap: int = 50) -> List[str]:
         """
@@ -31,10 +43,13 @@ class IngestionPipeline:
         start = 0
         while start < len(content):
             end = start + chunk_size
-            # Try to break at newline or space
+            # Try to break at newline or period — but only at positions that
+            # still let the next window advance past the current one. Snapping
+            # to a break inside the overlap region (i + 1 <= start + overlap)
+            # would leave start unchanged and spin forever.
             if end < len(content):
                 # Look for good break point
-                for i in range(end, max(start, end - 100), -1):
+                for i in range(end, max(start + overlap, end - 100), -1):
                     if content[i] in '\n.':
                         end = i + 1
                         break

@@ -43,3 +43,7 @@ def _get_duration(path: Path) -> str:
     except Exception as e:
         print(f"[video_converter] ffprobe failed for {path.name}: {e}")
         return ""
+
+from watcher.converters.base import ConverterSpec, register
+
+register(ConverterSpec(extension_kinds=((".mp4", "video"), (".mov", "video")), convert=convert))

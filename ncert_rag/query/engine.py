@@ -2,22 +2,33 @@ from storage.pgvector_store import PGVectorStore
 from embedding.gemini_embedder import GeminiEmbedder
 from openai import OpenAI
 from config.settings import settings
-from typing import List, Dict
+from ports import ChatClient, Embedder, VectorStore
+from typing import Dict, List, Optional
 
 
 class QueryEngine:
     """
     RAG Query Engine: Embed query -> Retrieve -> Generate answer
+
+    Collaborators are constructor-injected; every parameter defaults to the
+    production concrete, so existing no-arg callers (api/app.py, main.py)
+    behave exactly as before.
     """
 
-    def __init__(self):
-        self.store = PGVectorStore()
-        self.embedder = GeminiEmbedder()
-        self.client = OpenAI(
-            api_key=settings.DEEPSEEK_API_KEY,
-            base_url=settings.DEEPSEEK_BASE_URL
+    def __init__(
+        self,
+        store: Optional[VectorStore] = None,
+        embedder: Optional[Embedder] = None,
+        client: Optional[ChatClient] = None,
+        model: Optional[str] = None,
+    ):
+        self.store = store if store is not None else PGVectorStore()
+        self.embedder = embedder if embedder is not None else GeminiEmbedder()
+        self.client = client if client is not None else OpenAI(
+            api_key=settings.NEMOTRON_API_KEY,
+            base_url=settings.NEMOTRON_BASE_URL
         )
-        self.model = settings.DEEPSEEK_MODEL
+        self.model = model if model is not None else settings.NEMOTRON_MODEL
 
     def retrieve(self, query: str, top_k: int = 5) -> List[Dict]:
         """

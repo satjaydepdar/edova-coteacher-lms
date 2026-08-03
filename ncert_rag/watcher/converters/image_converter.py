@@ -16,15 +16,26 @@ from watcher.converters.base import ConversionResult
 _client = None
 
 
-def convert(path: Path) -> ConversionResult:
+def _build_client():
+    return genai.Client(api_key=settings.GEMINI_API_KEY)
+
+
+def _get_client():
+    """Lazily create and cache the Gemini client (same caching behavior as
+    before, now behind a factory tests can monkeypatch or reset)."""
     global _client
     if _client is None:
-        _client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        _client = _build_client()
+    return _client
+
+
+def convert(path: Path) -> ConversionResult:
+    client = _get_client()
 
     media_type = mimetypes.guess_type(str(path))[0] or "image/png"
     image_bytes = path.read_bytes()
 
-    response = _client.models.generate_content(
+    response = client.models.generate_content(
         model="gemini-3-flash-preview",
         contents=[
             types.Part.from_bytes(data=image_bytes, mime_type=media_type),
@@ -40,3 +51,7 @@ def convert(path: Path) -> ConversionResult:
         suggested_okf_type="Module",
         extra_frontmatter={},
     )
+
+from watcher.converters.base import ConverterSpec, register
+
+register(ConverterSpec(extension_kinds=((".jpg", "image"), (".jpeg", "image"), (".png", "image")), convert=convert))

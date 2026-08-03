@@ -12,19 +12,14 @@ from pathlib import Path
 from typing import Optional
 
 from watcher.chapter_router import route_from_path
-from watcher.converters import document_converter, excel_converter, image_converter, text_converter, video_converter
+from watcher.converters.base import converters_by_kind
+import watcher.converters  # noqa: F401 — importing the package registers all converter specs
 from watcher.metadata_generator import generate_metadata
 from watcher.okf_writer import ConceptSpec, write_concept
 from watcher.type_router import detect_type
 
-_CONVERTERS = {
-    "pdf": document_converter,
-    "docx": document_converter,
-    "video": video_converter,
-    "image": image_converter,
-    "excel": excel_converter,
-    "text": text_converter,
-}
+# kind -> convert callable, built from each converter's self-declared spec.
+_CONVERTERS = converters_by_kind()
 
 # Matches the convention already established by hand for the biology
 # bundle — Video concepts get a videos/ subfolder, most other types sit
