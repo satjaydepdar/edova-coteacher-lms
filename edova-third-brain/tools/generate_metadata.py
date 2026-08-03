@@ -30,8 +30,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from ingest import extract_text, load_config, read_node  # noqa: E402
+from okf_lib import extract_text, load_config, read_node  # noqa: E402
 
 MIN_TOPICS = 4
 SUBJECT_TITLES = {"math": "Mathematics", "science": "Science"}

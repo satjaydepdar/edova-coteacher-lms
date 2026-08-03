@@ -30,8 +30,10 @@ REQUIRED_PATH_KEYS = {"subjects", "okf_bundle", "logs", "inbox", "review"}
 OKF_BUNDLE_DIRS = ["manifest", "nodes", "edges", "attachments", "indexes", "history"]
 OKF_INDEX_SUBDIRS = ["by_subject", "by_chapter", "by_type"]
 
-EXPECTED_SUBJECTS = ["math", "science", "history", "geography", "english"]
-EXPECTED_SCIENCE_SUBDIRS = ["physics", "chemistry", "biology"]
+# Defaults — the live values come from config.yaml's taxonomy: block; these
+# only apply when that block is absent (identical to the pre-config values).
+DEFAULT_EXPECTED_SUBJECTS = ["math", "science", "history", "geography", "english"]
+DEFAULT_EXPECTED_SCIENCE_SUBDIRS = ["physics", "chemistry", "biology"]
 
 
 def check(label, condition, errors):
@@ -97,11 +99,14 @@ def main():
         check(f"okf-bundle/indexes/{d}/ exists", (bundle / "indexes" / d).is_dir(), errors)
 
     print("\nsubjects/ structure")
+    taxonomy = config.get("taxonomy", {}) or {}
+    expected_subjects = taxonomy.get("expected_subjects", DEFAULT_EXPECTED_SUBJECTS)
+    expected_science_subdirs = taxonomy.get("expected_science_subdirs", DEFAULT_EXPECTED_SCIENCE_SUBDIRS)
     subjects = root / "subjects"
-    for s in EXPECTED_SUBJECTS:
+    for s in expected_subjects:
         check(f"subjects/{s}/ exists", (subjects / s).is_dir(), errors)
     check("subjects/math/chapters/ exists", (subjects / "math" / "chapters").is_dir(), errors)
-    for s in EXPECTED_SCIENCE_SUBDIRS:
+    for s in expected_science_subdirs:
         check(f"subjects/science/{s}/ exists", (subjects / "science" / s).is_dir(), errors)
 
     if args.deep:
