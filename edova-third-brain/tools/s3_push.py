@@ -155,9 +155,9 @@ def main():
         print("\nnothing to upload.")
     else:
         try:
-            import boto3
             from botocore.exceptions import NoCredentialsError, ClientError
-            s3 = boto3.client("s3")
+            import s3conn
+            s3 = s3conn.get_client()
         except ImportError:
             print("boto3 not installed - pip install boto3", file=sys.stderr)
             return 2
@@ -189,8 +189,8 @@ def main():
     write_json(manifest_path, manifest)
     print(f"\nmanifest: {manifest['count']} shelved resources -> {manifest_path}")
     try:
-        import boto3
-        boto3.client("s3").put_object(
+        import s3conn
+        s3conn.get_client().put_object(
             Bucket=bucket, Key=f"{prefix}/manifest.json",
             Body=json.dumps(manifest, indent=2).encode("utf-8"),
             ContentType="application/json")

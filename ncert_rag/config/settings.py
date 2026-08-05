@@ -40,18 +40,9 @@ class Settings:
 
     # Paths
     PDF_DIR = os.getenv("PDF_DIR", "./data/pdfs")
-    # edova-third-brain (OKF librarian: ingest.py + s3_push.py live there).
-    THIRD_BRAIN_DIR = os.getenv("THIRD_BRAIN_DIR", "../edova-third-brain")
-
-    # S3 uploads (teacher UI uploads -> staging -> librarian shelves canonically)
-    S3_BUCKET = os.getenv("S3_BUCKET", "innuxai-edova-coteacher")
-    S3_PREFIX = os.getenv("S3_PREFIX", "Class-10/Semester-01")
-    S3_STAGING_PREFIX = os.getenv("S3_STAGING_PREFIX", "uploads")
-    UPLOAD_MAX_VIDEO_MB = int(os.getenv("UPLOAD_MAX_VIDEO_MB", "2048"))
-    UPLOAD_MAX_DOC_MB = int(os.getenv("UPLOAD_MAX_DOC_MB", "200"))
-    # Optional shared secret for the upload endpoints (X-Upload-Token header).
-    # Track-2 real auth replaces this — see instructions/dedicated-backend-plan.md.
-    UPLOAD_TOKEN = os.getenv("UPLOAD_TOKEN")
+    # (S3/upload settings moved out: teacher uploads are owned by
+    # ncert_rag/clerk, which reads edova-third-brain/config.yaml via
+    # tools/s3conn.py.)
     # Comma-separated browser origins allowed to call this API.
     API_CORS_ORIGINS = os.getenv(
         "API_CORS_ORIGINS", "http://localhost:5173,http://localhost:5174")

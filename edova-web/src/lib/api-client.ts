@@ -13,10 +13,6 @@ import { createGateway } from "./api-gateway"
 
 export const clerkApi = createGateway(import.meta.env.VITE_API_URL ?? "http://localhost:8001")
 
-/** Resolved clerk base URL — for the one non-gateway embed (the OKF dashboard
- * iframe on the Knowledge Graph page; clerk keeps the dashboard). Any HTTP
- * call goes through clerkApi instead. */
-export const CLERK_BASE_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8001").replace(/\/$/, "")
 export const backendApi = createGateway(import.meta.env.VITE_BACKEND_API_URL ?? "http://localhost:8003")
 export const ragApi = createGateway(import.meta.env.VITE_RAG_API_URL ?? "http://localhost:8000")
 export const aiApi = createGateway(import.meta.env.VITE_AI_API_URL ?? "http://localhost:8002")

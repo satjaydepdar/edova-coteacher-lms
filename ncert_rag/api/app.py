@@ -14,15 +14,12 @@ here instead of trusting a client-supplied value.
 
 import mimetypes
 import re
-import subprocess
-import sys
 import time
-import uuid
 from pathlib import Path
 from typing import List, Optional
 
 import psycopg2
-from fastapi import FastAPI, Header, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, RedirectResponse, Response
 from pydantic import BaseModel
@@ -32,7 +29,6 @@ from config.settings import settings
 from ingestion.okf_bundle_parser import OKFBundleParser
 from ingestion.pipeline import IngestionPipeline
 from query.engine import QueryEngine
-from shared.chapter_map import to_okf_chapter
 from storage.pgvector_store import PGVectorStore
 from utils.pdf_utils import PDFUtils
 
@@ -301,146 +297,11 @@ def stats():
     return StatsResponse(total_chunks=store.get_document_count())
 
 
-# ---------------------------------------------------------------- uploads
-# Teacher UI upload flow (Track 1): browser -> presign -> PUT direct to S3
-# staging -> complete -> librarian (ingest + s3_push) shelves it canonically.
-# The browser never holds AWS keys; this service only signs and orchestrates.
-
-UPLOAD_VIDEO_EXTS = {"mp4", "webm", "mov"}
-UPLOAD_DOC_EXTS = {"pdf", "ppt", "pptx", "doc", "docx", "md"}
-
-
-def _check_upload_token(x_upload_token: Optional[str]) -> None:
-    """Shared-secret gate until Track-2 auth lands. If UPLOAD_TOKEN is unset
-    the endpoints run open (single-school dev default)."""
-    if settings.UPLOAD_TOKEN and x_upload_token != settings.UPLOAD_TOKEN:
-        raise HTTPException(status_code=401, detail="invalid upload token")
-
-
-def _s3_client():
-    try:
-        import boto3
-        return boto3.client("s3")
-    except Exception as exc:
-        raise HTTPException(status_code=503, detail=f"S3 unavailable: {exc}")
-
-
-def map_chapter(subject: str, chapter: str) -> tuple:
-    """Frontend chapter id -> OKF chapter id. The mapping rule itself lives
-    in shared/chapter_map.py (single source of truth, shared with clerk)."""
-    try:
-        return to_okf_chapter(subject, chapter)
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc))
-
-
-class PresignRequest(BaseModel):
-    filename: str
-    content_type: str
-    size_bytes: int
-    teacher_id: Optional[str] = None
-
-
-class PresignResponse(BaseModel):
-    upload_url: str
-    staging_key: str
-    expires_in: int
-
-
-@app.post("/uploads/presign", response_model=PresignResponse)
-def presign(req: PresignRequest, x_upload_token: Optional[str] = Header(None)):
-    _check_upload_token(x_upload_token)
-    ext = req.filename.rsplit(".", 1)[-1].lower() if "." in req.filename else ""
-    if ext not in UPLOAD_VIDEO_EXTS | UPLOAD_DOC_EXTS:
-        raise HTTPException(status_code=422, detail=f"file type .{ext} not allowed")
-    limit_mb = settings.UPLOAD_MAX_VIDEO_MB if ext in UPLOAD_VIDEO_EXTS else settings.UPLOAD_MAX_DOC_MB
-    if req.size_bytes > limit_mb * 1024 * 1024:
-        raise HTTPException(status_code=422, detail=f"file exceeds {limit_mb} MB limit")
-
-    teacher = re.sub(r"[^a-zA-Z0-9_-]", "", req.teacher_id or "teacher") or "teacher"
-    staging_key = f"{settings.S3_STAGING_PREFIX}/{teacher}/{uuid.uuid4().hex}.{ext}"
-    try:
-        url = _s3_client().generate_presigned_url(
-            "put_object",
-            Params={"Bucket": settings.S3_BUCKET, "Key": staging_key,
-                    "ContentType": req.content_type},
-            ExpiresIn=900)
-    except Exception as exc:
-        raise HTTPException(status_code=503,
-                            detail=f"could not sign upload (AWS credentials configured?): {exc}")
-    return PresignResponse(upload_url=url, staging_key=staging_key, expires_in=900)
-
-
-class CompleteRequest(BaseModel):
-    staging_key: str
-    title: str
-    subject: str
-    chapter: str                # frontend id (sci10-ch05) or OKF id (biology-ch1)
-    doc_type: str = "video"
-    teacher_id: Optional[str] = None
-
-
-class CompleteResponse(BaseModel):
-    doc_id: str
-    s3_key: str
-    preview_s3_key: str
-
-
-def _run_librarian(args: list, cwd: Path) -> str:
-    proc = subprocess.run([sys.executable, *args], cwd=cwd,
-                          capture_output=True, text=True, timeout=600)
-    if proc.returncode != 0:
-        raise HTTPException(status_code=502,
-                            detail=f"librarian step failed ({args[0]}): {proc.stderr[-400:]}")
-    return proc.stdout
-
-
-@app.post("/uploads/complete", response_model=CompleteResponse)
-def complete(req: CompleteRequest, x_upload_token: Optional[str] = Header(None)):
-    _check_upload_token(x_upload_token)
-    if not req.staging_key.startswith(f"{settings.S3_STAGING_PREFIX}/"):
-        raise HTTPException(status_code=422, detail="staging_key outside staging area")
-    subject, chapter_id = map_chapter(req.subject, req.chapter)
-
-    s3 = _s3_client()
-    third_brain = Path(settings.THIRD_BRAIN_DIR).resolve()
-    inbox = third_brain / "inbox"
-    inbox.mkdir(parents=True, exist_ok=True)
-    local = inbox / f"upload_{uuid.uuid4().hex[:8]}_{Path(req.staging_key).name}"
-
-    try:
-        s3.download_file(settings.S3_BUCKET, req.staging_key, str(local))
-    except Exception:
-        raise HTTPException(status_code=404, detail="staged file not found in S3")
-
-    try:
-        chapter_name = req.title
-        out = _run_librarian(
-            ["tools/ingest.py", subject, chapter_id, chapter_name,
-             req.doc_type, str(local)], third_brain)
-        m = re.search(r'"doc_id"\s*:\s*"([^"]+)"', out)
-        if not m:
-            raise HTTPException(status_code=502, detail="ingest did not return a doc_id")
-        doc_id = m.group(1)
-
-        _run_librarian(["tools/s3_push.py", "--upload"], third_brain)
-
-        node_path = third_brain / "okf-bundle" / "nodes" / f"{doc_id}.md"
-        # nodes/*.md: YAML frontmatter + markdown body (see tools/ingest.py in
-        # third_brain, run above via _run_librarian as a subprocess).
-        import yaml as _yaml
-        _, front, _ = node_path.read_text(encoding="utf-8").split("---", 2)
-        node = _yaml.safe_load(front) or {}
-        s3_key = node.get("s3_key")
-        if not s3_key:
-            raise HTTPException(status_code=502, detail="shelved but node has no s3_key")
-
-        s3.delete_object(Bucket=settings.S3_BUCKET, Key=req.staging_key)
-        # getAssetUrl() percent-encodes the key itself; preview_s3_key must
-        # be the literal object key (see s3_push.py's build_manifest).
-        return CompleteResponse(doc_id=doc_id, s3_key=s3_key, preview_s3_key=s3_key)
-    finally:
-        local.unlink(missing_ok=True)
+# Teacher UI uploads (presign -> browser PUT to S3 -> complete) are owned
+# solely by the clerk service (ncert_rag/clerk/api.py, :8001) — the only
+# caller (edova-web's lib/upload.ts) points there. This app intentionally
+# has no /uploads/* endpoints; S3 settings live in
+# edova-third-brain/config.yaml via tools/s3conn.py.
 
 
 @app.delete("/collection")

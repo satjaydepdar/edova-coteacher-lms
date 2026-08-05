@@ -31,7 +31,8 @@ from datetime import datetime, timezone
 
 import yaml
 
-ROOT = Path(__file__).resolve().parent.parent
+# tools/okf_lib/__init__.py -> edova-third-brain/ (three levels up).
+ROOT = Path(__file__).resolve().parent.parent.parent
 OKF_VERSION = "1.0.0"
 
 

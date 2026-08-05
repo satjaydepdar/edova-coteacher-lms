@@ -45,7 +45,6 @@ from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
 HERE = Path(__file__).resolve().parent
@@ -56,18 +55,35 @@ DB_PATH = HERE / "clerk.db"
 # instantly listed and knowable — no manual ingest / s3_push runs.
 THIRD_BRAIN = HERE.parent.parent / "edova-third-brain"
 sys.path.insert(0, str(THIRD_BRAIN / "tools"))
+# okf_search.py (and any future clerk-local helpers) live beside this file;
+# make them importable whether we're run as `uvicorn api:app` from clerk/
+# or imported as `clerk.api` (pytest from the ncert_rag root). Appended, not
+# prepended — prepending lets this api.py shadow the ncert_rag/api package.
+sys.path.append(str(HERE))
 import ingest as okf_ingest  # noqa: E402
 import s3_push as okf_shelf  # noqa: E402
 import okf_dashboard  # noqa: E402
+import okf_search  # noqa: E402
+import s3conn  # noqa: E402
 
 OKF_BUNDLE = str(THIRD_BRAIN / "okf-bundle")
 
-S3_BUCKET = "innuxai-edova-coteacher"
-S3_REGION = "ap-south-1"
-S3_PREFIX = "Class-10/Semester-01"
-STAGING_PREFIX = "staging"
+# Bucket settings come from edova-third-brain/config.yaml's s3: block via
+# s3conn (single source of truth) — not hardcoded here.
+_S3 = s3conn.s3_settings()
+S3_BUCKET = _S3["bucket"]
+S3_REGION = _S3["region"]
+S3_PREFIX = _S3["prefix"]
+STAGING_PREFIX = _S3["staging_prefix"]
 
 app = FastAPI(title="Edova Clerk", version="0.1.0")
+
+
+@app.on_event("startup")
+def _check_aws_credentials():
+    # Uploads are the only feature needing AWS; warn loudly at boot instead
+    # of failing mysteriously on the teacher's first upload.
+    s3conn.warn_if_credentials_missing()
 
 # Vite dev server hops ports (5173, 5174, …) — allow any localhost port.
 app.add_middleware(
@@ -501,8 +517,7 @@ def add_wiki_note(student_id: str, body: WikiNoteIn):
 # ---------- teacher uploads (presign -> S3 PUT -> complete) ----------
 
 def s3_client():
-    import boto3
-    return boto3.client("s3", region_name=S3_REGION)
+    return s3conn.get_client()
 
 
 class PresignIn(BaseModel):
@@ -578,9 +593,9 @@ def _chapter_name(subject_slug: str, chapter_id: str, fallback: str) -> str:
 
 def _refresh_manifest(s3) -> None:
     """Rebuild manifest.json from the current node files and push it to
-    local disk + S3 + the standalone dashboard. Shared by anything that
-    changes a node — a new upload, or a trust update from /verify — so the
-    app's resource list reflects it immediately."""
+    local disk + S3. Shared by anything that changes a node — a new upload,
+    or a trust update from /verify — so the app's resource list reflects it
+    immediately."""
     config = okf_ingest.load_config()
     manifest = okf_shelf.build_manifest(okf_shelf.collect_plan(config), config)
     manifest_path = THIRD_BRAIN / "okf-bundle" / "manifest" / "manifest.json"
@@ -589,13 +604,6 @@ def _refresh_manifest(s3) -> None:
     s3.put_object(Bucket=S3_BUCKET, Key=f"{S3_PREFIX}/manifest.json",
                   Body=json.dumps(manifest, indent=2).encode("utf-8"),
                   ContentType="application/json")
-    # Refresh the shareable standalone health map too (the live /okf/dashboard
-    # endpoint always regenerates, but this keeps the on-disk file current).
-    try:
-        dash = okf_dashboard.render(okf_dashboard.collect(OKF_BUNDLE), fragment=False)
-        (Path(OKF_BUNDLE) / "okf_dashboard.html").write_text(dash, encoding="utf-8")
-    except Exception as exc:
-        print(f"[_refresh_manifest] dashboard refresh skipped: {exc}", file=sys.stderr)
 
 
 def _okf_catalog(s3, body: "CompleteIn", filename: str) -> tuple[str, str]:
@@ -681,16 +689,31 @@ def verify_resource(doc_id: str):
     return {"doc_id": doc_id, "trust": node["trust"]}
 
 
-@app.get("/okf/dashboard", response_class=HTMLResponse)
-def okf_dashboard_view():
-    """Live OKF bundle health map — regenerated from the bundle on every view,
-    so it always reflects the latest uploads (no manual refresh). Embedded by
-    edova-web's Administration → Knowledge Graph tab."""
+@app.get("/okf/graph")
+def okf_graph():
+    """Live OKF knowledge graph as JSON — subjects, chapters, documents with
+    per-document shelf/index/list status, plus the syllabus topic tree joined
+    to OKF chapters. Regenerated from the bundle on every call so it always
+    reflects the latest uploads. Consumed natively by edova-web's
+    Administration → Knowledge Graph page."""
     try:
         data = okf_dashboard.collect(OKF_BUNDLE)
-        return HTMLResponse(okf_dashboard.render(data, fragment=False))
+        chapters = {(d["subject"], d["chapter_id"]): d["chapter_name"] for d in data["nodes"]}
+        data["topics"] = okf_search.syllabus_topics(str(DB_PATH), chapters)
+        return data
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"could not build dashboard: {exc}")
+        raise HTTPException(status_code=500, detail=f"could not build graph: {exc}")
+
+
+@app.get("/okf/search")
+def okf_search_view(q: str, limit: int = 12):
+    """BM25 search across subjects, chapters, syllabus topics, and documents —
+    one ranked list for the Knowledge Graph page's non-cascading search box.
+    Short or empty queries return no matches, never an error."""
+    try:
+        return {"query": q, "matches": okf_search.search(OKF_BUNDLE, str(DB_PATH), q, limit)}
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"search failed: {exc}")
 
 
 @app.get("/health")

@@ -298,12 +298,12 @@ def test_clear_collection_requires_confirm():
     assert r.status_code == 400
 
 
-def test_presign_without_token_is_rejected():
-    # Pinned observed behavior: 422 (UPLOAD_TOKEN unset -> token gate passes,
-    # then request validation/mapping rejects). If UPLOAD_TOKEN gets configured
-    # this flips to 401 — update the pin with the env change.
+def test_uploads_not_served_here():
+    # Uploads moved to the clerk service (:8001) as the single owner — this
+    # app must NOT re-grow /uploads/* endpoints (duplicate implementations
+    # diverged on staging prefix and bucket config; see AWS-SETUP.md).
     r = client.post("/uploads/presign", json={"filename": "x.pdf", "subject": "math", "chapter": "ch1"})
-    assert r.status_code in (401, 422)
+    assert r.status_code == 404
 
 
 # ---- probe data cleanup -------------------------------------------------------
