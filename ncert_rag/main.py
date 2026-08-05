@@ -203,7 +203,7 @@ Examples:
     ingest_parser = subparsers.add_parser('ingest', help='Ingest PDFs into database')
     ingest_parser.add_argument('--pdf-dir', default='./data/pdfs', help='Directory containing PDFs')
     ingest_parser.add_argument('--text-only', action='store_true', help='Use text extraction instead of vision API')
-    ingest_parser.add_argument('--chunk-size', type=int, default=512, help='Text chunk size')
+    ingest_parser.add_argument('--chunk-size', type=int, default=2000, help='Text chunk size')
     ingest_parser.set_defaults(func=ingest_command)
 
     # Ingest OKF bundle command

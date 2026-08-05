@@ -32,32 +32,99 @@ class IngestionPipeline:
         self.store = store if store is not None else PGVectorStore()
         self.pdf_utils = pdf_utils if pdf_utils is not None else PDFUtils()
 
-    def chunk_content(self, content: str, chunk_size: int = 512, overlap: int = 50) -> List[str]:
+    @staticmethod
+    def _fix_page_breaks(content: str) -> str:
+        """Fix broken words from PDF page breaks before chunking."""
+        import re
+        # Fix hyphenated line breaks: "transpor-\nted" -> "transported"
+        content = re.sub(r'(?<=\w)-\n(?=\w)', '', content)
+        # Fix bare word breaks across lines (but NOT paragraph breaks):
+        # "transpor\nted" -> "transported" (only when lowercase letter follows)
+        # But preserve intentional newlines (double \n, bullets, headings, etc.)
+        content = re.sub(r'(?<=\w)\n(?=[a-z])', ' ', content)
+        # Remove PDF page headers/footers during ingestion too
+        content = re.sub(r'^[A-Z][A-Za-z\s\-&]+\d{1,3}\s*$', '', content, flags=re.MULTILINE)
+        content = re.sub(r'^Reprint\s+\d{4}[\-–]\d{2,4}\s*$', '', content, flags=re.MULTILINE)
+        content = re.sub(r'^\d+CH\d+\s*$', '', content, flags=re.MULTILINE)
+        content = re.sub(r'^CHAPTER\s+\d+\s*$', '', content, flags=re.MULTILINE)
+        # Collapse multiple blank lines
+        content = re.sub(r'\n{3,}', '\n\n', content)
+        return content.strip()
+
+    def chunk_content(self, content: str, chunk_size: int = 1500, overlap: int = 200) -> List[str]:
         """
-        Split long content into overlapping chunks
+        Split long content into overlapping chunks using markdown-aware separators.
+        Respects headings, paragraphs, and bullet points.
         """
+        import re
+
+        # Fix broken words from page breaks first
+        content = self._fix_page_breaks(content)
+
         if len(content) <= chunk_size:
             return [content]
 
+        # Markdown-aware separators in priority order
+        separators = [
+            "\n# ",      # H1 heading
+            "\n## ",     # H2 heading
+            "\n### ",    # H3 heading
+            "\n\n",      # Paragraph break
+            "\n",        # Single line break
+            ". ",        # Sentence end
+            " ",         # Word boundary
+        ]
+
         chunks = []
-        start = 0
-        while start < len(content):
-            end = start + chunk_size
-            # Try to break at newline or period — but only at positions that
-            # still let the next window advance past the current one. Snapping
-            # to a break inside the overlap region (i + 1 <= start + overlap)
-            # would leave start unchanged and spin forever.
-            if end < len(content):
-                # Look for good break point
-                for i in range(end, max(start + overlap, end - 100), -1):
-                    if content[i] in '\n.':
-                        end = i + 1
-                        break
+        self._recursive_split(content, separators, chunk_size, overlap, chunks)
+        return [c.strip() for c in chunks if c.strip()]
 
-            chunks.append(content[start:end].strip())
-            start = end - overlap
+    def _recursive_split(self, text: str, separators: List[str], 
+                          chunk_size: int, overlap: int, result: List[str]):
+        """Recursively split text using the best available separator."""
+        if len(text) <= chunk_size:
+            result.append(text)
+            return
 
-        return chunks
+        # Find the best separator that actually exists in the text
+        separator = separators[-1]  # fallback: space
+        for sep in separators:
+            if sep in text:
+                separator = sep
+                break
+
+        # Split on the chosen separator
+        parts = text.split(separator)
+        
+        current_chunk = ""
+        for part in parts:
+            candidate = current_chunk + separator + part if current_chunk else part
+            if len(candidate) <= chunk_size:
+                current_chunk = candidate
+            else:
+                if current_chunk:
+                    result.append(current_chunk)
+                    # Keep overlap from the end of current chunk
+                    if overlap > 0 and len(current_chunk) > overlap:
+                        overlap_text = current_chunk[-overlap:]
+                        # Try to start overlap at a word boundary
+                        space_idx = overlap_text.find(' ')
+                        if space_idx > 0:
+                            overlap_text = overlap_text[space_idx + 1:]
+                        current_chunk = overlap_text + separator + part
+                    else:
+                        current_chunk = part
+                else:
+                    # Single part is bigger than chunk_size, try next separator
+                    remaining_seps = separators[separators.index(separator) + 1:]
+                    if remaining_seps:
+                        self._recursive_split(part, remaining_seps, chunk_size, overlap, result)
+                    else:
+                        result.append(part)
+                    current_chunk = ""
+        
+        if current_chunk:
+            result.append(current_chunk)
 
     def _embed_and_store(self, all_chunks: List[Dict], results: Dict) -> Dict:
         """Shared tail end of both ingestion paths: embed in batches, store, report."""

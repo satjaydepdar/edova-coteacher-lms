@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { useAppStore } from "@/store/app-store"
 import Login from "@/pages/Login"
+import Portal from "@/pages/Portal"
 import Calendar from "@/pages/Calendar"
 import Settings from "@/pages/Settings"
 import KnowledgeGraph from "@/pages/KnowledgeGraph"
@@ -28,6 +29,7 @@ function IndexRedirect() {
 }
 
 export const router = createBrowserRouter([
+  { path: "/welcome", element: <Portal /> },
   { path: "/login", element: <Login /> },
   {
     path: "/",

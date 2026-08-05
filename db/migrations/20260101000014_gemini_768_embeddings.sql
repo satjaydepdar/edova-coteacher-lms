@@ -15,28 +15,12 @@
 -- TYPE will fail on any existing 1024-dim row.
 -- ============================================================
 
-DROP INDEX IF EXISTS idx_knowledge_embedding;
-ALTER TABLE knowledge_chunks ALTER COLUMN embedding TYPE vector(768);
-CREATE INDEX idx_knowledge_embedding ON knowledge_chunks USING hnsw (embedding vector_cosine_ops);
-
-DROP INDEX IF EXISTS idx_resource_chunks_embedding;
-ALTER TABLE resource_chunks ALTER COLUMN embedding TYPE vector(768);
-CREATE INDEX idx_resource_chunks_embedding ON resource_chunks USING hnsw (embedding vector_cosine_ops);
-
-DROP INDEX IF EXISTS idx_question_bank_embedding;
-ALTER TABLE question_bank ALTER COLUMN embedding TYPE vector(768);
-CREATE INDEX idx_question_bank_embedding ON question_bank USING hnsw (embedding vector_cosine_ops);
+ALTER TABLE knowledge_chunks ALTER COLUMN embedding TYPE JSONB;
+ALTER TABLE resource_chunks ALTER COLUMN embedding TYPE JSONB;
+ALTER TABLE question_bank ALTER COLUMN embedding TYPE JSONB;
 
 -- Down Migration
 
-DROP INDEX IF EXISTS idx_question_bank_embedding;
-ALTER TABLE question_bank ALTER COLUMN embedding TYPE vector(1024);
-CREATE INDEX idx_question_bank_embedding ON question_bank USING hnsw (embedding vector_cosine_ops);
-
-DROP INDEX IF EXISTS idx_resource_chunks_embedding;
-ALTER TABLE resource_chunks ALTER COLUMN embedding TYPE vector(1024);
-CREATE INDEX idx_resource_chunks_embedding ON resource_chunks USING hnsw (embedding vector_cosine_ops);
-
-DROP INDEX IF EXISTS idx_knowledge_embedding;
-ALTER TABLE knowledge_chunks ALTER COLUMN embedding TYPE vector(1024);
-CREATE INDEX idx_knowledge_embedding ON knowledge_chunks USING hnsw (embedding vector_cosine_ops);
+ALTER TABLE question_bank ALTER COLUMN embedding TYPE JSONB;
+ALTER TABLE resource_chunks ALTER COLUMN embedding TYPE JSONB;
+ALTER TABLE knowledge_chunks ALTER COLUMN embedding TYPE JSONB;

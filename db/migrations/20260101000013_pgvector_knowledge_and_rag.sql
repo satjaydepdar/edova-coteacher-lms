@@ -1,9 +1,9 @@
 -- Up Migration
 
 -- ============================================================
--- PGVECTOR EXTENSION
+-- PGVECTOR EXTENSION (REMOVED FOR LOCAL SETUP)
 -- ============================================================
-CREATE EXTENSION IF NOT EXISTS vector;
+-- CREATE EXTENSION IF NOT EXISTS vector;
 
 -- ============================================================
 -- KNOWLEDGE CHUNKS — global reference knowledge (NCERT textbook corpus,
@@ -22,14 +22,14 @@ CREATE TABLE knowledge_chunks (
     curriculum_unit_id UUID REFERENCES curriculum_units(id) ON DELETE SET NULL,
     page_number     INT,
     content         TEXT NOT NULL,
-    embedding       vector(1024),                    -- BAAI/bge-m3 dimension
+    embedding       JSONB,                           -- fallback for local setup
     metadata        JSONB NOT NULL DEFAULT '{}',
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     CONSTRAINT chk_knowledge_source_type CHECK (source_type IN ('ncert_textbook', 'okf_library'))
 );
 
-CREATE INDEX idx_knowledge_embedding ON knowledge_chunks USING hnsw (embedding vector_cosine_ops);
+-- HNSW index removed for local JSONB fallback
 CREATE INDEX idx_knowledge_source ON knowledge_chunks(source_type, source_ref);
 CREATE INDEX idx_knowledge_unit ON knowledge_chunks(curriculum_unit_id) WHERE curriculum_unit_id IS NOT NULL;
 
@@ -73,11 +73,11 @@ CREATE TABLE resource_chunks (
     resource_id     UUID NOT NULL REFERENCES resources(id) ON DELETE CASCADE,
     chunk_index     INT NOT NULL DEFAULT 0,
     content         TEXT NOT NULL,
-    embedding       vector(1024),
+    embedding       JSONB,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_resource_chunks_embedding ON resource_chunks USING hnsw (embedding vector_cosine_ops);
+-- HNSW index removed for local JSONB fallback
 CREATE INDEX idx_resource_chunks_resource ON resource_chunks(resource_id);
 
 ALTER TABLE resource_chunks ENABLE ROW LEVEL SECURITY;
@@ -92,8 +92,8 @@ CREATE POLICY resource_chunks_delete ON resource_chunks FOR DELETE TO app_role
 -- QUESTION BANK — add embedding for semantic dedup / "find similar
 -- question". A column, not a chunk table: questions are already atomic.
 -- ============================================================
-ALTER TABLE question_bank ADD COLUMN embedding vector(1024);
-CREATE INDEX idx_question_bank_embedding ON question_bank USING hnsw (embedding vector_cosine_ops);
+ALTER TABLE question_bank ADD COLUMN embedding JSONB;
+-- HNSW index removed for local JSONB fallback
 
 -- ============================================================
 -- RAG QUERIES — retrieval + generation audit trail
@@ -129,4 +129,4 @@ ALTER TABLE question_bank DROP COLUMN IF EXISTS embedding;
 DROP TABLE IF EXISTS resource_chunks;
 DROP FUNCTION IF EXISTS can_access_resource(UUID);
 DROP TABLE IF EXISTS knowledge_chunks;
-DROP EXTENSION IF EXISTS vector;
+-- DROP EXTENSION IF EXISTS vector;

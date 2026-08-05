@@ -27,5 +27,6 @@ export interface NavItem {
 export interface NavGroup {
   label: string
   adminOnly?: boolean
+  teacherOnly?: boolean
   items: NavItem[]
 }

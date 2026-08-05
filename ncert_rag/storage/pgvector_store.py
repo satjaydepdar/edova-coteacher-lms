@@ -61,7 +61,7 @@ class PGVectorStore:
                         d.get('curriculum_unit_id'),
                         d.get('page_number', 0),
                         d['content'],
-                        d['embedding'],
+                        psycopg2.extras.Json(d['embedding']),
                         psycopg2.extras.Json(d.get('metadata', {}))
                     )
                     for d in documents
@@ -94,36 +94,79 @@ class PGVectorStore:
         `doc_id` filters by source_ref, kept as the param name callers
         already use.
         """
+        import numpy as np
         conn = self._get_connection()
         try:
             with conn.cursor() as cur:
                 if doc_id:
                     cur.execute("""
-                        SELECT id, source_ref, page_number, content, metadata,
-                               1 - (embedding <=> %s::vector) as similarity
+                        SELECT id, source_ref, page_number, content, metadata, embedding
                         FROM knowledge_chunks
                         WHERE source_ref = %s
-                        ORDER BY embedding <=> %s::vector
-                        LIMIT %s;
-                    """, (query_embedding, doc_id, query_embedding, top_k))
+                    """, (doc_id,))
                 else:
                     cur.execute("""
-                        SELECT id, source_ref, page_number, content, metadata,
-                               1 - (embedding <=> %s::vector) as similarity
+                        SELECT id, source_ref, page_number, content, metadata, embedding
                         FROM knowledge_chunks
-                        ORDER BY embedding <=> %s::vector
-                        LIMIT %s;
-                    """, (query_embedding, query_embedding, top_k))
+                    """)
 
+                all_results = []
+                q_vec = np.array(query_embedding)
+                q_norm = np.linalg.norm(q_vec)
+                
+                for row in cur.fetchall():
+                    emb_data = row[5]
+                    if not emb_data:
+                        continue
+                    
+                    r_vec = np.array(emb_data)
+                    r_norm = np.linalg.norm(r_vec)
+                    
+                    if q_norm == 0 or r_norm == 0:
+                        sim = 0.0
+                    else:
+                        sim = np.dot(q_vec, r_vec) / (q_norm * r_norm)
+                    
+                    all_results.append({
+                        'id': row[0],
+                        'doc_id': row[1],
+                        'page_number': row[2],
+                        'content': row[3],
+                        'metadata': row[4],
+                        'similarity': float(sim)
+                    })
+                
+                all_results.sort(key=lambda x: x['similarity'], reverse=True)
+                return all_results[:top_k]
+        finally:
+            self._release_connection(conn)
+
+    def get_chunks_by_range(self, doc_id: str, page_number: int, start_index: int, end_index: int) -> List[Dict]:
+        """Fetch a continuous range of chunks for a document to prevent gaps"""
+        conn = self._get_connection()
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT id, source_ref, page_number, content, metadata
+                    FROM knowledge_chunks
+                    WHERE source_ref = %s 
+                    AND page_number = %s
+                    AND (metadata->>'chunk')::int BETWEEN %s AND %s
+                    ORDER BY (metadata->>'chunk')::int ASC
+                    """,
+                    (doc_id, page_number, start_index, end_index)
+                )
+                
                 results = []
                 for row in cur.fetchall():
                     results.append({
                         'id': row[0],
-                        'doc_id': row[1],        # kept as 'doc_id' — callers (engine.py) already key on this
+                        'doc_id': row[1],
                         'page_number': row[2],
                         'content': row[3],
                         'metadata': row[4],
-                        'similarity': row[5]
+                        'chunk_index': row[4].get('chunk', 0)
                     })
                 return results
         finally:

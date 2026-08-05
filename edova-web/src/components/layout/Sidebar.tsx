@@ -12,7 +12,9 @@ export function Sidebar() {
   const identity = session
     ? identityFromUser(session.user)
     : role === "admin" ? ADMIN_IDENTITY : TEACHER_IDENTITY
-  const groups = NAV_GROUPS.filter((g) => !g.adminOnly || role === "admin")
+  const groups = NAV_GROUPS.filter(
+    (g) => (!g.adminOnly || role === "admin") && (!g.teacherOnly || role === "teacher")
+  )
 
   // Main modules are collapsed by default; clicking a module header reveals
   // its submodule list without navigating.

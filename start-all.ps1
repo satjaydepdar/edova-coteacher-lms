@@ -21,9 +21,8 @@ foreach ($s in $services) {
     Write-Host ("SKIP   {0} - already running" -f $s.Name) -ForegroundColor DarkGray
     continue
   }
-  $log = Join-Path $logs (($s.Dir -replace '[/\\]', '-') + ".log")
   $dir = Join-Path $root $s.Dir
-  Start-Process powershell -ArgumentList "-NoProfile", "-Command", "Set-Location '$dir'; $($s.Cmd) *> '$log'" -WindowStyle Minimized
+  Start-Process cmd -ArgumentList "/k", "cd /d `"$dir`" && $($s.Cmd)" -WindowStyle Minimized
   Write-Host ("START  {0}" -f $s.Name) -ForegroundColor Green
 }
 

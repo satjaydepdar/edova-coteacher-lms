@@ -69,7 +69,7 @@ export function AppLayout() {
   const session = useAppStore((s) => s.session)
   const guestMode = useAppStore((s) => s.guestMode)
   if (!session && !guestMode) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/welcome" replace />
   }
 
   if (session?.user.role === "student") {

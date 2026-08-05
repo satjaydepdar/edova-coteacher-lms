@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { Navigate, useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { Navigate, useNavigate, useLocation } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAppStore } from "@/store/app-store"
@@ -14,12 +14,17 @@ const ROLE_TABS: { key: RoleTab; label: string }[] = [
 
 export default function Login() {
   const navigate = useNavigate()
+  const location = useLocation()
+  
   const login = useAppStore((s) => s.login)
   const continueAsGuest = useAppStore((s) => s.continueAsGuest)
   const session = useAppStore((s) => s.session)
   const guestMode = useAppStore((s) => s.guestMode)
 
-  const [role, setRole] = useState<RoleTab>("student")
+  const searchParams = new URLSearchParams(location.search)
+  const defaultRole = (searchParams.get("role") as RoleTab) || "student"
+
+  const [role, setRole] = useState<RoleTab>(defaultRole)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -36,11 +41,11 @@ export default function Login() {
     setError("")
     setSubmitting(true)
     try {
-      await login(email, password)
+      await login(email, password, role)
       const loggedInRole = useAppStore.getState().session?.user.role
       navigate(loggedInRole === "student" ? "/learning" : "/")
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Sign in failed")
+      setError(err instanceof Error ? err.message : "Invalid credentials")
     } finally {
       setSubmitting(false)
     }

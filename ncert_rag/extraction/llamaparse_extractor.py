@@ -25,11 +25,12 @@ class LlamaParseExtractor:
         self.parser = LlamaParse(
             api_key=settings.LLAMA_CLOUD_API,
             result_type="markdown",
-            parsing_instruction=(
-                "Preserve ALL mathematical equations in LaTeX format: $...$ for inline, "
-                "$$...$$ for display. Describe diagrams briefly as [Diagram: description]. "
-                "Maintain structure: Examples, Exercises, Solutions, Theorems. Keep "
-                "example/solution numbering intact. Use markdown tables for tabular data."
+            system_prompt=(
+                "Extract the text perfectly. Preserve all chemical equations and math formulas accurately exactly as they appear. "
+                "Do not add any conversational text. Output raw markdown only. "
+                "Preserve all paragraph breaks and bullet points. "
+                "Do NOT describe diagrams or images. Skip all images entirely. "
+                "Extract tables exactly if they exist, but DO NOT format regular text or layouts with borders into tables."
             ),
             verbose=True,
         )
@@ -67,12 +68,9 @@ class LlamaParseExtractor:
                 "error": "LlamaParse returned no content",
             }]
 
-        full_text = documents[0].text
-        pages = full_text.split(self.PAGE_SEPARATOR)
-
         results = []
-        for i, page_content in enumerate(pages, start=1):
-            page_content = page_content.strip()
+        for i, doc in enumerate(documents, start=1):
+            page_content = doc.text.strip()
             if not page_content:
                 continue
             results.append({
