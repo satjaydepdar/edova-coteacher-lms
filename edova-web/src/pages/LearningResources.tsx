@@ -389,9 +389,36 @@ export default function LearningResources() {
 
   const openPreview = (resource: DisplayResource) => setPreview(resource)
 
-  const handleAssignOne = (resourceId: string) => {
+  const publishAssignment = useSchoolStore((s) => s.publishAssignment)
+
+  const handleAssignOne = async (resourceId: string) => {
     assignOkfResources(cls, [resourceId])
-    showFlash("resource", `Assigned to ${cls} for tomorrow.`)
+    const resItem = resources.find((r) => r.id === resourceId)
+    const resTitle = resItem ? resItem.title : "Assigned Learning Resource"
+    const s3Key = resItem?.s3_key || resItem?.preview_s3_key || ""
+
+    const newAssignment = {
+      id: `a_res_${Date.now()}`,
+      title: resTitle,
+      classId: cls,
+      subject: subjectName || "Mathematics",
+      term: "Term 2",
+      academicYear: year,
+      due: "Tomorrow, 11:59 PM",
+      dueIso: new Date(Date.now() + 86400000).toISOString(),
+      totalPoints: 10,
+      status: "active" as const,
+      sourceAssessmentId: null,
+      publishedToStudents: true,
+      createdOn: "Just now",
+      type: (resItem?.type === "Video" ? "video" : resItem?.type === "PPT" ? "reading" : "homework") as any,
+      description: `Please watch and review the ${resTitle} learning material assigned for your class.`,
+      attachments: s3Key ? [{ name: resTitle, size: "N/A", s3Key }] : [],
+      submissions: [],
+    }
+
+    await publishAssignment(newAssignment)
+    showFlash("resource", `Assigned "${resTitle}" to ${cls}.`)
   }
 
   const handleUploadSubmit = (title: string, file: File) => {

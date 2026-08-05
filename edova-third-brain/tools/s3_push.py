@@ -89,9 +89,21 @@ def build_manifest(plan: list, config: dict) -> dict:
         node = e["node"]
         if "s3_key" not in node:
             continue  # only catalog what is actually shelved
+        node_title = node.get("title", "")
+        chap_name = node.get("chapter_name", "")
+
+        if node_title.startswith("upload_"):
+            clean_t = chap_name or node_title
+        elif " — upload_" in node_title:
+            clean_t = node_title.split(" — upload_")[0]
+        elif chap_name and node_title and (node_title.lower() != chap_name.lower()) and not node_title.lower().startswith(chap_name.lower()):
+            clean_t = f"{chap_name} — {node_title}"
+        else:
+            clean_t = chap_name or node_title
+
         resources.append({
             "id": node["doc_id"],
-            "title": f"{node['chapter_name']} — {node['title']}",
+            "title": clean_t,
             "type": resource_type(node["s3_key"]),
             "subject": node["subject"],
             "chapter_id": node["chapter_id"],

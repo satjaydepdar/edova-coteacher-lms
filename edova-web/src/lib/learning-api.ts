@@ -136,7 +136,7 @@ export function getQuiz(topicId: string) {
   )
 }
 
-export function getSubjects(year = "2026–27", board = "CBSE", classLabel = "Class 10") {
+export function getSubjects(year = "2026-2027", board = "CBSE", classLabel = "Class 10") {
   return apiGet<{ subjects: LearningSubject[] }>(
     `/api/curriculums?year=${encodeURIComponent(year)}&board=${encodeURIComponent(board)}&class=${encodeURIComponent(classLabel)}`,
   )

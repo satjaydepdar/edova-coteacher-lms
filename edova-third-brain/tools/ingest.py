@@ -150,9 +150,10 @@ def ingest(subject: str, chapter_id: str, chapter_name: str, doc_type: str, file
     #   teacher_reviewed - a person confirmed it (either an app upload,
     #                      where a teacher chose subject/chapter/type
     #                      themselves, or a later explicit review)
+    clean_title = chapter_name if (file_path.stem.startswith("upload_") and chapter_name) else file_path.stem
     node = {
         "doc_id": doc_id,
-        "title": file_path.stem,
+        "title": clean_title,
         "subject": subject,
         "chapter_id": chapter_id,
         "chapter_name": chapter_name,

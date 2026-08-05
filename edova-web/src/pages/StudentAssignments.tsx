@@ -132,7 +132,6 @@ function getAnswersForAssignment(a: MyAssignment, activeAnswersMap: Record<strin
 
 export default function StudentAssignments() {
   const [assignments, setAssignments] = useState<MyAssignment[]>([])
-  const [loadError, setLoadError] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [openId, setOpenId] = useState<string | null>(null)
   const [answersMap, setAnswersMap] = useState<Record<string, string>>({})
@@ -142,7 +141,36 @@ export default function StudentAssignments() {
   const [submittedQMap, setSubmittedQMap] = useState<Record<string, Record<string, boolean>>>({})
 
   function reload() {
-    getMyAssignments().then(setAssignments).catch(() => setLoadError(true))
+    const getStoreAssignments = (): MyAssignment[] => {
+      const storeAssignments = useSchoolStore.getState().assignments || []
+      return storeAssignments.map((a) => ({
+        id: a.id,
+        title: a.title,
+        description: a.description || "",
+        due_date: a.dueIso || a.due || null,
+        points_possible: a.totalPoints || 10,
+        submission_type: a.type || "video",
+        classroom_name: a.classId || "Class 10",
+        submission_status: "not_started",
+        submitted_at: null,
+        text_response: null,
+        points_earned: null,
+        feedback: null,
+      }))
+    }
+
+    getMyAssignments()
+      .then((apiAssignments) => {
+        const localItems = getStoreAssignments()
+        const mergedMap = new Map<string, MyAssignment>()
+        localItems.forEach((item) => mergedMap.set(item.id, item))
+        apiAssignments.forEach((item) => mergedMap.set(item.id, item))
+        setAssignments(Array.from(mergedMap.values()))
+      })
+      .catch(() => {
+        const localItems = getStoreAssignments()
+        setAssignments(localItems)
+      })
   }
 
   useEffect(() => { reload() }, [])
@@ -257,16 +285,7 @@ export default function StudentAssignments() {
     }
   }
 
-  if (loadError) {
-    return (
-      <div>
-        <PageHeader title="My Assignments" />
-        <div className="rounded-[12px] border border-card-border bg-cream p-5 text-[14px] text-text-secondary shadow-card">
-          Couldn't load your assignments right now. Try again shortly.
-        </div>
-      </div>
-    )
-  }
+
 
   return (
     <div>
