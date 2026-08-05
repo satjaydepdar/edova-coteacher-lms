@@ -82,6 +82,7 @@ def collect(bundle: str) -> dict:
             "doc_id": did, "title": n.get("title", did),
             "subject": n.get("subject", ""), "chapter_id": n.get("chapter_id", ""),
             "chapter_name": n.get("chapter_name", ""), "doc_type": n.get("doc_type", "document"),
+            "topic_id": n.get("topic_id") or "",
             "shelved": shelved, "searchable": is_searchable, "listed": is_listed,
             "expects_search": is_text, "status": status,
             "s3_key": n.get("s3_key", ""), "ingested_at": n.get("ingested_at", ""),

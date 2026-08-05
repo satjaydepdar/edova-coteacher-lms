@@ -9,9 +9,14 @@ paths:
 
 # Cloud shelf (tools/s3_push.py). Keys derive as
 # <prefix>/<Subject>/Chapter-XX/<filename> and are written back into OKF nodes.
+# THE single source of truth for bucket settings — clerk's teacher-upload
+# endpoints and s3_push both read this block via tools/s3conn.py.
 s3:
   bucket: "innuxai-edova-coteacher"
   prefix: "Class-10/Semester-01"
+  region: "ap-south-1"
+  # Where browser PUTs land before /uploads/complete shelves them canonically.
+  staging_prefix: "staging"
 
 subjects: {}
 
