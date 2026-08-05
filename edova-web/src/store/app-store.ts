@@ -2,7 +2,6 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import type { Role } from "@/lib/types"
 import { login as apiLogin, logout as apiLogout, type SessionUser } from "@/lib/auth"
-import { setSessionToken, setSessionUser } from "@/lib/api-client"
 
 interface AppState {
   // Role toggle (Teacher / Admin) — drives sidebar admin group + identity.
@@ -74,12 +73,6 @@ export const useAppStore = create<AppState>()(
         academicYear: s.academicYear,
         sectionId: s.sectionId,
       }),
-      // Push the persisted session back into the gateways on reload so authed
-      // calls carry the bearer without the data layer reading this store.
-      onRehydrateStorage: () => (state) => {
-        setSessionToken(state?.session?.token ?? null)
-        setSessionUser(state?.session?.user ?? null)
-      },
     }
   )
 )

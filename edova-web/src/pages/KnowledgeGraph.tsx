@@ -1,11 +1,11 @@
 import { useState } from "react"
 import { PageHeader } from "@/components/common/PageHeader"
-import { CLERK_BASE_URL } from "@/lib/api-client"
 
 // Administration → Knowledge Graph. Embeds the OKF bundle health map served
 // live by the Clerk (ncert_rag) at GET /okf/dashboard — regenerated from the
 // bundle on every load, so it always reflects the latest uploads.
-const DASHBOARD_URL = `${CLERK_BASE_URL}/okf/dashboard`
+const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8001"
+const DASHBOARD_URL = `${API_BASE}/okf/dashboard`
 
 export default function KnowledgeGraph() {
   const [reloadKey, setReloadKey] = useState(0)

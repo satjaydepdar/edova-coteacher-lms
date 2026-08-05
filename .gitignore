@@ -26,6 +26,3 @@ innuxai-edova-coteacher_S3/
 edova-interactive-learning-engine/
 _decomp/
 graphify-out/
-
-# Runtime logs
-*.log

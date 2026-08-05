@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom"
-import { Bell } from "lucide-react"
+import { Bell, Search } from "lucide-react"
 import { useAppStore, TEACHER_IDENTITY, ADMIN_IDENTITY, identityFromUser } from "@/store/app-store"
 import type { Role } from "@/lib/types"
 
@@ -38,7 +38,16 @@ export function Topbar() {
   }
 
   return (
-    <header className="flex h-16 min-h-16 items-center justify-end border-b border-[#E5E1D2] bg-cream px-6">
+    <header className="flex h-16 min-h-16 items-center justify-between border-b border-[#E5E1D2] bg-cream px-6">
+      <div className="flex max-w-[480px] flex-1 items-center gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
+          <input
+            placeholder="Search students, classes, assignments…"
+            className="h-[38px] w-full rounded-[8px] border border-[#E5E1D2] bg-[#FAF8F2] pl-9 pr-3 text-[15px] outline-none placeholder:text-text-muted focus:border-gold"
+          />
+        </div>
+      </div>
       <div className="flex items-center gap-3">
         <div className="flex items-center rounded-full bg-[#F3EFE3] p-[3px]">
           {toggle("teacher", "Teacher")}
