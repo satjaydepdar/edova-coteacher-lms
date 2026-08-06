@@ -27,7 +27,7 @@ foreach ($s in $services) {
 }
 
 Write-Host "`nWaiting for services to come up..." -ForegroundColor Cyan
-Start-Sleep -Seconds 10
+Start-Sleep -Seconds 15
 
 Write-Host ""
 foreach ($s in $services) {

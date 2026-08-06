@@ -29,7 +29,7 @@ function StudentShell() {
           <img 
             src="/logo-cropped.png" 
             alt="Edova Logo" 
-            className="h-8 w-auto object-contain"
+            className="h-10 w-auto object-contain"
           />
         </div>
         <nav className="flex items-center gap-4">
