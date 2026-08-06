@@ -35,6 +35,7 @@ export const NAV_GROUPS: NavGroup[] = [
     label: "Student",
     items: [
       { key: "learning", label: "Learning Hub", icon: "🎓", path: "/learning" },
+      { key: "studentAssignments", label: "My Assignments", icon: "📑", path: "/my-assignments" },
       // Slug mirrors STUDENT_ID from lib/learning-api.ts ("stu_demo") — there's
       // no auth yet, so this always points at the one demo student's wiki.
       { key: "wiki", label: "My Wiki", icon: "📔", path: "/wiki/student-stu_demo" },

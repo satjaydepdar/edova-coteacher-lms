@@ -14,6 +14,7 @@ export type ViewKey =
   | "parentCommunication"
   | "reports"
   | "learning"
+  | "studentAssignments"
   | "wiki"
 
 export type Role = "teacher" | "admin" | "student"
