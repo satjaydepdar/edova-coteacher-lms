@@ -38,6 +38,231 @@ function formatDue(due: string | null): string {
   return new Date(due).toLocaleDateString(undefined, { month: "short", day: "numeric" })
 }
 
+// ── Description-embedded MCQ parsing ────────────────────────────────────
+// AssessmentBuilder assignments that don't carry structured `sections`
+// (the real /api/students/me/assignments path never returns sections at
+// all — see edova-backend/main.py's MyAssignmentOut) instead embed a
+// __ANSWER_KEY__:{...} block in the description, which edova-backend's
+// _evaluate_quiz_score parses server-side to auto-grade. This mirrors that
+// parsing client-side so students get a real quiz UI instead of the raw
+// description text, and submits in the exact {questionId: answer} shape
+// the backend expects.
+interface ParsedQuestion {
+  id: string
+  label: string
+  text: string
+  options: string[]
+}
+
+function parseAnswerKey(description: string): Record<string, string> {
+  if (!description) return {}
+  const match = description.match(/__ANSWER_KEY__:\s*(\{.*?\})/)
+  if (match) {
+    try {
+      return JSON.parse(match[1])
+    } catch {
+      return {}
+    }
+  }
+  return {}
+}
+
+function parseQuestions(description: string): ParsedQuestion[] {
+  if (!description) return []
+
+  let cleanDesc = description.replace(/__ANSWER_KEY__:\s*\{.*?\}\s*/g, "").trim()
+  if (!cleanDesc) return []
+
+  cleanDesc = cleanDesc
+    .replace(/\s+(\d+(\.\d+)?[\)\.]|Q\d+[\.\)])\s+/gi, "\n$1 ")
+    .replace(/\s+([A-D][\)\.]|Option\s+[A-D])\s+/gi, "\n$1 ")
+
+  const lines = cleanDesc
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean)
+
+  const list: ParsedQuestion[] = []
+  let current: ParsedQuestion | null = null
+
+  for (const line of lines) {
+    const qMatch = line.match(/^(\d+(\.\d+)?[\)\.]|Q\d+[\.\)])\s*(.*)/i)
+    const optMatch = line.match(/^([A-D][\)\.]|Option\s+[A-D])\s*(.*)/i)
+
+    if (qMatch) {
+      if (current) list.push(current)
+      const cleanId = qMatch[1].trim().replace(/[\)\:]+$/, "").replace(/\.$/, "").replace(/^Q/i, "")
+      current = {
+        id: cleanId,
+        label: qMatch[1],
+        text: qMatch[3] || line,
+        options: [],
+      }
+    } else if (optMatch && current) {
+      current.options.push(line)
+    } else if (current) {
+      if (current.options.length > 0) {
+        current.options.push(line)
+      } else {
+        current.text += " " + line
+      }
+    }
+  }
+  if (current) list.push(current)
+  return list
+}
+
+function isAnswerMatching(studentVal: string, correctVal: string): boolean {
+  if (!studentVal || !correctVal) return false
+  const s = studentVal.trim().toLowerCase()
+  const c = correctVal.trim().toLowerCase()
+  const sClean = s.replace(/^[a-d][\)\.]\s*/i, "").trim()
+  const cClean = c.replace(/^[a-d][\)\.]\s*/i, "").trim()
+  return s === c || sClean === cClean || s.includes(cClean) || c.includes(sClean) || sClean.includes(c) || cClean.includes(s)
+}
+
+function getCorrectAnswerForQuestion(q: ParsedQuestion, idx: number, answerKey: Record<string, string>): string {
+  if (!answerKey || Object.keys(answerKey).length === 0) return ""
+  if (answerKey[q.id]) return answerKey[q.id]
+  const secQKey = `1.${idx + 1}`
+  if (answerKey[secQKey]) return answerKey[secQKey]
+  const numKey = `${idx + 1}`
+  if (answerKey[numKey]) return answerKey[numKey]
+  const foundKey = Object.keys(answerKey).find(
+    (k) => k === q.id || k.endsWith(`.${idx + 1}`) || k === String(idx + 1)
+  )
+  if (foundKey) return answerKey[foundKey]
+  return ""
+}
+
+// "A) Some text" -> "Some text"
+function optionDisplayText(opt: string): string {
+  return opt.replace(/^[A-D][\)\.]\s*/i, "").trim()
+}
+
+// Card summary text — never show the raw __ANSWER_KEY__ block or the full
+// question dump; a short generic line is friendlier for MCQ assignments.
+function descriptionPreview(a: MyAssignment, questionCount: number): string {
+  if (questionCount > 0) return `${questionCount} question${questionCount === 1 ? "" : "s"} — open to answer.`
+  const clean = (a.description || "").replace(/__ANSWER_KEY__:\s*\{.*?\}\s*/g, "").trim()
+  return clean || "Your teacher has assigned you homework. Complete it before the deadline."
+}
+
+function DescriptionMcq({
+  assignment,
+  questions,
+  onSubmitted,
+}: {
+  assignment: MyAssignment
+  questions: ParsedQuestion[]
+  onSubmitted: () => void
+}) {
+  const isSubmitted =
+    assignment.submission_status === "submitted" ||
+    assignment.submission_status === "late" ||
+    assignment.submission_status === "graded"
+  const answerKey = useMemo(() => parseAnswerKey(assignment.description), [assignment.description])
+  const [answers, setAnswers] = useState<Record<string, string>>(() => {
+    if (assignment.text_response) {
+      try {
+        const parsed = JSON.parse(assignment.text_response)
+        if (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) return parsed
+      } catch { /* not JSON */ }
+    }
+    return {}
+  })
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function handleSubmit() {
+    setSubmitting(true)
+    setError(null)
+    try {
+      await submitMyAssignment(assignment.id, JSON.stringify(answers))
+      onSubmitted()
+    } catch (err: any) {
+      setError(err?.message || err?.detail || "Submission failed. Please log in as a student.")
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const allAnswered = questions.every((q) => !!answers[q.id])
+
+  return (
+    <div className="space-y-3">
+      {error && (
+        <div className="rounded-[10px] border border-[#FCA5A5] bg-[#FEF2F2] p-3 text-[13px] text-[#991B1B]">{error}</div>
+      )}
+      {questions.map((q, idx) => {
+        const studentAns = answers[q.id] || ""
+        const correctAns = getCorrectAnswerForQuestion(q, idx, answerKey)
+        const isCorrect = isSubmitted && isAnswerMatching(studentAns, correctAns)
+        return (
+          <div key={q.id} className="rounded-[10px] border border-[#E8E2D5] bg-white p-3.5">
+            <div className="mb-2 text-[13.5px] font-semibold text-[#1A2E26]">
+              {q.label} {q.text}
+            </div>
+            {q.options.length >= 2 ? (
+              <div className="space-y-1.5">
+                {q.options.map((opt, oIdx) => {
+                  const optText = optionDisplayText(opt)
+                  const isSelected = studentAns === optText || studentAns === opt
+                  const isCorrectOpt = isSubmitted && correctAns && optText.toLowerCase().includes(correctAns.trim().toLowerCase())
+                  let style = "border-[#E8E2D5] bg-[#FBF9F4] cursor-pointer"
+                  if (isSubmitted) {
+                    if (isCorrectOpt) style = "border-[#86EFAC] bg-[#DCFCE7] font-semibold text-[#14532D] cursor-default"
+                    else if (isSelected) style = "border-[#FCA5A5] bg-[#FEE2E2] font-semibold text-[#7F1D1D] cursor-default"
+                    else style = "border-[#E8E2D5] bg-white opacity-60 cursor-default"
+                  } else if (isSelected) {
+                    style = "border-[#C17D3A] bg-[#FFF7E8] font-semibold text-[#1A2E26] cursor-pointer"
+                  }
+                  return (
+                    <label
+                      key={oIdx}
+                      onClick={() => !isSubmitted && setAnswers((a) => ({ ...a, [q.id]: optText }))}
+                      className={`flex items-center gap-2.5 rounded-[8px] border p-2.5 text-[13px] transition ${style}`}
+                    >
+                      <input type="radio" checked={isSelected} disabled={isSubmitted} readOnly className="h-3.5 w-3.5 accent-[#C17D3A]" />
+                      {optText || opt}
+                    </label>
+                  )
+                })}
+              </div>
+            ) : (
+              <input
+                type="text"
+                value={studentAns}
+                disabled={isSubmitted}
+                onChange={(e) => setAnswers((a) => ({ ...a, [q.id]: e.target.value }))}
+                placeholder="Type your answer here…"
+                className="h-9 w-full rounded-[8px] border border-[#E8E2D5] bg-[#FBF9F4] px-3 text-[13px] outline-none focus:border-[#C17D3A] focus:bg-white disabled:opacity-60"
+              />
+            )}
+            {isSubmitted && (
+              <div className={`mt-2 text-[11.5px] font-semibold ${isCorrect ? "text-[#15803D]" : "text-[#991B1B]"}`}>
+                {isCorrect ? "✓ Correct" : correctAns ? `✕ Correct answer: ${correctAns}` : "✕ Incorrect"}
+              </div>
+            )}
+          </div>
+        )
+      })}
+      {!isSubmitted && (
+        <div className="flex justify-end">
+          <button
+            type="button"
+            disabled={submitting || !allAnswered}
+            onClick={handleSubmit}
+            className="cursor-pointer rounded-[10px] bg-[#C17D3A] hover:bg-[#A86B2F] text-white px-4 py-2 text-[13px] font-bold transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {submitting ? "Submitting…" : "Submit Assignment"}
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── Date helpers for filter logic ──────────────────────────────────────
 function toDateOnly(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
@@ -343,6 +568,7 @@ export default function StudentAssignments() {
                   const overdue = isOverdue(a.due_date) && !submitted
                   const progressPct = graded ? 100 : submitted ? 80 : started ? 20 : 0
                   const tasksCompleted = graded ? "5/5" : submitted ? "4/5" : started ? "1/5" : "0/5"
+                  const descriptionQuestions = parseQuestions(a.description)
 
                   // Button label adapts to submission state
                   const buttonLabel = submitted
@@ -375,7 +601,7 @@ export default function StudentAssignments() {
 
                       <h4 className="text-[15px] font-bold text-[#1A2E26] mb-1">{a.title}</h4>
                       <p className="text-[13px] text-[#6B7280] mb-4">
-                        {a.description || "Your teacher has assigned you homework. Complete it before the deadline."}
+                        {descriptionPreview(a, descriptionQuestions.length)}
                       </p>
 
                       {/* Real Progress Bar */}
@@ -434,6 +660,8 @@ export default function StudentAssignments() {
 
                           {a.submission_type === "mcq" && (a.sections?.length ?? 0) > 0 ? (
                             <McqQuiz assignment={a} onSubmitted={loadAssignments} />
+                          ) : descriptionQuestions.length > 0 ? (
+                            <DescriptionMcq assignment={a} questions={descriptionQuestions} onSubmitted={loadAssignments} />
                           ) : (
                             <>
                               <textarea
