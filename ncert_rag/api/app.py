@@ -325,3 +325,9 @@ app.include_router(class_sections.router)
 app.include_router(resources.router)
 app.include_router(memory.router)
 app.include_router(assessments.router)
+
+try:
+    from clerk.api import app as clerk_app
+    app.include_router(clerk_app.router)
+except Exception as e:
+    print(f"Warning: could not include clerk_app router: {e}")
