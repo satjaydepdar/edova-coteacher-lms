@@ -1,6 +1,7 @@
 // Domain types — mirror the mockup's seed data shapes (_decomp/app.js).
 
 export type ViewKey =
+  | "home"
   | "calendar"
   | "settings"
   | "knowledgeGraph"
