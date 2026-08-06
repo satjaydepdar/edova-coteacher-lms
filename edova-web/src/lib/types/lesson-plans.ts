@@ -29,6 +29,7 @@ export interface LessonPlan {
   duration: string
   standards: string[]
   objective: string
+  materials: string[]
   outcomes: string[]
   warmup: string
   instruction: string
@@ -54,6 +55,7 @@ export interface NewLessonPlan {
   duration_minutes: number
   standards: string[]
   objective: string
+  materials?: string[]
   outcomes: string[]
   warmup: string
   instruction: string

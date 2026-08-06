@@ -1,6 +1,8 @@
 // App shell — navigation + identity primitives.
 
 export type ViewKey =
+  | "home"
+  | "teacherHome"
   | "calendar"
   | "settings"
   | "knowledgeGraph"
@@ -14,6 +16,7 @@ export type ViewKey =
   | "parentCommunication"
   | "reports"
   | "learning"
+  | "studentAssignments"
   | "wiki"
 
 export type Role = "teacher" | "admin" | "student"

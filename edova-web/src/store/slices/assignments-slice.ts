@@ -18,7 +18,7 @@ interface ApiAssignmentRow {
   sections?: AssessmentSection[]
 }
 interface ApiGradeRow { student_id: string; points_earned: number | null; feedback: string }
-interface ApiSubmissionRow { student_id: string; is_late: boolean; submitted_at: string | null }
+interface ApiSubmissionRow { student_id: string; is_late: boolean; submitted_at: string | null; answers?: Array<{ question_id: string; selected: string }> | null; text_response?: string | null }
 
 // Best-effort write to the real grades table. Silently no-ops for a
 // fake seed assignment/student (assignment_id/student_id aren't real
@@ -99,7 +99,7 @@ function doHydrateAssignments(
       // Real student submissions (Student Module) -- lets the roster show
       // "Submitted"/"Late" instead of always "not_started" once a student
       // has actually turned work in.
-      const submissionsByAssignment = new Map<string, Map<string, { late: boolean; submittedOn: string }>>()
+      const submissionsByAssignment = new Map<string, Map<string, { late: boolean; submittedOn: string; answers?: Array<{ question_id: string; selected: string }> | null; textResponse?: string | null }>>()
       await Promise.all(
         rows.map(async (r) => {
           const grades = await backendApi
@@ -117,7 +117,7 @@ function doHydrateAssignments(
             new Map(
               subs
                 .filter((s) => s.submitted_at)
-                .map((s) => [s.student_id, { late: s.is_late, submittedOn: formatShortDate(new Date(s.submitted_at as string)) }])
+                .map((s) => [s.student_id, { late: s.is_late, submittedOn: formatShortDate(new Date(s.submitted_at as string)), answers: s.answers, textResponse: s.text_response }])
             )
           )
         })
@@ -149,6 +149,8 @@ function doHydrateAssignments(
                 submittedOn: sub?.submittedOn ?? "",
                 score: grades?.get(st.id)?.score ?? null,
                 feedback: grades?.get(st.id)?.feedback ?? "",
+                answers: sub?.answers ?? null,
+                textResponse: sub?.textResponse ?? null,
               }
             }),
             type: r.submission_type as Assignment["type"],

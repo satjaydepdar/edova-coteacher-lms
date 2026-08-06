@@ -158,3 +158,15 @@ export interface TopicTickOut {
   topic_id: string
   done: boolean
 }
+
+export interface TopicOption {
+  id: string
+  label: string
+}
+export interface BankQuestionV2 {
+  id: number
+  text: string
+  difficulty: "Easy" | "Medium" | "Hard"
+  options: string[]
+  correct: number[]
+}

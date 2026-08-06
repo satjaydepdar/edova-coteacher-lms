@@ -14,7 +14,7 @@ import { createGateway } from "./api-gateway"
 export const clerkApi = createGateway(import.meta.env.VITE_API_URL ?? "http://localhost:8001")
 
 export const backendApi = createGateway(import.meta.env.VITE_BACKEND_API_URL ?? "http://localhost:8003")
-export const ragApi = createGateway(import.meta.env.VITE_RAG_API_URL ?? "http://localhost:8000")
+export const ragApi = createGateway(import.meta.env.VITE_RAG_API_URL ?? "http://localhost:8001")
 export const aiApi = createGateway(import.meta.env.VITE_AI_API_URL ?? "http://localhost:8002")
 
 /** Push the session token into every gateway that serves authed endpoints.

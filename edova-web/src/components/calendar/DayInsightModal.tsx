@@ -316,18 +316,7 @@ export function DayInsightModal({ open, onOpenChange, date, entries, classOption
                   onChange={(e) => setForm({ ...form, assignment: e.target.value })}
                 />
               </div>
-              <div className="mb-4">
-                <div className={fieldLabel}>Topic Covered Till Date</div>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="range" min={0} max={100} value={form.percentCovered}
-                    onChange={(e) => setForm({ ...form, percentCovered: Number(e.target.value) })}
-                    className="flex-1 accent-[#1A2E1A]"
-                  />
-                  <span className="w-[36px] text-right text-[13px] font-semibold text-ink">{form.percentCovered}%</span>
-                </div>
-              </div>
-              <div className="flex justify-end">
+              <div className="flex justify-end pt-2">
                 <Button onClick={handleSave} disabled={!form.classSection || !form.subjectChapter}>
                   {editingId ? "Save changes" : "Add entry"}
                 </Button>

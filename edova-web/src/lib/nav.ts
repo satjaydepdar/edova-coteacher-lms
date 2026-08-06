@@ -11,7 +11,6 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     label: "Administration",
-    adminOnly: true,
     items: [
       { key: "settings", label: "Settings", icon: "⚙️", path: "/settings" },
       { key: "knowledgeGraph", label: "Knowledge Graph", icon: "🗂️", path: "/knowledge-graph" },
@@ -19,7 +18,6 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     label: "Planning",
-    teacherOnly: true,
     items: [
       { key: "lessonPlanner", label: "Lesson Planner", icon: "📝", path: "/lesson-planner" },
       { key: "curriculumMap", label: "Syllabus Map", icon: "🗺️", path: "/curriculum-map" },
@@ -27,16 +25,25 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     label: "Teaching",
-    teacherOnly: true,
     items: [
+      { key: "home", label: "Dashboard", icon: "📊", path: "/" },
       { key: "assignmentTracker", label: "Assignment Tracker", icon: "📋", path: "/assignment-tracker" },
       { key: "assessmentBuilder", label: "Assessment Builder", icon: "🧮", path: "/assessment-builder" },
       { key: "resources", label: "Learning Resources", icon: "📁", path: "/resources" },
     ],
   },
   {
+    label: "Student",
+    items: [
+      { key: "learning", label: "Learning Hub", icon: "🎓", path: "/learning" },
+      { key: "studentAssignments", label: "My Assignments", icon: "📑", path: "/my-assignments" },
+      // Slug mirrors STUDENT_ID from lib/learning-api.ts ("stu_demo") — there's
+      // no auth yet, so this always points at the one demo student's wiki.
+      { key: "wiki", label: "My Wiki", icon: "📔", path: "/wiki/student-stu_demo" },
+    ],
+  },
+  {
     label: "Communication",
-    teacherOnly: true,
     items: [
       { key: "announcements", label: "Student Communication", icon: "📣", path: "/announcements" },
       { key: "parentCommunication", label: "Parent Communication", icon: "💬", path: "/parent-communication" },

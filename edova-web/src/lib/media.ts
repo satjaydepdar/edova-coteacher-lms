@@ -2,13 +2,14 @@
 // converted PPT/DOCX/XLSX) is stored in S3 by key; this is the one place
 // that turns a key into a fetchable URL. When a CDN goes in front of the
 // bucket, only VITE_S3_BUCKET_URL changes — no component needs to change.
-const ASSET_BASE_URL = import.meta.env.VITE_S3_BUCKET_URL ?? ""
+const ASSET_BASE_URL = import.meta.env.VITE_S3_BUCKET_URL ?? "https://innuxai-edova-coteacher.s3.amazonaws.com/"
 
 export function getAssetUrl(key: string): string {
-  // Keys contain spaces and unicode (e.g. "Class-10/Semester-01/Physics/
-  // Chapter-01/Chapter 1 - Light.pdf"), so each path segment is encoded
-  // while the "/" separators pass through.
-  return `${ASSET_BASE_URL}${key.split("/").map(encodeURIComponent).join("/")}`
+  if (!key) return ""
+  if (key.startsWith("http://") || key.startsWith("https://") || key.startsWith("blob:")) return key
+  const base = ASSET_BASE_URL.endsWith("/") ? ASSET_BASE_URL : `${ASSET_BASE_URL}/`
+  const cleanKey = key.replace(/^\/+/, "")
+  return `${base}${cleanKey.split("/").map(encodeURIComponent).join("/")}`
 }
 
 // A resource is either a catalogued S3 file (s3_key) or an external link

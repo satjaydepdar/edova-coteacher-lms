@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "react-router-dom"
-import type { CatalogResource, CurriculumOut, OkfResourceType, SyllabusUnitOut } from "@/lib/types"
-import { getAcademicYears, getCurriculum, getSubjectResources, getSyllabus } from "@/lib/curriculum-api"
+import type { OkfResourceType } from "@/lib/types"
 import { getAssetUrl } from "@/lib/media"
-import { ambiguousChapterNumbers, groupResourcesByChapter, type DisplayResource } from "@/lib/resource-grouping"
-import { useResourceUpload, type UploadTarget } from "./learning-resources/useResourceUpload"
+import { uploadLearningResource } from "@/lib/upload"
 import {
   Select,
   SelectContent,
@@ -29,6 +27,7 @@ import { cn } from "@/lib/utils"
 // third-brain bundle/manifest), so this page groups resources by chapter;
 // topics render as plain context text under each chapter, not as their own
 // resource-bearing cards like the old "Subtopic" model had.
+const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8001"
 const CLASS_OPTIONS = ["LKG", "UKG", ...Array.from({ length: 10 }, (_, i) => `Class ${i + 1}`)]
 const BOARD_OPTIONS = ["CBSE", "ICSE", "State"]
 
@@ -40,6 +39,16 @@ function categoryForType(type: OkfResourceType): StatusCategory {
   if (type === "Video") return "Video"
   if (type === "PPT") return "Slides"
   return "Quiz" // Worksheet, PDF, Quiz — practice/assessment material
+}
+
+interface DisplayResource {
+  id: string
+  title: string
+  type: OkfResourceType
+  meta: string
+  status: "ready" | "processing" | "failed"
+  previewS3Key?: string
+  uploadedByTeacher?: boolean
 }
 
 function categoryStatus(resources: DisplayResource[], category: StatusCategory, assignedIds: string[]): CategoryStatus {
@@ -114,43 +123,17 @@ function ResourceRow({
   )
 }
 
-function PreviewPanel({
-  resource, assigned, onAssign, expanded, onToggleExpand,
-}: {
-  resource: DisplayResource
-  assigned: boolean
-  onAssign: () => void
-  expanded: boolean
-  onToggleExpand: () => void
-}) {
+function PreviewPanel({ resource, assigned, onAssign }: { resource: DisplayResource; assigned: boolean; onAssign: () => void }) {
   const isVideo = resource.type === "Video"
   const previewUrl = resource.previewS3Key ? getAssetUrl(resource.previewS3Key) : null
 
   return (
     <div>
-      <div className="mb-4 flex items-start justify-between gap-3">
-        <div>
-          <div className="font-display text-[18px] font-bold text-ink">{resource.title}</div>
-          <div className="mt-0.5 text-[13px] text-text-secondary">{resource.type} · {resource.meta}</div>
-        </div>
-        {!isVideo && previewUrl && (
-          <button
-            onClick={onToggleExpand}
-            className="shrink-0 rounded-[6px] border border-card-border px-2.5 py-1 text-[12px] font-medium text-text-secondary hover:bg-[#F9FAFB]"
-          >
-            {expanded ? "⤡ Collapse" : "⤢ Expand"}
-          </button>
-        )}
+      <div className="mb-4">
+        <div className="font-display text-[18px] font-bold text-ink">{resource.title}</div>
+        <div className="mt-0.5 text-[13px] text-text-secondary">{resource.type} · {resource.meta}</div>
       </div>
-      {/* Explicit height (not min-h + h-full) -- an iframe/video with h-full
-          inside an indefinite-height flex box collapses to the browser's
-          intrinsic default instead of filling it. */}
-      <div
-        className={cn(
-          "mb-5 flex items-center justify-center overflow-hidden rounded-[10px] border border-card-border bg-[#0B1220]",
-          isVideo ? "aspect-video" : expanded ? "h-[75vh]" : "h-[420px]",
-        )}
-      >
+      <div className={cn("mb-5 flex items-center justify-center overflow-hidden rounded-[10px] border border-card-border bg-[#0B1220]", isVideo ? "aspect-video" : "min-h-[360px]")}>
         {resource.status === "processing" ? (
           <div className="text-[13.5px] text-white/70">Converting for preview…</div>
         ) : resource.status === "failed" ? (
@@ -183,6 +166,12 @@ function FilterField({ label, children }: { label: string; children: React.React
 
 const ALL = "all"
 
+interface UploadTarget {
+  chapterNumber: number
+  chapterName: string
+  category: StatusCategory
+}
+
 function UploadPanel({ target, onCancel, onSubmit }: { target: UploadTarget; onCancel: () => void; onSubmit: (title: string, file: File) => void }) {
   const [title, setTitle] = useState("")
   const [file, setFile] = useState<File | null>(null)
@@ -213,6 +202,18 @@ function UploadPanel({ target, onCancel, onSubmit }: { target: UploadTarget; onC
   )
 }
 
+// ---- API shapes ----
+interface SubjectRow { id: string; subject_name: string }
+interface CurriculumResponse { id: string; subjects: SubjectRow[] }
+interface TopicOut { id: string; title: string }
+interface ChapterOut { id: string; number: number | null; name: string; topics: TopicOut[] }
+interface UnitOut { id: string; name: string; chapters: ChapterOut[] }
+interface SyllabusResponse { units: UnitOut[] }
+interface CatalogResource {
+  id: string; title: string; type: OkfResourceType; doc_type?: string
+  chapter_number: number; s3_key?: string; preview_s3_key?: string; status: string
+}
+
 export default function LearningResources() {
   const [searchParams] = useSearchParams()
   const okfAssignedByClass = useSchoolStore((s) => s.okfAssignedByClass)
@@ -225,11 +226,15 @@ export default function LearningResources() {
   const [board, setBoard] = useState(BOARD_OPTIONS[0])
   const [cls, setCls] = useState("Class 10")
 
-  const [curriculum, setCurriculum] = useState<CurriculumOut | null>(null)
+  const [curriculum, setCurriculum] = useState<CurriculumResponse | null>(null)
   const [subjectId, setSubjectId] = useState("")
 
-  const [units, setUnits] = useState<SyllabusUnitOut[]>([])
+  const [units, setUnits] = useState<UnitOut[]>([])
   const [resources, setResources] = useState<CatalogResource[]>([])
+  // Optimistic in-flight uploads, keyed by chapter number — page-local only
+  // (not shared cross-page state; the real record lands via the manifest
+  // once /uploads/complete finishes, and the next loadResources() picks it up).
+  const [pendingUploads, setPendingUploads] = useState<Record<number, DisplayResource[]>>({})
 
   const [unitFilter, setUnitFilter] = useState(ALL)
   const [chapterFilter, setChapterFilter] = useState(ALL)
@@ -237,32 +242,34 @@ export default function LearningResources() {
   const [expandedChapters, setExpandedChapters] = useState<Record<string, boolean>>({})
   const [detailChapterId, setDetailChapterId] = useState<string | null>(null)
   const [preview, setPreview] = useState<DisplayResource | null>(null)
-  const [previewExpanded, setPreviewExpanded] = useState(false)
+  const [uploadTarget, setUploadTarget] = useState<UploadTarget | null>(null)
 
   const subjects = useMemo(() => curriculum?.subjects ?? [], [curriculum])
   const subjectName = subjects.find((s) => s.id === subjectId)?.subject_name ?? ""
 
   useEffect(() => {
-    getAcademicYears()
-      .then((rows) => {
+    fetch(`${API_BASE}/api/academic-years`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((rows: { year_label: string }[]) => {
         const labels = rows.map((r) => r.year_label)
         setYearOptions(labels)
         setYear((prev) => prev || labels[labels.length - 1] || "")
       })
-      .catch(() => showFlash("resource", "Could not load academic years — is the API running on :8000?", 5000))
+      .catch(() => showFlash("resource", "Could not load academic years — is the API running on :8001?", 5000))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const loadCurriculum = useCallback(() => {
     if (!year) return
-    getCurriculum(year, board, cls)
-      .then((d) => {
+    fetch(`${API_BASE}/api/curriculums?year=${encodeURIComponent(year)}&board=${encodeURIComponent(board)}&class=${encodeURIComponent(cls)}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((d: CurriculumResponse) => {
         setCurriculum(d)
         setSubjectId((prev) => (d.subjects.some((s) => s.id === prev) ? prev : (d.subjects[0]?.id ?? "")))
       })
       .catch(() => {
         setCurriculum(null)
-        showFlash("resource", "Could not load curriculum — is the API running on :8000?", 5000)
+        showFlash("resource", "Could not load curriculum — is the API running on :8001?", 5000)
       })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year, board, cls])
@@ -271,35 +278,54 @@ export default function LearningResources() {
 
   const loadResources = useCallback(() => {
     if (!subjectId) { setResources([]); return }
-    getSubjectResources(subjectId)
-      .then((rows) => setResources(rows))
+    fetch(`${API_BASE}/api/curriculum-subjects/${subjectId}/resources`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((rows: CatalogResource[]) => setResources(rows))
       .catch(() => showFlash("resource", "Could not load catalogued resources.", 5000))
   }, [subjectId, showFlash])
 
-  const { pendingUploads, uploadTarget, setUploadTarget, resetPending, handleUploadSubmit } =
-    useResourceUpload(subjectName, loadResources, showFlash)
-
   useEffect(() => {
     if (!subjectId) { setUnits([]); setUnitFilter(ALL); setChapterFilter(ALL); return }
-    getSyllabus(subjectId)
-      .then((d) => setUnits(d.units))
+    fetch(`${API_BASE}/api/curriculum-subjects/${subjectId}/syllabus`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((d: SyllabusResponse) => setUnits(d.units))
       .catch(() => showFlash("resource", "Could not load syllabus detail.", 5000))
     setUnitFilter(ALL)
     setChapterFilter(ALL)
-    resetPending()
+    setPendingUploads({})
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subjectId])
 
   useEffect(() => { loadResources() }, [loadResources])
 
   // Same safeguard as ResourceLibrary.tsx: chapter numbers aren't guaranteed
-  // unique across units (see lib/resource-grouping.ts).
-  const ambiguousNums = useMemo(() => ambiguousChapterNumbers(units), [units])
+  // unique across units once an admin adds units through Master Data, so
+  // resources can't be resolved to a chapter number that more than one real
+  // chapter shares — showing nothing beats attaching the wrong file.
+  const ambiguousChapterNumbers = useMemo(() => {
+    const counts = new Map<number, number>()
+    for (const u of units) for (const c of u.chapters) if (c.number != null) counts.set(c.number, (counts.get(c.number) ?? 0) + 1)
+    return new Set([...counts.entries()].filter(([, count]) => count > 1).map(([number]) => number))
+  }, [units])
 
-  const resourcesByChapter = useMemo(
-    () => groupResourcesByChapter(resources, pendingUploads, ambiguousNums),
-    [resources, pendingUploads, ambiguousNums],
-  )
+  const resourcesByChapter = useMemo(() => {
+    const m = new Map<number, DisplayResource[]>()
+    for (const r of resources) {
+      if (ambiguousChapterNumbers.has(r.chapter_number)) continue
+      const display: DisplayResource = {
+        id: r.id, title: r.title, type: r.type,
+        meta: r.doc_type ?? "", status: r.status === "ready" ? "ready" : "processing",
+        previewS3Key: r.preview_s3_key,
+      }
+      m.set(r.chapter_number, [...(m.get(r.chapter_number) ?? []), display])
+    }
+    for (const [num, pending] of Object.entries(pendingUploads)) {
+      const n = Number(num)
+      if (ambiguousChapterNumbers.has(n)) continue
+      m.set(n, [...(m.get(n) ?? []), ...pending])
+    }
+    return m
+  }, [resources, pendingUploads, ambiguousChapterNumbers])
 
   // Flat chapter list with resolved unit + resource-based filtering.
   const allChapters = useMemo(
@@ -361,11 +387,63 @@ export default function LearningResources() {
   )
   const detailResources = detailRow?.chapter.number != null ? (resourcesByChapter.get(detailRow.chapter.number) ?? []) : []
 
-  const openPreview = (resource: DisplayResource) => { setPreview(resource); setPreviewExpanded(false) }
+  const openPreview = (resource: DisplayResource) => setPreview(resource)
 
-  const handleAssignOne = (resourceId: string) => {
+  const publishAssignment = useSchoolStore((s) => s.publishAssignment)
+
+  const handleAssignOne = async (resourceId: string) => {
     assignOkfResources(cls, [resourceId])
-    showFlash("resource", `Assigned to ${cls} for tomorrow.`)
+    const resItem = resources.find((r) => r.id === resourceId)
+    const resTitle = resItem ? resItem.title : "Assigned Learning Resource"
+    const s3Key = resItem?.s3_key || resItem?.preview_s3_key || ""
+
+    const newAssignment = {
+      id: `a_res_${Date.now()}`,
+      title: resTitle,
+      classId: cls,
+      subject: subjectName || "Mathematics",
+      term: "Term 2",
+      academicYear: year,
+      due: "Tomorrow, 11:59 PM",
+      dueIso: new Date(Date.now() + 86400000).toISOString(),
+      totalPoints: 10,
+      status: "active" as const,
+      sourceAssessmentId: null,
+      publishedToStudents: true,
+      createdOn: "Just now",
+      type: (resItem?.type === "Video" ? "video" : resItem?.type === "PPT" ? "reading" : "homework") as any,
+      description: `Please watch and review the ${resTitle} learning material assigned for your class.`,
+      attachments: s3Key ? [{ name: resTitle, size: "N/A", s3Key }] : [],
+      submissions: [],
+    }
+
+    await publishAssignment(newAssignment)
+    showFlash("resource", `Assigned "${resTitle}" to ${cls}.`)
+  }
+
+  const handleUploadSubmit = (title: string, file: File) => {
+    if (!uploadTarget || !subjectName) return
+    const type: OkfResourceType = uploadTarget.category === "Video" ? "Video" : uploadTarget.category === "Slides" ? "PPT" : "Quiz"
+    const pendingId = `pending_${uploadTarget.chapterNumber}_${file.name}`
+    const chapterNumber = uploadTarget.chapterNumber
+    setPendingUploads((prev) => ({
+      ...prev,
+      [chapterNumber]: [...(prev[chapterNumber] ?? []), { id: pendingId, type, title, meta: file.name, status: "processing", uploadedByTeacher: true }],
+    }))
+    setUploadTarget(null)
+
+    uploadLearningResource({ file, title, subject: subjectName, chapter: `Chapter ${chapterNumber}`, docType: type.toLowerCase() })
+      .then(() => {
+        setPendingUploads((prev) => ({ ...prev, [chapterNumber]: (prev[chapterNumber] ?? []).filter((r) => r.id !== pendingId) }))
+        loadResources()
+      })
+      .catch((err: Error) => {
+        setPendingUploads((prev) => ({
+          ...prev,
+          [chapterNumber]: (prev[chapterNumber] ?? []).map((r) => (r.id === pendingId ? { ...r, status: "failed" } : r)),
+        }))
+        showFlash("resource", `Upload failed: ${err.message}`)
+      })
   }
 
   return (
@@ -443,7 +521,7 @@ export default function LearningResources() {
         {filteredChapters.map(({ chapter, unit }) => {
           const open = expandedChapters[chapter.id] ?? autoOpen
           const chapterResources = chapter.number != null ? (resourcesByChapter.get(chapter.number) ?? []) : []
-          const ambiguous = chapter.number != null && ambiguousNums.has(chapter.number)
+          const ambiguous = chapter.number != null && ambiguousChapterNumbers.has(chapter.number)
 
           return (
             <section key={chapter.id} className="mb-7">
@@ -539,16 +617,8 @@ export default function LearningResources() {
         )}
       </SlideUpOverlay>
 
-      <SlideUpOverlay open={!!preview} onClose={() => setPreview(null)} wide={previewExpanded}>
-        {preview && (
-          <PreviewPanel
-            resource={preview}
-            assigned={assignedIds.includes(preview.id)}
-            onAssign={() => handleAssignOne(preview.id)}
-            expanded={previewExpanded}
-            onToggleExpand={() => setPreviewExpanded((v) => !v)}
-          />
-        )}
+      <SlideUpOverlay open={!!preview} onClose={() => setPreview(null)}>
+        {preview && <PreviewPanel resource={preview} assigned={assignedIds.includes(preview.id)} onAssign={() => handleAssignOne(preview.id)} />}
       </SlideUpOverlay>
 
       <SlideUpOverlay open={!!uploadTarget} onClose={() => setUploadTarget(null)}>

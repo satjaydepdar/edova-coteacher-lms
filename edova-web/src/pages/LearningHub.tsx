@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { VideoPlayerWithQuiz } from "@/components/learning/VideoPlayerWithQuiz"
-import { PdfViewerWithNotes } from "@/components/learning/PdfViewerWithNotes"
+import { PdfViewerWithNotes, MyNotesWidget } from "@/components/learning/PdfViewerWithNotes"
 import { LabExercise } from "@/components/learning/LabExercise"
 import { Mindmap } from "@/components/learning/Mindmap"
 import { MistakeJournal } from "@/components/learning/MistakeJournal"
@@ -8,18 +8,13 @@ import { Heatmap } from "@/components/learning/Heatmap"
 import { StudyPlan } from "@/components/learning/StudyPlan"
 import { StudyMaterial } from "@/components/learning/StudyMaterial"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useLearningStore } from "@/store/learning-store"
-import { useAppStore } from "@/store/app-store"
-import { RecommendationCards } from "@/components/common/RecommendationCards"
-import { getMyAssignments, type MyAssignment } from "@/lib/student-api"
-import { getRecommendations } from "@/lib/memory-api"
-import type { RecTask } from "@/components/learning/StudyPlan"
-import { APP_TODAY } from "@/lib/dates"
+import { useSchoolStore } from "@/store/school-store"
 import {
-  currentStudentId,
   getQuiz,
   getResources,
   getSubjects,
@@ -35,7 +30,7 @@ import type { QuizQuestion } from "@/lib/types"
 
 // Degraded path when the clerk API is unreachable: the dropdowns collapse to
 // the one seeded demo selection (chapter 9 carries the seeded quiz + PDF).
-const FALLBACK_SUBJECT: LearningSubject = { id: "fallback-subject", subject_name: "Science" }
+
 const FALLBACK_CHAPTER: SyllabusChapter = {
   id: "fallback-chapter",
   number: 9,
@@ -44,8 +39,9 @@ const FALLBACK_CHAPTER: SyllabusChapter = {
 }
 const FALLBACK_TOPIC: SyllabusTopic = { id: "fallback-topic", title: "Laws of Reflection" }
 
-// Placeholder shown only in Guest mode (no student session) — logged-in
-// students see their real assignments instead (fetched below).
+// Placeholder until teacher-assigned homework is wired into StudyPlan for
+// real — chapter name matches the seeded syllabus exactly so "Start Now"
+// genuinely jumps there instead of silently doing nothing.
 const ASSIGNMENTS = [
   {
     id: "a1",
@@ -57,91 +53,26 @@ const ASSIGNMENTS = [
   },
 ]
 
-type StudyAssignment = {
-  id: string
-  title: string
-  subject: string
-  chapter: string
-  dueLabel: string
-  status: "overdue" | "due_today" | "due_soon"
-}
+const DEFAULT_SUBJECTS: LearningSubject[] = [
+  { id: "95d52338-ad08-4941-a06b-4d60fa696874", subject_name: "Science" },
+  { id: "b2e55684-4aa5-423b-a576-3979def5914f", subject_name: "Mathematics" },
+]
 
-// MyAssignment (backend) -> the StudyPlan strip's shape. Returns null for
-// work already turned in — the strip is a to-do list, not a history.
-function toStudyAssignment(a: MyAssignment): StudyAssignment | null {
-  if (a.submission_status !== "not_started") return null
-  const subject = a.classroom_name.split("·").pop()?.trim() ?? ""
-  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-  const today = new Date(APP_TODAY.getFullYear(), APP_TODAY.getMonth(), APP_TODAY.getDate())
-  const due = a.due_date ? new Date(a.due_date) : null
-  const dueDay = due ? new Date(due.getFullYear(), due.getMonth(), due.getDate()) : null
-  const diff = dueDay ? Math.round((dueDay.getTime() - today.getTime()) / 86400000) : null
-  const status = diff !== null && diff < 0 ? ("overdue" as const) : diff === 0 ? ("due_today" as const) : ("due_soon" as const)
-  const dueLabel =
-    diff === null ? "No due date"
-    : diff < 0 ? "Overdue"
-    : diff === 0 ? "Today"
-    : diff === 1 ? "Tomorrow"
-    : `${MONTHS[dueDay!.getMonth()]} ${dueDay!.getDate()}`
-  return { id: a.id, title: a.title, subject, chapter: a.topic_label || subject, dueLabel, status }
-}
 
-function subjectCode(name: string): string {
-  if (name === "Science") return "SCI"
-  if (name === "Mathematics") return "MAT"
-  return name.slice(0, 3).toUpperCase()
-}
 
 export default function LearningHub() {
+  const storeAssignments = useSchoolStore((s) => s.assignments)
   const [activeView, setActiveView] = useState<"learning" | "journal" | "heatmap">("learning")
   const [tab, setTab] = useState("learn")
   // Default: 55/45 video/reading split. Theater: 72/28, for when the video
   // is what needs the room (a diagram, a worked example) rather than the text.
   const [videoFocus, setVideoFocus] = useState(false)
-  const { xp, streak, mistakes, hydrate, addXP, addMistake } = useLearningStore()
-
-  // Real teacher-assigned homework for logged-in students; Guest mode keeps
-  // the placeholder above. `null` = not loaded / not a student session.
-  const session = useAppStore((s) => s.session)
-  const [realAssignments, setRealAssignments] = useState<StudyAssignment[] | null>(null)
-  useEffect(() => {
-    if (session?.user.role !== "student") return
-    getMyAssignments()
-      .then((rows) => setRealAssignments(rows.map(toStudyAssignment).filter((a) => a !== null)))
-      .catch(() => { /* keep placeholder */ })
-  }, [session])
-
-  // Real recommended tasks: memory-layer struggle cards (works for the demo
-  // student in Guest mode too) + the live mistake journal.
-  const [recTasks, setRecTasks] = useState<RecTask[]>([])
-  useEffect(() => {
-    getRecommendations(currentStudentId(), "student")
-      .then((recs) => {
-        const tasks: RecTask[] = recs
-          .filter((r) => r.kind === "struggle_remedial" && r.chapter)
-          .map((r) => ({
-            id: r.id,
-            title: `Revisit ${r.chapter}`,
-            meta: "You struggled here • High impact",
-            xp: "+30 XP",
-          }))
-        if (mistakes.length > 0) {
-          tasks.push({
-            id: "mistake-journal",
-            title: `Fix ${Math.min(3, mistakes.length)} mistake${mistakes.length === 1 ? "" : "s"} in Journal`,
-            meta: "High impact • Mistake Journal",
-            xp: "+30 XP",
-          })
-        }
-        setRecTasks(tasks.slice(0, 4))
-      })
-      .catch(() => { /* no recommendations — strip just hides */ })
-  }, [mistakes.length])
+  const { streak, mistakes, hydrate, addXP, addMistake } = useLearningStore()
 
   // Content tree from the clerk API; each level falls back to the seeded
   // Science/Light/Laws-of-Reflection selection while unloaded or unreachable.
-  const [subjects, setSubjects] = useState<LearningSubject[]>([])
-  const [subjectId, setSubjectId] = useState(FALLBACK_SUBJECT.id)
+  const [subjects, setSubjects] = useState<LearningSubject[]>(DEFAULT_SUBJECTS)
+  const [subjectId, setSubjectId] = useState(DEFAULT_SUBJECTS[0].id)
   const [units, setUnits] = useState<SyllabusUnit[]>([])
   const [chapterId, setChapterId] = useState(FALLBACK_CHAPTER.id)
   const [topicId, setTopicId] = useState(FALLBACK_TOPIC.id)
@@ -162,17 +93,18 @@ export default function LearningHub() {
   useEffect(() => {
     getSubjects()
       .then((d) => {
-        setSubjects(d.subjects)
-        const science = d.subjects.find((s) => s.subject_name === FALLBACK_SUBJECT.subject_name) ?? d.subjects[0]
-        if (science) setSubjectId(science.id)
+        if (d.subjects && d.subjects.length > 0) {
+          setSubjects(d.subjects)
+          setSubjectId(d.subjects[0].id)
+        }
       })
-      .catch(() => { /* keep the fallback subject */ })
+      .catch(() => { /* keep default subjects */ })
   }, [])
 
   // Syllabus tree of the picked subject; default to the Light chapter (or the
   // first chapter for any other subject) and its Laws of Reflection topic.
   useEffect(() => {
-    if (subjectId === FALLBACK_SUBJECT.id) return
+    if (!subjectId) return
     setUnits([])
     const pendingChapterName = pendingChapterNameRef.current
     pendingChapterNameRef.current = null
@@ -182,7 +114,13 @@ export default function LearningHub() {
         setUnits(loaded)
         const chapters = loaded.flatMap((u) => u.chapters)
         const chapter =
-          (pendingChapterName && chapters.find((c) => c.name === pendingChapterName)) ||
+          (pendingChapterName &&
+            chapters.find(
+              (c) =>
+                c.name.toLowerCase() === pendingChapterName.toLowerCase() ||
+                c.name.toLowerCase().includes(pendingChapterName.toLowerCase()) ||
+                pendingChapterName.toLowerCase().includes(c.name.toLowerCase())
+            )) ||
           chapters.find((c) => c.name === FALLBACK_CHAPTER.name) ||
           chapters[0]
         if (chapter) {
@@ -196,10 +134,7 @@ export default function LearningHub() {
 
   // Chapter-level resources (chapter PDF, video) of the picked subject.
   useEffect(() => {
-    if (subjectId === FALLBACK_SUBJECT.id) {
-      setResources([])
-      return
-    }
+    if (!subjectId) return
     getResources(subjectId)
       .then(setResources)
       .catch(() => setResources([]))
@@ -219,11 +154,27 @@ export default function LearningHub() {
     return () => { cancelled = true }
   }, [topicId])
 
-  const subjectOptions = subjects.length > 0 ? subjects : [FALLBACK_SUBJECT]
-  const subject = subjectOptions.find((s) => s.id === subjectId) ?? subjectOptions[0]
+  const subjectOptions = subjects.length > 0 ? subjects : DEFAULT_SUBJECTS
 
-  const chapters = useMemo(() => units.flatMap((u) => u.chapters), [units])
-  const chapterOptions = chapters.length > 0 ? chapters : [FALLBACK_CHAPTER]
+  const assignedChapters = useMemo(() => {
+    const allSyllabusChapters = units.flatMap((u) => u.chapters)
+    if (!storeAssignments || storeAssignments.length === 0) {
+      return allSyllabusChapters.slice(0, 1)
+    }
+
+    const assignedTitles = storeAssignments.map((a) => a.title.toLowerCase())
+
+    const filtered = allSyllabusChapters.filter((c) => {
+      const cNameLower = c.name.toLowerCase()
+      return assignedTitles.some(
+        (t) => t.includes(cNameLower) || cNameLower.includes(t)
+      )
+    })
+
+    return filtered.length > 0 ? filtered : allSyllabusChapters.slice(0, 1)
+  }, [units, storeAssignments])
+
+  const chapterOptions = assignedChapters.length > 0 ? assignedChapters : [FALLBACK_CHAPTER]
   const chapter = chapterOptions.find((c) => c.id === chapterId) ?? chapterOptions[0]
 
   const topicOptions = chapter.topics.length > 0 ? chapter.topics : [FALLBACK_TOPIC]
@@ -242,56 +193,75 @@ export default function LearningHub() {
   const goToChapter = (chapterName: string, subjectName: string) => {
     setActiveView("learning")
     setTab("learn")
-    const targetSubject = subjectOptions.find((s) => s.subject_name === subjectName)
-    if (!targetSubject || targetSubject.id === subjectId) {
-      // Already on the right subject (or it couldn't be resolved) — its
-      // chapters are already loaded, so switch directly.
-      const match = chapterOptions.find((c) => c.name === chapterName)
-      if (match) onChapterChange(match.id)
-      return
+    const targetSubject = subjectOptions.find(
+      (s) => s.subject_name.toLowerCase() === subjectName.toLowerCase()
+    )
+    if (targetSubject) {
+      pendingChapterNameRef.current = chapterName
+      setSubjectId(targetSubject.id)
     }
-    // Different subject: its syllabus isn't loaded yet, so stash the target
-    // chapter name for the syllabus-loaded effect to pick up once it is.
-    pendingChapterNameRef.current = chapterName
-    setSubjectId(targetSubject.id)
   }
 
-  // Chapter PDF + video for the selection, straight from the subject's
-  // catalogued resources (see LearningResources for the same catalog).
-  // Prefer a resource tagged to the exact topic in view over a merely
-  // chapter-matched one -- a chapter can have several resources, and the
-  // topic tag is how a student finds the one that's actually about what
-  // they're looking at.
+  // Chapter PDF + video for the selection, straight from teacher-assigned chapters.
+  const allVideoResources = useMemo(() => {
+    const assignedChapterNumbers = new Set(assignedChapters.map((c) => c.number))
+    const catalogVideos = resources.filter(
+      (r) =>
+        (r.type === "Video" || r.doc_type === "video") &&
+        (r.chapter_number == null || assignedChapterNumbers.has(r.chapter_number))
+    )
+    const storeVideos = (storeAssignments || [])
+      .filter((a) => a.attachments && a.attachments.some((att) => att.s3Key?.endsWith(".mp4") || att.name.toLowerCase().includes("video")))
+      .map((a) => {
+        const att = a.attachments?.find((att) => att.s3Key?.endsWith(".mp4") || att.name.toLowerCase().includes("video"))
+        return {
+          id: a.id,
+          title: a.title,
+          type: "Video" as const,
+          chapter_number: chapter.number,
+          s3_key: att?.s3Key || "",
+          doc_type: "video",
+          topic_id: null,
+        }
+      })
+    return [...catalogVideos, ...storeVideos]
+  }, [resources, storeAssignments, chapter.number, assignedChapters])
+
+  const currentChapterVideos = useMemo(() => {
+    return allVideoResources.filter((r) => r.s3_key && (r.chapter_number === chapter.number || !r.chapter_number))
+  }, [allVideoResources, chapter.number])
+
+  const [selectedVideoKey, setSelectedVideoKey] = useState<string | null>(null)
+
+  const chapterVideo = useMemo(() => {
+    if (selectedVideoKey) {
+      const match = currentChapterVideos.find((v) => v.s3_key === selectedVideoKey || v.id === selectedVideoKey)
+      if (match) return match
+    }
+    return (
+      currentChapterVideos.find((r) => r.topic_id === topicId) ??
+      currentChapterVideos[0] ??
+      allVideoResources[0]
+    )
+  }, [selectedVideoKey, currentChapterVideos, topicId, allVideoResources])
+
+  const videoUrl = chapterVideo?.s3_key ? getAssetUrl(chapterVideo.s3_key) : undefined
+
   const chapterPdf =
     resources.find((r) => r.doc_type === "chapter_content" && r.topic_id === topicId && r.s3_key) ??
     resources.find((r) => r.doc_type === "chapter_content" && r.chapter_number === chapter.number && r.s3_key)
   const pdfUrl = chapterPdf?.s3_key ? getAssetUrl(chapterPdf.s3_key) : undefined
-  const chapterVideo =
-    resources.find((r) => r.type === "Video" && r.topic_id === topicId && r.s3_key) ??
-    resources.find((r) => r.type === "Video" && r.chapter_number === chapter.number && r.s3_key)
-  const videoUrl = chapterVideo?.s3_key ? getAssetUrl(chapterVideo.s3_key) : undefined
-  const chapterLab =
-    resources.find((r) => r.doc_type === "lab" && r.topic_id === topicId && r.s3_key) ??
-    resources.find((r) => r.doc_type === "lab" && r.chapter_number === chapter.number && r.s3_key)
-  // Cache-bust with the upload timestamp -- a lab file gets edited in place
-  // at the same S3 key, and browsers otherwise keep serving whatever they
-  // first cached for that URL even after the object changes.
-  const labUrl = chapterLab?.s3_key
-    ? `${getAssetUrl(chapterLab.s3_key)}${chapterLab.s3_uploaded_at ? `?v=${encodeURIComponent(chapterLab.s3_uploaded_at)}` : ""}`
-    : undefined
 
-  const okf = `C10.${subjectCode(subject.subject_name)}.CH${String(chapter.number ?? 0).padStart(2, "0")}`
+
 
   const triggerClass =
     "data-[state=active]:bg-ink data-[state=active]:text-sidebar-text"
 
+  const [showPdfModal, setShowPdfModal] = useState(false)
+
   return (
     <div>
-      {/* Proactive memory cards — struggle remedials derived from this
-          student's quiz-mistake events (fire-and-forget, never blocks) */}
-      <RecommendationCards userId={currentStudentId()} role="student" />
-      {/* Breadcrumb context + gamification status (was the package's own
-          topbar; AppLayout already renders the app Topbar) */}
+      {/* Breadcrumb context + gamification status */}
       <Card className="flex items-center justify-between px-5 py-3">
         <div className="flex items-center gap-3">
           <Select value={subjectId} onValueChange={setSubjectId}>
@@ -328,17 +298,29 @@ export default function LearningHub() {
               ))}
             </SelectContent>
           </Select>
-          <Badge variant="okf" className="ml-2 font-mono">{okf}</Badge>
         </div>
         <div className="flex items-center gap-3">
           <StudyMaterial chapterName={chapter.name} chapterNumber={chapter.number} resources={resources} />
-          <Badge variant="secondary">⚡ {xp} XP</Badge>
           <Badge variant="warning">🔥 {streak} day streak</Badge>
         </div>
       </Card>
 
       <div className="mt-6">
-        <StudyPlan assignments={realAssignments ?? ASSIGNMENTS} recommended={recTasks} onGoToChapter={goToChapter} />
+        <StudyPlan
+          assignments={
+            storeAssignments && storeAssignments.length > 0
+              ? storeAssignments.map((a) => ({
+                  id: a.id,
+                  title: a.title,
+                  subject: a.subject,
+                  chapter: a.title,
+                  dueLabel: a.due || "Due Soon",
+                  status: "due_today" as const,
+                }))
+              : ASSIGNMENTS
+          }
+          onGoToChapter={goToChapter}
+        />
       </div>
 
       <Tabs
@@ -360,7 +342,25 @@ export default function LearningHub() {
         </TabsList>
 
         <TabsContent value="learn" className="mt-6">
-          <div className="mb-3 flex justify-end">
+          <div className="mb-3 flex items-center justify-between">
+            {currentChapterVideos.length > 1 ? (
+              <div className="flex items-center gap-2">
+                <span className="text-[12.5px] font-semibold text-text-secondary">📹 Video Lesson:</span>
+                <select
+                  value={chapterVideo?.s3_key || ""}
+                  onChange={(e) => setSelectedVideoKey(e.target.value)}
+                  className="h-8 rounded-[8px] border border-card-border bg-white px-3 text-[13px] font-semibold text-ink shadow-sm"
+                >
+                  {currentChapterVideos.map((v) => (
+                    <option key={v.id || v.s3_key} value={v.s3_key || ""}>
+                      {v.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <div />
+            )}
             <div className="flex items-center rounded-full bg-secondary p-[3px]">
               <button
                 type="button"
@@ -382,36 +382,100 @@ export default function LearningHub() {
               </button>
             </div>
           </div>
-          <div
-            className={`grid gap-6 transition-[grid-template-columns] duration-300 ${
-              videoFocus ? "grid-cols-[72%_28%]" : "grid-cols-[55%_45%]"
-            }`}
-          >
-            {/* key remounts the player per topic so quiz progress resets */}
-            <VideoPlayerWithQuiz
-              key={topic.id}
-              questions={quiz ?? undefined}
-              chapter={chapter.name}
-              videoUrl={videoUrl}
-              addXP={addXP}
-              onMistake={addMistake}
-            />
-            <PdfViewerWithNotes
-              pdfUrl={pdfUrl}
-              pdfTitle={chapterPdf?.title}
-              chapter={chapter.name}
-              chapterNumber={chapter.number}
-              addXP={addXP}
-            />
+
+          <div className="grid grid-cols-1 lg:grid-cols-[70%_28%] gap-6">
+            <div>
+              <VideoPlayerWithQuiz
+                key={topic.id}
+                questions={quiz ?? undefined}
+                chapter={chapter.name}
+                videoUrl={videoUrl}
+                addXP={addXP}
+                onMistake={addMistake}
+              />
+              <MyNotesWidget
+                chapter={chapter.name}
+                chapterNumber={chapter.number}
+                addXP={addXP}
+              />
+            </div>
+
+            <Card className="flex flex-col justify-between p-5 bg-white border border-card-border rounded-[12px] shadow-sm h-fit">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex size-9 items-center justify-center rounded-lg bg-[#FEF3C7] text-lg shrink-0">
+                    📄
+                  </div>
+                  <div>
+                    <p className="text-[10.5px] font-bold uppercase tracking-wider text-text-secondary">Textbook & Notes</p>
+                    <h4 className="font-bold text-[14px] text-ink leading-snug">
+                      {chapterPdf?.title || `${chapter.name} PDF`}
+                    </h4>
+                  </div>
+                </div>
+                <p className="text-[12.5px] text-text-secondary leading-relaxed">
+                  Open the official textbook PDF notes, worked examples, and formulas for {chapter.name}.
+                </p>
+              </div>
+
+              <div className="mt-5 space-y-2">
+                <Button
+                  type="button"
+                  variant="gold"
+                  onClick={() => setShowPdfModal(true)}
+                  className="w-full flex items-center justify-center gap-2 font-bold py-2.5 text-[13.5px] shadow-sm"
+                >
+                  <span>📖</span> Open Chapter PDF & Notes
+                </Button>
+                {pdfUrl && (
+                  <a
+                    href={pdfUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block text-center text-[12px] text-text-secondary hover:text-ink hover:underline pt-1"
+                  >
+                    Download PDF ↗
+                  </a>
+                )}
+              </div>
+            </Card>
           </div>
         </TabsContent>
-        <TabsContent value="lab">
-          <LabExercise key={topic.id} addXP={addXP} onMistake={addMistake} chapter={chapter.name} labUrl={labUrl} />
-        </TabsContent>
+        <TabsContent value="lab"><LabExercise addXP={addXP} onMistake={addMistake} chapter={chapter.name} /></TabsContent>
         <TabsContent value="mindmap"><Mindmap /></TabsContent>
         <TabsContent value="journal"><MistakeJournal mistakes={mistakes} /></TabsContent>
         <TabsContent value="heatmap"><Heatmap /></TabsContent>
       </Tabs>
+
+      {/* PDF Viewer Popup Modal */}
+      {showPdfModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="relative w-full max-w-4xl h-[90vh] flex flex-col rounded-[16px] border border-card-border bg-white shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between border-b border-card-border px-5 py-3.5 bg-cream">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">📄</span>
+                <span className="font-bold text-[15px] text-ink">{chapterPdf?.title || `${chapter.name} PDF & Notes`}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowPdfModal(false)}
+                className="rounded-full bg-secondary px-3.5 py-1 text-[13px] font-bold text-ink hover:bg-ink hover:text-white transition-colors"
+              >
+                Close ✕
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4">
+              <PdfViewerWithNotes
+                pdfUrl={pdfUrl}
+                pdfTitle={chapterPdf?.title}
+                chapter={chapter.name}
+                chapterNumber={chapter.number}
+                addXP={addXP}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

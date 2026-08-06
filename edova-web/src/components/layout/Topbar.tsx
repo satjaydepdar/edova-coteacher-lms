@@ -52,6 +52,30 @@ export function Topbar() {
     (a) => !seenAt || new Date(a.submitted_at) > new Date(seenAt),
   ).length
 
+  const handleRole = (next: Role) => {
+    setRole(next)
+    // Leaving admin while on the admin-only Settings screen bounces to My Calendar.
+    if (next === "teacher" && location.pathname === "/settings") {
+      navigate("/calendar")
+    }
+  }
+
+  const toggle = (r: Role, label: string) => {
+    const active = role === r
+    return (
+      <button
+        onClick={() => handleRole(r)}
+        className="cursor-pointer rounded-full px-4 py-1.5 text-[14.5px] font-semibold transition-colors"
+        style={{
+          background: active ? "#16332B" : "transparent",
+          color: active ? "#fff" : "#6B7280",
+        }}
+      >
+        {label}
+      </button>
+    )
+  }
+
   return (
     <header className="flex h-16 min-h-16 items-center justify-between border-b border-[#E5E1D2] bg-cream px-6">
       <div className="flex max-w-[480px] flex-1 items-center gap-4">
@@ -65,15 +89,8 @@ export function Topbar() {
       </div>
       <div className="flex items-center gap-3">
         <div className="flex items-center rounded-full bg-[#F3EFE3] p-[3px]">
-          <div
-            className="px-4 py-1.5 text-[14px] font-medium rounded-full transition-colors"
-            style={{
-              background: "#16332B",
-              color: "#fff",
-            }}
-          >
-            {role.charAt(0).toUpperCase() + role.slice(1)}
-          </div>
+          {toggle("teacher", "Teacher")}
+          {toggle("admin", "Admin")}
         </div>
         <div className="h-6 w-px bg-[#E5E1D2]" />
         <div className="relative" ref={bellRef}>

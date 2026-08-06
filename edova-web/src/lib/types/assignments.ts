@@ -9,12 +9,15 @@ export type SubmissionStatus =
   | "submitted"
   | "late"
   | "missing"
+  | "graded"
 export interface Submission {
   studentId: string
   status: SubmissionStatus
   submittedOn: string
   score: number | null
   feedback: string
+  answers?: Array<{ question_id: string; selected: string }> | null
+  textResponse?: string | null
 }
 export type AssignmentStatus = "active" | "closed" | "graded"
 
@@ -96,6 +99,12 @@ export interface Assignment {
   term: string
   academicYear: string
   due: string
+  // Precise ISO timestamp from the date+time picker — preferred over `due`
+  // (a display string) wherever exact due-date math matters.
+  dueIso?: string
+  // Set when the teacher schedules this assignment to publish later instead
+  // of immediately.
+  scheduleIso?: string
   totalPoints: number
   status: AssignmentStatus
   sourceAssessmentId: string | null
