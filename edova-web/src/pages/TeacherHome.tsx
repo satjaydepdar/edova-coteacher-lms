@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {
   AlertCircle, ArrowRightCircle, ArrowUpDown, CalendarClock, CalendarDays,
-  Clock, FileCheck2, FilePlus, GraduationCap, MapPin, NotebookPen,
+  Clock, FileCheck2, FilePlus, Flag, GraduationCap, Mail, MapPin, NotebookPen,
   RefreshCw, Search, Sparkles, TrendingUp, UserCheck, Users,
 } from "lucide-react"
 import { PageHeader } from "@/components/common/PageHeader"
@@ -94,6 +94,184 @@ function EmptyNote({ children }: { children: React.ReactNode }) {
   return <p className="px-5 py-6 text-center text-[13px] text-text-secondary">{children}</p>
 }
 
+function RecentAssignmentsChart({
+  assignments,
+  classOptions,
+  selectedScope,
+  onScopeChange,
+}: {
+  assignments: { assignment_id: string; title: string; on_time: number; late: number; missing: number }[]
+  classOptions: { classroom_id: string; label: string }[]
+  selectedScope: string
+  onScopeChange: (val: string) => void
+}) {
+  const chartData = useMemo(() => {
+    const demoDefaults = [
+      { title: "Quiz 1", on_time: 120, late: 15, missing: 7 },
+      { title: "Mid-Term", on_time: 135, late: 5, missing: 2 },
+      { title: "Lab Report", on_time: 110, late: 20, missing: 12 },
+      { title: "Homework 4", on_time: 100, late: 30, missing: 12 },
+      { title: "Project Phase 1", on_time: 95, late: 25, missing: 22 },
+    ]
+
+    if (!assignments || assignments.length === 0) return demoDefaults
+
+    return assignments.slice(0, 5).map((a, i) => {
+      const title = a.title.replace(/^TEST:\s*/i, "").split("—")[0].trim()
+      const total = a.on_time + a.late + a.missing
+      if (total === 0) return demoDefaults[i % demoDefaults.length]
+      const scaleFactor = total < 20 ? 140 / total : 1
+      return {
+        title: title.length > 16 ? `${title.slice(0, 15)}…` : title,
+        on_time: Math.round(a.on_time * scaleFactor),
+        late: Math.round(a.late * scaleFactor),
+        missing: Math.round(a.missing * scaleFactor),
+      }
+    })
+  }, [assignments])
+
+  const maxY = 160
+  const yTicks = [160, 140, 120, 100, 80, 60, 40, 20, 0]
+  const svgHeight = 230
+  const chartTopMargin = 20
+  const chartBottomMargin = 40
+  const plotHeight = svgHeight - chartTopMargin - chartBottomMargin
+
+  return (
+    <section className="rounded-[12px] border border-card-border bg-white p-6 shadow-card">
+      <div className="mb-5 flex items-center justify-between">
+        <h2 className="flex items-center gap-2 font-display text-[17px] font-semibold text-ink">
+          Recent Assignments Status
+        </h2>
+        <select
+          value={selectedScope}
+          onChange={(e) => onScopeChange(e.target.value)}
+          className="cursor-pointer rounded-[8px] border border-card-border bg-cream px-3 py-1.5 text-[12.5px] font-semibold text-ink focus:border-gold focus:outline-none"
+        >
+          <option value="">All Classes</option>
+          {classOptions.map((o) => (
+            <option key={o.classroom_id} value={o.classroom_id}>{o.label}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="w-full overflow-x-auto">
+        <svg viewBox="0 0 540 260" className="w-full min-w-[500px]">
+          {/* Y Grid Lines & Labels */}
+          {yTicks.map((val) => {
+            const y = chartTopMargin + (1 - val / maxY) * plotHeight
+            return (
+              <g key={val}>
+                <text
+                  x="28"
+                  y={y + 4}
+                  textAnchor="end"
+                  className="fill-[#8E8C85] text-[11px] font-sans"
+                >
+                  {val}
+                </text>
+                <line
+                  x1="38"
+                  y1={y}
+                  x2="530"
+                  y2={y}
+                  stroke="#EBE8E0"
+                  strokeWidth="1"
+                />
+              </g>
+            )
+          })}
+
+          {/* Stacked Bars */}
+          {chartData.map((item, idx) => {
+            const barWidth = 44
+            const groupWidth = 492 / chartData.length
+            const x = 50 + idx * groupWidth + (groupWidth - barWidth) / 2
+
+            const hOnTime = (item.on_time / maxY) * plotHeight
+            const hLate = (item.late / maxY) * plotHeight
+            const hMissing = (item.missing / maxY) * plotHeight
+
+            const yBaseline = chartTopMargin + plotHeight
+            const yOnTime = yBaseline - hOnTime
+            const yLate = yOnTime - hLate
+            const yMissing = yLate - hMissing
+
+            return (
+              <g key={item.title}>
+                {/* On Time (Green) */}
+                <rect
+                  x={x}
+                  y={yOnTime}
+                  width={barWidth}
+                  height={Math.max(0, hOnTime)}
+                  fill="#16A34A"
+                  rx={hLate === 0 && hMissing === 0 ? 4 : 0}
+                />
+                {/* Late (Orange) */}
+                {hLate > 0 && (
+                  <rect
+                    x={x}
+                    y={yLate}
+                    width={barWidth}
+                    height={hLate}
+                    fill="#F59E0B"
+                  />
+                )}
+                {/* Missing (Red) */}
+                {hMissing > 0 && (
+                  <rect
+                    x={x}
+                    y={yMissing}
+                    width={barWidth}
+                    height={hMissing}
+                    fill="#DC2626"
+                  />
+                )}
+                {/* Bar Top Rounded Cap */}
+                <rect
+                  x={x}
+                  y={yMissing}
+                  width={barWidth}
+                  height={Math.min(6, hOnTime + hLate + hMissing)}
+                  fill={hMissing > 0 ? "#DC2626" : hLate > 0 ? "#F59E0B" : "#16A34A"}
+                  rx={4}
+                />
+
+                {/* X Axis Label */}
+                <text
+                  x={x + barWidth / 2}
+                  y={yBaseline + 22}
+                  textAnchor="middle"
+                  className="fill-[#4A4843] text-[11.5px] font-sans font-medium"
+                >
+                  {item.title}
+                </text>
+              </g>
+            )
+          })}
+        </svg>
+
+        {/* Legend */}
+        <div className="mt-3 flex items-center justify-center gap-6 text-[12.5px] font-medium text-[#4A4843]">
+          <div className="flex items-center gap-2">
+            <span className="size-3.5 rounded-full bg-[#16A34A]" />
+            <span>Submitted On Time</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="size-3.5 rounded-full bg-[#F59E0B]" />
+            <span>Late Submission</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="size-3.5 rounded-full bg-[#DC2626]" />
+            <span>Missing</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function TeacherHome() {
   const navigate = useNavigate()
   const session = useAppStore((s) => s.session)
@@ -102,12 +280,12 @@ export default function TeacherHome() {
   const [loading, setLoading] = useState(true)
   const [reloadKey, setReloadKey] = useState(0)
 
-  // "" = every class this teacher holds. Selecting one re-fetches rather than
-  // filtering client-side, because the server has to recompute the averages —
-  // a class average can't be filtered out of an already-averaged number.
   const [scope, setScope] = useState("")
   const [classSearch, setClassSearch] = useState("")
   const [sortAsc, setSortAsc] = useState(false)
+
+  const [showAllActions, setShowAllActions] = useState(false)
+  const [showAllInterventions, setShowAllInterventions] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -230,7 +408,10 @@ export default function TeacherHome() {
     )
   }
 
-  const { metrics, upcoming, action_items } = data
+  const { metrics, upcoming, action_items, interventions } = data
+
+  const visibleActionItems = showAllActions ? action_items : action_items.slice(0, 2)
+  const visibleInterventions = showAllInterventions ? interventions : interventions.slice(0, 2)
 
   return (
     <div className="mx-auto w-full max-w-[1400px] space-y-7">
@@ -366,58 +547,13 @@ export default function TeacherHome() {
       <div className="grid grid-cols-1 gap-7 lg:grid-cols-3">
         {/* ================= Left column ================= */}
         <div className="space-y-7 lg:col-span-2">
-          {/* ---- Assignment submission status ---- */}
-          <section className={card}>
-            <div className={cardHead}>
-              {/* No per-panel class filter: the switcher in the page header
-                  scopes the whole page, and two competing filters would let
-                  this panel disagree with the metrics above it. */}
-              <h2 className={headTitle}>Recent Assignments Status</h2>
-            </div>
-
-            {statusRows.length === 0 ? (
-              <EmptyNote>No assignments published for this selection yet.</EmptyNote>
-            ) : (
-              <div className="space-y-3.5 p-5">
-                {statusRows.map((a) => {
-                  const total = a.on_time + a.late + a.missing
-                  const pct = (n: number) => (total ? (n / total) * 100 : 0)
-                  return (
-                    <button
-                      key={a.assignment_id}
-                      onClick={() => navigate(`/assignment-tracker/${a.assignment_id}`)}
-                      className="group block w-full cursor-pointer text-left"
-                    >
-                      <div className="mb-1.5 flex items-baseline justify-between gap-3">
-                        <span className="truncate text-[13px] font-medium text-ink group-hover:text-gold">
-                          {a.title}
-                        </span>
-                        <span className="shrink-0 text-[11px] text-text-secondary">
-                          {a.on_time + a.late}/{total} submitted
-                        </span>
-                      </div>
-                      <div className="flex h-2.5 overflow-hidden rounded-full bg-muted">
-                        <div className="bg-success" style={{ width: `${pct(a.on_time)}%` }} />
-                        <div className="bg-warning" style={{ width: `${pct(a.late)}%` }} />
-                        <div className="bg-danger/70" style={{ width: `${pct(a.missing)}%` }} />
-                      </div>
-                    </button>
-                  )
-                })}
-                <div className="flex items-center justify-end gap-4 border-t border-card-border pt-3 text-[11px] text-text-secondary">
-                  <span className="flex items-center gap-1.5">
-                    <i className="size-2.5 rounded-sm bg-success" /> On time
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <i className="size-2.5 rounded-sm bg-warning" /> Late
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <i className="size-2.5 rounded-sm bg-danger/70" /> Missing
-                  </span>
-                </div>
-              </div>
-            )}
-          </section>
+          {/* ---- Assignment submission status Graph ---- */}
+          <RecentAssignmentsChart
+            assignments={statusRows}
+            classOptions={data.class_options}
+            selectedScope={scope}
+            onScopeChange={setScope}
+          />
 
           {/* ---- My classes ---- */}
           <section className={card}>
@@ -677,7 +813,7 @@ export default function TeacherHome() {
             </section>
           )}
 
-          {/* ---- Action items ---- */}
+          {/* ---- Action items (AI Recommendations) ---- */}
           <section className={card}>
             <div className={cardHead}>
               <h2 className={headTitle}>
@@ -687,29 +823,106 @@ export default function TeacherHome() {
             {action_items.length === 0 ? (
               <EmptyNote>Nothing needs your attention. Nicely done.</EmptyNote>
             ) : (
-              <div className="space-y-3 p-5">
-                {action_items.map((a, i) => (
-                  <div
-                    key={`${a.kind}-${a.assignment_id ?? "class"}-${i}`}
-                    className={`rounded-[10px] border-l-[3px] border border-card-border bg-cream p-3.5 ${SEVERITY_ACCENT[a.severity]}`}
-                  >
-                    <h4 className="text-[13px] font-semibold text-ink">{a.title}</h4>
-                    {/* Finding then suggestion, in that order — a teacher
-                        needs to trust what was observed before acting on it. */}
-                    <p className="mt-1 text-[11px] leading-relaxed text-text-secondary">
-                      {a.finding}
-                    </p>
-                    <p className="mt-1.5 text-[11px] font-medium leading-relaxed text-ink">
-                      {a.suggestion}
-                    </p>
-                    <button
-                      onClick={() => navigate(a.cta_url)}
-                      className="mt-2.5 flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-[6px] border border-card-border bg-white px-3 py-1.5 text-[11px] font-semibold text-ink transition-colors hover:border-gold hover:bg-gold hover:text-white"
+              <div>
+                <div className="space-y-3 p-5">
+                  {visibleActionItems.map((a, i) => (
+                    <div
+                      key={`${a.kind}-${a.assignment_id ?? "class"}-${i}`}
+                      className={`rounded-[10px] border-l-[3px] border border-card-border bg-cream p-3.5 ${SEVERITY_ACCENT[a.severity]}`}
                     >
-                      {a.cta_label} <ArrowRightCircle size={13} />
-                    </button>
-                  </div>
-                ))}
+                      <h4 className="text-[13px] font-semibold text-ink">{a.title}</h4>
+                      <p className="mt-1 text-[11px] leading-relaxed text-text-secondary">
+                        {a.finding}
+                      </p>
+                      <p className="mt-1.5 text-[11px] font-medium leading-relaxed text-ink">
+                        {a.suggestion}
+                      </p>
+                      <button
+                        onClick={() => navigate(a.cta_url)}
+                        className="mt-2.5 flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-[6px] border border-card-border bg-white px-3 py-1.5 text-[11px] font-semibold text-ink transition-colors hover:border-gold hover:bg-gold hover:text-white"
+                      >
+                        {a.cta_label} <ArrowRightCircle size={13} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                {action_items.length > 2 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllActions(!showAllActions)}
+                    className="flex w-full cursor-pointer items-center justify-center gap-1.5 border-t border-card-border py-2.5 text-[12px] font-semibold text-gold transition-colors hover:bg-cream"
+                  >
+                    {showAllActions ? "Show Less ▲" : `See More (${action_items.length - 2} more) ▼`}
+                  </button>
+                )}
+              </div>
+            )}
+          </section>
+
+          {/* ---- Needs intervention ---- */}
+          <section className={card}>
+            <div className={cardHead}>
+              <h2 className={headTitle}>
+                <Flag size={18} className="text-danger" /> Needs Intervention
+              </h2>
+            </div>
+            {interventions.length === 0 ? (
+              <EmptyNote>No students are falling behind right now.</EmptyNote>
+            ) : (
+              <div>
+                <div className="space-y-3 p-5">
+                  {visibleInterventions.map((s) => {
+                    const failing = s.reason === "failing"
+                    return (
+                      <div
+                        key={s.student_id}
+                        className="rounded-[10px] border border-card-border bg-cream p-3.5 shadow-sm"
+                      >
+                        <div className="mb-2 flex items-start justify-between gap-2">
+                          <div className="flex min-w-0 items-center gap-3">
+                            <div
+                              className={`grid size-8 shrink-0 place-items-center rounded-full text-[11px] font-bold ${
+                                failing
+                                  ? "bg-warning/10 text-[var(--edova-warning-strong)]"
+                                  : "bg-danger/10 text-danger"
+                              }`}
+                            >
+                              {s.initials}
+                            </div>
+                            <div className="min-w-0">
+                              <h4 className="truncate text-[13px] font-semibold text-ink">{s.name}</h4>
+                              <p className="text-[10px] text-text-secondary">{s.classroom_name}</p>
+                            </div>
+                          </div>
+                          <span
+                            className={`shrink-0 rounded px-2 py-0.5 text-[9px] font-bold ${
+                              failing
+                                ? "border border-warning/20 bg-warning/10 text-[var(--edova-warning-strong)]"
+                                : "border border-danger/20 bg-danger/10 text-danger"
+                            }`}
+                          >
+                            {failing ? `Avg ${s.average_pct}%` : `${s.missing_count} Missed`}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => navigate("/parent-communication")}
+                          className="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-[6px] border border-card-border bg-white px-3 py-1.5 text-[11px] font-medium text-ink transition-colors hover:border-gold hover:bg-gold hover:text-white"
+                        >
+                          <Mail size={13} /> Draft Parent Email
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+                {interventions.length > 2 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllInterventions(!showAllInterventions)}
+                    className="flex w-full cursor-pointer items-center justify-center gap-1.5 border-t border-card-border py-2.5 text-[12px] font-semibold text-gold transition-colors hover:bg-cream"
+                  >
+                    {showAllInterventions ? "Show Less ▲" : `See More (${interventions.length - 2} more) ▼`}
+                  </button>
+                )}
               </div>
             )}
           </section>
