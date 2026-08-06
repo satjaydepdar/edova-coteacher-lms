@@ -1,7 +1,7 @@
 {
   "okf_version": "1.0.0",
   "created_at": "2026-07-17T03:22:17.030277+00:00",
-  "doc_count": 24,
+  "doc_count": 30,
   "doc_ids": [
     "math_math-ch1_chapter_content_dc88ce76",
     "math_math-ch2_chapter_content_028c9038",
@@ -26,7 +26,13 @@
     "science_biology-ch1_video_8239d1b8",
     "math_math-ch4_chapter_content_dea48ae5",
     "math_math-ch11_video_e69b2c59",
-    "science_science-ch9_chapter_content_f2002852"
+    "Mathematics_math-ch1_video_9c7e7671",
+    "Mathematics_math-ch2_video_2cf97ae1",
+    "Mathematics_math-ch3_video_41f5c39e",
+    "Mathematics_math-ch4_video_1599398d",
+    "Mathematics_math-ch5_video_61860846",
+    "Mathematics_math-ch6_video_66d98733",
+    "Mathematics_math-ch7_video_6e8246e5"
   ],
-  "last_updated": "2026-07-30T03:19:29.813852+00:00"
+  "last_updated": "2026-08-05T13:33:39.247966+00:00"
 }

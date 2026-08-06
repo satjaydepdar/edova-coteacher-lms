@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from pydantic import BaseModel
 
 from camel.agents import ChatAgent
 from camel.messages import BaseMessage
@@ -13,84 +12,23 @@ from camel.types import ModelPlatformType
 # Load .env from the repo root (edova-coteacher-v2/.env)
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
-
-# Response schemas passed as `response_format` to each agent's .step() call
-# (camel_society/tasks.py). Gemini enforces these at the API level, so the
-# agent's reply is always valid JSON in this exact shape — the prompt's
-# "Output JSON with keys: ..." instruction is a human-readable description
-# of the same contract, kept as a backup for models/paths that don't honor
-# response_format.
-class CurriculumOutput(BaseModel):
-    section_ref: str
-    definition: str
-    learning_outcomes: list[str]
-    misconceptions: list[str]
-
-
-class PedagogyPhase(BaseModel):
-    phase: str
-    duration_min: int
-    teacher_does: str
-    student_does: str
-
-
-class PedagogyOutput(BaseModel):
-    title: str
-    objective: str
-    flow: list[PedagogyPhase]
-
-
-class AssessmentQuestion(BaseModel):
-    question_type: str
-    bloom_level: str
-    question: str
-    options: list[str]  # empty for non-MCQ question types
-    correct_answer: str
-
-
-class AssessmentOutput(BaseModel):
-    exit_ticket: list[AssessmentQuestion]
-
-
-class CritiqueOutput(BaseModel):
-    # "pass" is a Python keyword, so the field is named `passed` instead —
-    # nothing downstream parses this JSON by key, so no alias is needed.
-    passed: bool
-    issues: list[str]
-    compliance_score: float
-
-# Hardcoded model id — the factory default, overridable per build_model() call.
-DEFAULT_MODEL_TYPE = "gemini-2.5-flash"
-
-_model = None
-
-
-def build_model(model_type: str = DEFAULT_MODEL_TYPE):
-    """
-    Build the shared Gemini model every agent runs on — lazily, on first use,
-    then cached for the process lifetime (the first call's model_type wins).
-
-    Importing this module no longer requires GEMINI_API_KEY; the key is only
-    needed here. Still fails fast with a clear message instead of a confusing
-    auth error on the first lesson-plan request.
-    """
-    global _model
-    if _model is not None:
-        return _model
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
-        raise RuntimeError(
-            "GEMINI_API_KEY is not set. Add it to edova-coteacher-v2/.env "
-            "(or the environment) before starting edova-camel."
-        )
-    # Use Google Gemini via CAMEL's native Gemini platform.
-    _model = ModelFactory.create(
-        model_platform=ModelPlatformType.GEMINI,
-        model_type=model_type,
-        api_key=api_key,
-        model_config_dict={"temperature": 0.3, "max_tokens": 8192}
+# Fail fast with a clear message instead of a confusing auth error on the first
+# lesson-plan request. The model is built at import time, so this guard runs
+# when the API server starts.
+_GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+if not _GEMINI_API_KEY:
+    raise RuntimeError(
+        "GEMINI_API_KEY is not set. Add it to edova-coteacher-v2/.env "
+        "(or the environment) before starting edova-camel."
     )
-    return _model
+
+# Use Google Gemini via CAMEL's native Gemini platform.
+model = ModelFactory.create(
+    model_platform=ModelPlatformType.GEMINI,
+    model_type="gemini-2.5-flash",
+    api_key=_GEMINI_API_KEY,
+    model_config_dict={"temperature": 0.3, "max_tokens": 8192}
+)
 
 
 class LessonContext:
@@ -99,27 +37,13 @@ class LessonContext:
     the society works for any topic, not one fixed chapter."""
 
     def __init__(self, topic, duration=45, board="CBSE", class_label="",
-                 subject="", unit="", nep_concepts=None):
+                 subject="", unit=""):
         self.topic = (topic or "").strip()
         self.duration = duration
         self.board = (board or "CBSE").strip()
         self.class_label = (class_label or "").strip()
         self.subject = (subject or "").strip()
         self.unit = (unit or "").strip()
-        self.nep_concepts = [c.strip() for c in (nep_concepts or []) if c and c.strip()]
-
-    def nep_line(self) -> str:
-        """Instruction to ground the objective/questions in the teacher's
-        selected NEP 2020 concepts. '' when none were picked."""
-        if not self.nep_concepts:
-            return ""
-        return (
-            f"NEP 2020 FOCUS — the teacher selected: {', '.join(self.nep_concepts)}. "
-            f"Ground the objective and at least one assessment question in each of "
-            f"these concepts (e.g. a 'Case Study' pick means one question must be a "
-            f"case-study scenario; 'Critical thinking' means one question must require "
-            f"reasoning, not recall)."
-        )
 
     def curriculum_label(self) -> str:
         """e.g. 'CBSE Class 10 Mathematics' — omits parts that weren't given."""
@@ -140,11 +64,7 @@ class LessonContext:
         return " | ".join(bits)
 
 
-def build_society(ctx: LessonContext):
-    """Create the four ChatAgents for one lesson request, all sharing the
-    lazily-built model from build_model() — so the GEMINI_API_KEY requirement
-    only materializes on first use, never at import time."""
-    model = build_model()
+def get_agents(ctx: LessonContext):
     curriculum = ctx.curriculum_label()
 
     # Shared rules injected into every agent: stay grounded to the prescribed
@@ -179,8 +99,7 @@ def build_society(ctx: LessonContext):
         - section_ref: the syllabus unit/chapter/section this topic belongs to
         - definition: the key definition(s)/theorem statement(s), quoted from the
           prescribed textbook wording where possible
-        - learning_outcomes: 3-4 short, concrete "student can ___" statements
-          (max ~12 words each) — not a paragraph
+        - learning_outcomes: what a student should be able to do after the lesson
         - misconceptions: common student errors specific to THIS topic
 
         Output strictly JSON with keys: section_ref, definition, learning_outcomes,
@@ -202,11 +121,10 @@ def build_society(ctx: LessonContext):
         Use real-world examples from the students' own context (India / {ctx.board}).
         Keep every teacher_does / student_does under 25 words, as one plain sentence.
         Every phase must be about "{ctx.topic}" — do not reuse examples from other topics.
-        {ctx.nep_line()}
 
         Output JSON with keys:
-          title (a short, engaging lesson title for "{ctx.topic}", 6-12 words),
           objective (one measurable objective for this topic),
+          materials (array of strings),
           flow (array of {{phase, duration_min, teacher_does, student_does}}).
         """
     )
@@ -220,7 +138,6 @@ def build_society(ctx: LessonContext):
         1 Case/Competency-Based, and 1 short-answer question. Keep every question strictly
         on "{ctx.topic}".
         {grounding}
-        {ctx.nep_line()}
 
         SELF-CONTAINED RULE (critical): every question must stand entirely on its own.
         - You have NO access to any student's work, answer sheet, or prior submission —
@@ -249,8 +166,8 @@ def build_society(ctx: LessonContext):
           3) definitions/theorems are not aligned to the {curriculum} syllabus,
           4) the phase durations do not sum to {ctx.duration} minutes.
 
-        Output JSON with keys: passed (bool), issues (array), compliance_score.
-        If passed is false, the society will loop.
+        Output JSON with keys: pass (bool), issues (array), compliance_score.
+        If pass is false, the society will loop.
         """
     )
 
@@ -260,8 +177,3 @@ def build_society(ctx: LessonContext):
         "assessment": ChatAgent(system_message=assessment_sys_msg, model=model),
         "critique": ChatAgent(system_message=critique_sys_msg, model=model),
     }
-
-
-def get_agents(ctx: LessonContext):
-    """Kept name for the society factory — camel_society.tasks imports it."""
-    return build_society(ctx)

@@ -1,18 +1,10 @@
 # camel_society/tasks.py
-from .agents import (
-    AssessmentOutput,
-    CritiqueOutput,
-    CurriculumOutput,
-    LessonContext,
-    PedagogyOutput,
-    get_agents,
-)
+from .agents import LessonContext, get_agents
 from .grounding import format_block, retrieve_grounding
 
 
 def run_society(topic: str, duration: int = 45, board: str = "CBSE",
-                class_label: str = "", subject: str = "", unit: str = "",
-                nep_concepts=None):
+                class_label: str = "", subject: str = "", unit: str = ""):
     """Run the lesson-planning society for ANY topic. Grounding is retrieved from
     the edova-third-brain OKF bundle (the prescribed textbook) when a matching
     chapter exists, and falls back to prompt-only grounding otherwise — nothing
@@ -20,7 +12,6 @@ def run_society(topic: str, duration: int = 45, board: str = "CBSE",
     ctx = LessonContext(
         topic=topic, duration=duration, board=board,
         class_label=class_label, subject=subject, unit=unit,
-        nep_concepts=nep_concepts,
     )
     agents = get_agents(ctx)
 
@@ -36,27 +27,23 @@ def run_society(topic: str, duration: int = 45, board: str = "CBSE",
     # threaded into every generative step so curriculum context, the 5E lesson,
     # and the assessment items are all grounded in the same prescribed chapter.
     ctx_out = agents["curriculum"].step(
-        f"Extract curriculum context for the topic. {scope}{source}",
-        response_format=CurriculumOutput,
+        f"Extract curriculum context for the topic. {scope}{source}"
     )
     curriculum_json = ctx_out.msg.content
 
     pedagogy_out = agents["pedagogy"].step(
         f"Curriculum context: {curriculum_json}\n{scope}\n"
-        f"Design the {duration}-minute 5E lesson for this exact topic.{source}",
-        response_format=PedagogyOutput,
+        f"Design the {duration}-minute 5E lesson for this exact topic.{source}"
     )
     assessment_out = agents["assessment"].step(
         f"Curriculum context: {curriculum_json}\n{scope}\n"
-        f"Write the assessment questions for this exact topic.{source}",
-        response_format=AssessmentOutput,
+        f"Write the assessment questions for this exact topic.{source}"
     )
 
     draft = pedagogy_out.msg.content + assessment_out.msg.content
     critique_out = agents["critique"].step(
         f"Topic under review: \"{ctx.topic}\" ({ctx.curriculum_label()}), "
-        f"duration {duration} min.\nReview this draft: {draft}",
-        response_format=CritiqueOutput,
+        f"duration {duration} min.\nReview this draft: {draft}"
     )
 
     return {

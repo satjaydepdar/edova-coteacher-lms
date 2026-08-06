@@ -1,18 +1,18 @@
 import { useEffect, useMemo, useState } from "react"
-import { CLASSES, APP_TODAY } from "@/data/seed"
-import { parseShortDate } from "@/lib/dates"
+import { CALENDAR_EVENTS, CLASSES, EXAMS, APP_TODAY, TEACHERS } from "@/data/seed"
+import { dayLabelForDate, parseShortDate } from "@/lib/dates"
+import type { CalendarEvent } from "@/lib/types"
 import { useAppStore } from "@/store/app-store"
 import { useSchoolStore } from "@/store/school-store"
 import { CalendarToolbar } from "@/components/calendar/CalendarToolbar"
-import { RecommendationCards } from "@/components/common/RecommendationCards"
 import { CalendarLegend } from "@/components/calendar/CalendarLegend"
 import { MonthView } from "@/components/calendar/MonthView"
 import { TimeGrid } from "@/components/calendar/TimeGrid"
 import { YearView } from "@/components/calendar/YearView"
 import { DayInsightModal } from "@/components/calendar/DayInsightModal"
 import { AddSchoolEventModal } from "@/components/calendar/AddSchoolEventModal"
-import { dateKey } from "@/components/calendar/utils"
-import { makeItem, type CalItem, type EventKind } from "@/components/calendar/model"
+import { dateKey, parseTimeOfDay } from "@/components/calendar/utils"
+import { kindForSchedule, makeItem, type CalItem, type EventKind } from "@/components/calendar/model"
 import { type CalendarEntry, type CalendarViewKey } from "@/components/calendar/types"
 
 // Real calendar_events.event_type -> the display vocabulary already defined
@@ -25,17 +25,78 @@ const REAL_EVENT_KIND: Record<string, EventKind> = {
   event: "class",
 }
 
+function classNameById(id: string) {
+  return CLASSES.find((c) => c.id === id)?.name ?? id
+}
+
+type MergedEvent = CalendarEvent & { _sort: number }
+
+function mergedEvents(): MergedEvent[] {
+  const nonExam = CALENDAR_EVENTS.filter((e) => e.type !== "exam").map((e) => ({
+    ...e,
+    _sort: parseShortDate(e.date).getTime(),
+  }))
+  const examEvents = EXAMS.map((ex) => {
+    const d = parseShortDate(ex.date)
+    return {
+      date: ex.date,
+      day: dayLabelForDate(d),
+      title: `${classNameById(ex.classId)} — ${ex.title}`,
+      type: "exam" as const,
+      time: ex.type === "Quiz" || ex.type === "Unit Test" ? "9:00 AM" : "All day",
+      teacherId: ex.teacherId,
+      _sort: d.getTime(),
+    }
+  })
+  return [...nonExam, ...examEvents].sort((a, b) => a._sort - b._sort)
+}
+
+// Hardcoded sample plan entries so the Class/Section + Subject–Chapter +
+// Assignment + % Covered feature has something to show on first load.
+const SAMPLE_ENTRIES: CalendarEntry[] = [
+  {
+    id: "sample_1",
+    date: "2026-07-09",
+    classSection: CLASSES[0]?.name ?? "Class 8 — Section A",
+    subjectChapter: "Mathematics – Linear Equations",
+    assignment: "Exercise 4.2, Q1–Q5",
+    percentCovered: 62,
+    teacherId: "t_me",
+  },
+  {
+    id: "sample_2",
+    date: "2026-07-14",
+    classSection: CLASSES[2]?.name ?? "Class 7 — Section A",
+    subjectChapter: "Mathematics – Geometry Basics",
+    assignment: "Homework: angle-pairs worksheet",
+    percentCovered: 40,
+    teacherId: "t_me",
+  },
+  {
+    id: "sample_3",
+    date: "2026-07-10",
+    classSection: "Class 9 — Section C",
+    subjectChapter: "Science – Life Processes",
+    assignment: "Nutrition diagram worksheet",
+    percentCovered: 35,
+    teacherId: "t_ri",
+  },
+]
+
 export default function Calendar() {
+  const scheduleEvents = useMemo(() => mergedEvents(), [])
   const classOptions = useMemo(() => [...new Set(CLASSES.map((c) => c.name))], [])
 
   const [view, setView] = useState<CalendarViewKey>("month")
   const [currentDate, setCurrentDate] = useState<Date>(APP_TODAY)
-  const [entries, setEntries] = useState<CalendarEntry[]>([])
+  const [entries, setEntries] = useState<CalendarEntry[]>(SAMPLE_ENTRIES)
   const [modalDate, setModalDate] = useState<Date | null>(null)
   const [addEventOpen, setAddEventOpen] = useState(false)
+  const [teacherId, setTeacherId] = useState(TEACHERS[0].id)
 
-  // Real assignment due dates + real calendar events, only for a real
-  // (non-Guest) session. Guest mode makes no real fetches.
+  // Real assignment due dates + real calendar events -- additive on top of
+  // the fake schedule/plan-entry data above, only for a real (non-Guest)
+  // session. Guest mode makes no real fetches, unchanged from before.
   const session = useAppStore((s) => s.session)
   const assignments = useSchoolStore((s) => s.assignments)
   const realClassroomIdByFakeId = useSchoolStore((s) => s.realClassroomIdByFakeId)
@@ -49,15 +110,33 @@ export default function Calendar() {
     }
   }, [session, hydrateAssignments, hydrateCalendarEvents])
 
-  // Unified view-model: teacher plan entries + real due dates + real
-  // calendar events (no fake school schedule anymore).
+  const visibleForTeacher = (ownerId: string | undefined) =>
+    ownerId !== undefined && (ownerId === teacherId || ownerId === "all")
+
+  // Unified view-model: schedule events + plan entries, filtered to the
+  // selected teacher (school-wide "all" rows show on every calendar).
   const itemsByDate = useMemo(() => {
     const map: Record<string, CalItem[]> = {}
-    entries.forEach((en) => {
-      ;(map[en.date] ??= []).push(
-        makeItem(en.id, "entry", `${en.classSection} · ${en.subjectChapter}`, undefined, 0),
-      )
-    })
+    scheduleEvents
+      .filter((ev) => visibleForTeacher(ev.teacherId))
+      .forEach((ev) => {
+        const key = dateKey(parseShortDate(ev.date))
+        const t = parseTimeOfDay(ev.time)
+        ;(map[key] ??= []).push(
+          makeItem(`sched_${ev.date}_${ev.title}`, kindForSchedule(ev.type, ev.title), ev.title,
+                   t ? ev.time : undefined, ev._sort + (t ? t.hours * 60 + t.minutes : 0)),
+        )
+      })
+    entries
+      .filter((en) => visibleForTeacher(en.teacherId))
+      .forEach((en) => {
+        ;(map[en.date] ??= []).push(
+          makeItem(en.id, "entry", `${en.classSection} · ${en.subjectChapter}`, undefined, 0),
+        )
+      })
+    // Real items (Class 10 due dates + real calendar events) -- shown
+    // regardless of the fake teacher-switcher, since they belong to the
+    // one real logged-in teacher, not a fake persona.
     if (session) {
       const realClassIds = new Set(Object.keys(realClassroomIdByFakeId))
       assignments
@@ -76,15 +155,17 @@ export default function Calendar() {
       })
     }
     return map
-  }, [entries, session, assignments, realClassroomIdByFakeId, realCalendarEvents])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scheduleEvents, entries, teacherId, session, assignments, realClassroomIdByFakeId, realCalendarEvents])
 
   const entriesByDate = useMemo(() => {
     const map: Record<string, CalendarEntry[]> = {}
-    entries.forEach((en) => {
+    entries.filter((en) => visibleForTeacher(en.teacherId)).forEach((en) => {
       ;(map[en.date] ??= []).push(en)
     })
     return map
-  }, [entries])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entries, teacherId])
 
   function weekDays(center: Date): Date[] {
     const start = new Date(center)
@@ -97,14 +178,15 @@ export default function Calendar() {
   }
 
   function handleSaveEntry(entry: CalendarEntry) {
+    const owned = { ...entry, teacherId }
     setEntries((prev) => {
       const idx = prev.findIndex((e) => e.id === entry.id)
       if (idx >= 0) {
         const copy = [...prev]
-        copy[idx] = entry
+        copy[idx] = owned
         return copy
       }
-      return [...prev, entry]
+      return [...prev, owned]
     })
   }
 
@@ -121,10 +203,6 @@ export default function Calendar() {
         Teaching schedule, meetings, holidays, and exams.
       </div>
 
-      {/* Class insights — proactive digests from the behavioral memory layer
-          (students struggling per chapter, from quiz-mistake events) */}
-      <RecommendationCards userId={session?.user.id ?? "teacher_demo"} role="teacher" />
-
       <CalendarToolbar
         view={view}
         onViewChange={setView}
@@ -132,6 +210,9 @@ export default function Calendar() {
         onDateChange={setCurrentDate}
         onAddEntry={() => setModalDate(currentDate)}
         onAddSchoolEvent={session ? () => setAddEventOpen(true) : undefined}
+        teachers={TEACHERS}
+        teacherId={teacherId}
+        onTeacherChange={setTeacherId}
       />
 
       <CalendarLegend />

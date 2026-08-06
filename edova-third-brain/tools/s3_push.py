@@ -31,7 +31,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-from okf_lib import load_config, write_json, read_node, write_node  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from ingest import load_config, write_json, read_node, write_node  # noqa: E402
 
 
 def subject_folder(node: dict) -> str:
@@ -57,12 +58,6 @@ def resource_type(filename: str) -> str:
         return "PDF"
     if ext in ("ppt", "pptx"):
         return "PPT"
-    if ext == "html":
-        return "Lab"
-    if ext in ("jpg", "jpeg", "png", "gif", "webp", "svg"):
-        return "Image"
-    if ext in ("xlsx", "xls", "csv"):
-        return "Excel"
     return "Worksheet"
 
 
@@ -94,9 +89,21 @@ def build_manifest(plan: list, config: dict) -> dict:
         node = e["node"]
         if "s3_key" not in node:
             continue  # only catalog what is actually shelved
+        node_title = node.get("title", "")
+        chap_name = node.get("chapter_name", "")
+
+        if node_title.startswith("upload_"):
+            clean_t = chap_name or node_title
+        elif " — upload_" in node_title:
+            clean_t = node_title.split(" — upload_")[0]
+        elif chap_name and node_title and (node_title.lower() != chap_name.lower()) and not node_title.lower().startswith(chap_name.lower()):
+            clean_t = f"{chap_name} — {node_title}"
+        else:
+            clean_t = chap_name or node_title
+
         resources.append({
             "id": node["doc_id"],
-            "title": f"{node['chapter_name']} — {node['title']}",
+            "title": clean_t,
             "type": resource_type(node["s3_key"]),
             "subject": node["subject"],
             "chapter_id": node["chapter_id"],
@@ -112,10 +119,6 @@ def build_manifest(plan: list, config: dict) -> dict:
             "previewS3Key": node["s3_key"],
             "status": "ready",
             "trust": node.get("trust", {"status": "unverified"}),
-            # Cache-busting signal for content that's re-uploaded to the same
-            # key in place (e.g. an iterated-on lab file) -- browsers
-            # otherwise keep serving a stale cached copy of that URL.
-            "s3_uploaded_at": node.get("s3_uploaded_at"),
         })
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
