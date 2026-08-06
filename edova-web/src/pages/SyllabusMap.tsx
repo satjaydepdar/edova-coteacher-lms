@@ -55,8 +55,8 @@ function sectionLabel(id: string): string {
 /** Auto planned-end from periods + the section/subject's weekly load, skipping weekends & holidays. */
 function computeAutoPlannedEnd(
   classId: string,
-  plannedStart: string,
-  periods: number,
+  plannedStart: string | undefined,
+  periods: number | undefined,
   academicYear: string
 ): string | null {
   const cls = CLASSES.find((c) => c.id === classId)
@@ -80,11 +80,11 @@ function computeAutoPlannedEnd(
   return formatShortDate(d)
 }
 
-function unitStatus(row: { actual: number; plannedStart: string; plannedEnd: string }): string {
+function unitStatus(row: { actual: number; plannedStart?: string; plannedEnd?: string }): string {
   if (Number(row.actual) >= 100) return "Completed"
+  if (!row.plannedStart || !row.plannedEnd) return Number(row.actual) > 0 ? "In Progress" : "Not Started"
   const start = parseShortDate(row.plannedStart)
   const end = parseShortDate(row.plannedEnd)
-  if (!row.plannedStart || !row.plannedEnd) return Number(row.actual) > 0 ? "In Progress" : "Not Started"
   if (APP_TODAY.getTime() < start.getTime() && Number(row.actual) === 0) return "Not Started"
   if (APP_TODAY.getTime() > end.getTime() && Number(row.actual) < 100) return "Delayed"
   return "In Progress"

@@ -346,7 +346,7 @@ export default function AssignmentEvaluate() {
                       {cls ? cls.name : assignment.classId} • {student?.rollNo}
                     </div>
                     {evalTab === "evaluate" ? (() => {
-                      const effectiveScore = s.score ?? autoEvaluateSubmission(s.textResponse, assignment.description, assignment.totalPoints)
+                      const effectiveScore = s.score ?? autoEvaluateSubmission(s.textResponse ?? undefined, assignment.description, assignment.totalPoints)
                       return (
                         <div className={`mt-1.5 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold ${
                           effectiveScore != null

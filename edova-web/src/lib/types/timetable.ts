@@ -1,5 +1,11 @@
 // Timetables + sections.
 
+export interface TimetableEntry {
+  id: string
+  day: string
+  time: string
+  classId: string
+}
 export interface MasterTimetableRow {
   id: string
   sectionId: string

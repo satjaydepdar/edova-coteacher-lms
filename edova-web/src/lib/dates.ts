@@ -1,8 +1,18 @@
-
+// App clock + short-date helpers. APP_TODAY is kept for callers that still
+// want a fixed demo "today" (data/seed.ts also exports its own copy);
+// parseShortDate/dayLabelForDate use the real current date.
+export const APP_TODAY = new Date(2026, 6, 9) // Jul 9, 2026
 
 const MONTH_MAP: Record<string, number> = {
   Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
   Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11,
+}
+
+const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+export const MONTH_SHORT = MONTHS_SHORT
+
+export function formatShortDate(d: Date): string {
+  return `${MONTHS_SHORT[d.getMonth()]} ${d.getDate()}`
 }
 
 export function parseShortDate(str: string): Date {

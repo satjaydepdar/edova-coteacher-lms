@@ -83,11 +83,11 @@ function classNameById(id: string): string {
   return CLASSES.find((c) => c.id === id)?.name ?? id
 }
 
-function unitStatus(row: { actual: number | string; plannedStart: string; plannedEnd: string }): string {
+function unitStatus(row: { actual: number | string; plannedStart?: string; plannedEnd?: string }): string {
   if (Number(row.actual) >= 100) return "Completed"
+  if (!row.plannedStart || !row.plannedEnd) return Number(row.actual) > 0 ? "In Progress" : "Not Started"
   const start = parseShortDate(row.plannedStart)
   const end = parseShortDate(row.plannedEnd)
-  if (!row.plannedStart || !row.plannedEnd) return Number(row.actual) > 0 ? "In Progress" : "Not Started"
   if (APP_TODAY < start && Number(row.actual) === 0) return "Not Started"
   if (APP_TODAY > end && Number(row.actual) < 100) return "Delayed"
   return "In Progress"
@@ -311,7 +311,7 @@ export default function Settings() {
     return { conflictIds, messages: [...new Set(messages)] }
   }, [yearRows])
 
-  const computeAutoPlannedEnd = (classId: string, plannedStart: string, periods: number | string, year: string) => {
+  const computeAutoPlannedEnd = (classId: string, plannedStart: string | undefined, periods: number | string | undefined, year: string) => {
     const map = CLASSID_TO_SECTION_SUBJECT[classId]
     if (!map || !plannedStart || !periods) return null
     const periodsPerWeek = masterTimetable.filter((r) => r.sectionId === map.sectionId && r.subject === map.subject && r.academicYear === year).length
@@ -755,7 +755,7 @@ export default function Settings() {
     let shortfall = false
     if (units.length) {
       const activeUnit = units.find((u) => unitStatus(u) === "In Progress") || units[0]
-      if (activeUnit.plannedStart && activeUnit.plannedEnd) {
+      if (activeUnit.plannedStart && activeUnit.plannedEnd && activeUnit.periods != null) {
         const weeks = Math.max(1, Math.round((parseShortDate(activeUnit.plannedEnd).getTime() - parseShortDate(activeUnit.plannedStart).getTime()) / (7 * 86400000)))
         requiredPerWeek = Math.ceil(activeUnit.periods / weeks)
         shortfall = periodsPerWeek < requiredPerWeek

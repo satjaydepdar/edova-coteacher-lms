@@ -94,7 +94,7 @@ export const CALENDAR_EVENTS: CalendarEvent[] = [
 ]
 
 export const ASSIGNMENTS_SEED: Assignment[] = [
-  { id: "a1", title: "Linear Equations Worksheet", classId: "c1", subject: "Mathematics", term: "Term 2", academicYear: "2026–27", due: "Jul 11", totalPoints: 20, status: "active", sourceAssessmentId: null, publishedToStudents: true, createdOn: "Jul 4",
+  { id: "a1", title: "Linear Equations Worksheet", classId: "c1", subject: "Mathematics", term: "Term 2", academicYear: "2026–27", due: "Jul 11", totalPoints: 20, type: "written", status: "active", sourceAssessmentId: null, publishedToStudents: true, createdOn: "Jul 4",
     submissions: [
       { studentId: "s1", status: "submitted", submittedOn: "Jul 8", score: null, feedback: "" },
       { studentId: "s2", status: "submitted", submittedOn: "Jul 9", score: null, feedback: "" },
@@ -105,7 +105,7 @@ export const ASSIGNMENTS_SEED: Assignment[] = [
       { studentId: "s7", status: "submitted", submittedOn: "Jul 8", score: null, feedback: "" },
       { studentId: "s8", status: "not_started", submittedOn: "", score: null, feedback: "" },
     ] },
-  { id: "a2", title: "Quadratic Functions Practice", classId: "c1", subject: "Mathematics", term: "Term 2", academicYear: "2026–27", due: "Jul 12", totalPoints: 15, status: "active", sourceAssessmentId: null, publishedToStudents: true, createdOn: "Jul 5",
+  { id: "a2", title: "Quadratic Functions Practice", classId: "c1", subject: "Mathematics", term: "Term 2", academicYear: "2026–27", due: "Jul 12", totalPoints: 15, type: "written", status: "active", sourceAssessmentId: null, publishedToStudents: true, createdOn: "Jul 5",
     submissions: [
       { studentId: "s1", status: "submitted", submittedOn: "Jul 8", score: null, feedback: "" },
       { studentId: "s2", status: "not_started", submittedOn: "", score: null, feedback: "" },
@@ -116,17 +116,17 @@ export const ASSIGNMENTS_SEED: Assignment[] = [
       { studentId: "s7", status: "submitted", submittedOn: "Jul 9", score: null, feedback: "" },
       { studentId: "s8", status: "not_started", submittedOn: "", score: null, feedback: "" },
     ] },
-  { id: "a3", title: "Geometry Basics Quiz Prep", classId: "c3", subject: "Mathematics", term: "Term 2", academicYear: "2026–27", due: "Jul 9", totalPoints: 25, status: "closed", sourceAssessmentId: null, publishedToStudents: true, createdOn: "Jun 30",
+  { id: "a3", title: "Geometry Basics Quiz Prep", classId: "c3", subject: "Mathematics", term: "Term 2", academicYear: "2026–27", due: "Jul 9", totalPoints: 25, type: "written", status: "closed", sourceAssessmentId: null, publishedToStudents: true, createdOn: "Jun 30",
     submissions: [
       { studentId: "s9", status: "submitted", submittedOn: "Jul 8", score: null, feedback: "" },
       { studentId: "s10", status: "missing", submittedOn: "", score: null, feedback: "" },
     ] },
-  { id: "a4", title: "Polynomial Identities", classId: "c4", subject: "Algebra II", term: "Term 2", academicYear: "2026–27", due: "Jul 15", totalPoints: 20, status: "active", sourceAssessmentId: null, publishedToStudents: true, createdOn: "Jul 6",
+  { id: "a4", title: "Polynomial Identities", classId: "c4", subject: "Algebra II", term: "Term 2", academicYear: "2026–27", due: "Jul 15", totalPoints: 20, type: "written", status: "active", sourceAssessmentId: null, publishedToStudents: true, createdOn: "Jul 6",
     submissions: [
       { studentId: "s11", status: "submitted", submittedOn: "Jul 8", score: null, feedback: "" },
       { studentId: "s12", status: "not_started", submittedOn: "", score: null, feedback: "" },
     ] },
-  { id: "a5", title: "Word Problems Set 3", classId: "c1", subject: "Mathematics", term: "Term 2", academicYear: "2026–27", due: "Jul 8", totalPoints: 20, status: "graded", sourceAssessmentId: null, publishedToStudents: true, createdOn: "Jun 28",
+  { id: "a5", title: "Word Problems Set 3", classId: "c1", subject: "Mathematics", term: "Term 2", academicYear: "2026–27", due: "Jul 8", totalPoints: 20, type: "written", status: "graded", sourceAssessmentId: null, publishedToStudents: true, createdOn: "Jun 28",
     submissions: [
       { studentId: "s1", status: "submitted", submittedOn: "Jul 7", score: 19, feedback: "Excellent work." },
       { studentId: "s2", status: "submitted", submittedOn: "Jul 8", score: 16, feedback: "Watch sign errors." },
@@ -706,8 +706,10 @@ export const STANDARDS_OPTIONS: StandardOption[] = [
 
 export const DEFAULT_PLAN: LessonPlan = {
   topic: "Solving Linear Equations with Variables on Both Sides",
+  title: "Solving Linear Equations with Variables on Both Sides",
   className: "Class 8 — Section A", subject: "Mathematics", duration: "45", standards: ["8.EE.C.7"],
   objective: "Students will be able to solve linear equations with variables on both sides with at least 80% accuracy on independent practice.",
+  outcomes: [],
   materials: ["Whiteboard & markers", "Practice worksheet (printable)", "Exit ticket slips", "Calculator (optional)"],
   warmup: "5 min — Quick recap: 3 review problems from the previous lesson, solved individually then checked in pairs.",
   instruction: "15 min — Direct instruction with worked examples on the board; think-aloud modeling of each solution step.",

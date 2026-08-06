@@ -53,6 +53,7 @@ const MONTH_MAP: Record<string, number> = {
 interface ApiSavedPlan {
   id: string
   topic: string
+  title: string
   class_label: string
   section: string | null
   subject: string
@@ -61,6 +62,7 @@ interface ApiSavedPlan {
   standards: string[]
   objective: string
   materials: string[]
+  outcomes: string[]
   warmup: string
   instruction: string
   activity: string
@@ -83,14 +85,18 @@ function apiToRecord(r: ApiSavedPlan): SavedLessonPlanRecord {
     id: r.id,
     savedOn: formatSavedOn(r.created_at),
     curriculumSubjectId: r.curriculum_subject_id,
+    classLabel: r.class_label,
+    section: r.section,
     plan: {
       topic: r.topic,
+      title: r.title,
       className: r.section ? `${r.class_label} — ${r.section}` : r.class_label,
       subject: r.subject,
       duration: String(r.duration_minutes),
       standards: r.standards ?? [],
       objective: r.objective,
       materials: r.materials ?? [],
+      outcomes: r.outcomes ?? [],
       warmup: r.warmup,
       instruction: r.instruction,
       activity: r.activity,
@@ -108,11 +114,11 @@ function parseShortDate(str: string): Date {
   return new Date(2026, mon, day)
 }
 
-function unitStatus(row: { actual: number; plannedStart: string; plannedEnd: string }): string {
+function unitStatus(row: { actual: number; plannedStart?: string; plannedEnd?: string }): string {
   if (Number(row.actual) >= 100) return "Completed"
+  if (!row.plannedStart || !row.plannedEnd) return Number(row.actual) > 0 ? "In Progress" : "Not Started"
   const start = parseShortDate(row.plannedStart)
   const end = parseShortDate(row.plannedEnd)
-  if (!row.plannedStart || !row.plannedEnd) return Number(row.actual) > 0 ? "In Progress" : "Not Started"
   if (APP_TODAY < start && Number(row.actual) === 0) return "Not Started"
   if (APP_TODAY > end && Number(row.actual) < 100) return "Delayed"
   return "In Progress"
@@ -297,12 +303,14 @@ export default function LessonPlanner() {
       const p = data.plan
       setGeneratedPlan({
         topic: p.topic,
+        title: p.title ?? p.topic,
         className: `${planClass} — ${planSection}`,
         subject: selectedSubject?.name ?? "Mathematics",
         duration: p.duration,
         standards: [],
         objective: p.objective,
-        materials: p.materials,
+        materials: p.materials ?? [],
+        outcomes: p.outcomes ?? [],
         warmup: p.warmup,
         instruction: p.instruction,
         activity: p.activity,
