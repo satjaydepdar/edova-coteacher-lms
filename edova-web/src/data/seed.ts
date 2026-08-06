@@ -63,7 +63,6 @@ export const CLASSES: Klass[] = [
   { id: "c2", name: "Class 8 — Section B", subject: "Mathematics", room: "Room 204", students: 30, schedule: "Mon–Fri, 10:00–10:45", sectionId: "sec_8b" },
   { id: "c3", name: "Class 7 — Section A", subject: "Mathematics", room: "Room 108", students: 28, schedule: "Mon, Wed, Fri, 11:15–12:00", sectionId: "sec_7a" },
   { id: "c4", name: "Class 9 — Section C", subject: "Algebra II", room: "Room 204", students: 26, schedule: "Tue, Thu, 1:00–1:45", sectionId: "sec_9c" },
-  { id: "c5", name: "Class 8 — Section A", subject: "Homeroom", room: "Room 204", students: 32, schedule: "Mon–Fri, 8:15–8:30", sectionId: "sec_8a" },
   // Current focus: Class 10 Mathematics — the one class whose syllabus lives
   // in the clerk DB (CBSE 041). The planner + syllabus pages work against
   // this section.
