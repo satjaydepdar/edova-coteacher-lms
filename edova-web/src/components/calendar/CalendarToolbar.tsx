@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { dateKey, parseDateKey } from "./utils"
 import type { CalendarViewKey } from "./types"
 
@@ -16,9 +17,12 @@ interface CalendarToolbarProps {
   onDateChange: (date: Date) => void
   onAddEntry: () => void
   onAddSchoolEvent?: () => void
+  teachers?: { id: string; name: string }[]
+  teacherId?: string
+  onTeacherChange?: (id: string) => void
 }
 
-export function CalendarToolbar({ view, onViewChange, date, onDateChange, onAddEntry, onAddSchoolEvent }: CalendarToolbarProps) {
+export function CalendarToolbar({ view, onViewChange, date, onDateChange, onAddEntry, onAddSchoolEvent, teachers, teacherId, onTeacherChange }: CalendarToolbarProps) {
   const title =
     view === "year"
       ? String(date.getFullYear())
@@ -32,6 +36,18 @@ export function CalendarToolbar({ view, onViewChange, date, onDateChange, onAddE
     <div className="mb-3.5 flex flex-wrap items-center justify-between gap-2.5">
       <div className="font-display text-[18px] font-bold text-ink">{title}</div>
       <div className="flex flex-wrap items-center gap-2">
+        {teachers && onTeacherChange && (
+          <Select value={teacherId} onValueChange={onTeacherChange}>
+            <SelectTrigger className="h-[34px] w-[190px] rounded-[8px] border-card-border text-[13px]">
+              <SelectValue placeholder="Teacher" />
+            </SelectTrigger>
+            <SelectContent>
+              {teachers.map((t) => (
+                <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         <input
           type="date"
           value={dateKey(date)}

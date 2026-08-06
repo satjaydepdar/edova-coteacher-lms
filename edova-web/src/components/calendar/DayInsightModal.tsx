@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
-import { CLASSES, PLANNED_COVERAGE_BY_CLASS, STUDENTS } from "@/data/seed"
+import { PLANNED_COVERAGE_BY_CLASS } from "@/data/seed"
 import { useSchoolStore } from "@/store/school-store"
 import { EntryCard } from "./EntryCard"
 import { dateKey } from "./utils"
@@ -33,7 +33,6 @@ interface DayInsightModalProps {
 
 export function DayInsightModal({ open, onOpenChange, date, entries, classOptions, onSave, onDelete }: DayInsightModalProps) {
   const showFlash = useSchoolStore((s) => s.showFlash)
-  const assignments = useSchoolStore((s) => s.assignments)
 
   const classTabs = useMemo(() => [...new Set(entries.map((e) => e.classSection))], [entries])
   const [activeTab, setActiveTab] = useState<string>("")
@@ -53,14 +52,14 @@ export function DayInsightModal({ open, onOpenChange, date, entries, classOption
 
   const tab = activeTab || classTabs[0] || ""
   const entry = entries.find((e) => e.classSection === tab)
-  const classId = classIdByName(tab, CLASSES)
+  const classId = classIdByName(tab)
 
   const snapshot = getPlanSnapshot(tab, entry, PLANNED_COVERAGE_BY_CLASS)
   const variance = snapshot && snapshot.plannedPct !== null ? snapshot.taughtPct - snapshot.plannedPct : null
-  const compliance = classId ? getWeeklyCompliance(classId, date, assignments) : []
-  const funnel = classId ? getFunnel(classId, date, assignments) : null
-  const atRisk = classId ? getAtRisk(classId, date, STUDENTS, assignments) : []
-  const mastery = classId ? getMastery(classId, assignments) : null
+  const compliance = classId ? getWeeklyCompliance(classId, date) : []
+  const funnel = classId ? getFunnel(classId, date) : null
+  const atRisk = classId ? getAtRisk(classId, date) : []
+  const mastery = classId ? getMastery(classId) : null
 
   function startEdit(e: CalendarEntry) {
     setEditingId(e.id)

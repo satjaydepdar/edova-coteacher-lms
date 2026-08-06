@@ -6,8 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FlashBanner } from "@/components/common/FlashBanner"
 import { useSchoolStore } from "@/store/school-store"
 import { uploadLearningResource } from "@/lib/upload"
-import { getAcademicYears, getCurriculum, getSubjectResources, getSyllabus } from "@/lib/curriculum-api"
-import type { CatalogResource, CurriculumOut, SyllabusUnitOut } from "@/lib/types"
+import type { OkfResourceType } from "@/lib/types"
 
 // Settings > Resource Library — admin view of catalogued learning-resource
 // files, grouped under the REAL Master Data syllabus tree instead of a
@@ -18,9 +17,11 @@ import type { CatalogResource, CurriculumOut, SyllabusUnitOut } from "@/lib/type
 // GET /api/curriculum-subjects/{subject_id}/resources, matched to real
 // chapters by chapter number (see api.py's _global_chapter_ref for the
 // math/science id-shape handling).
+const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8001"
+
 const CLASS_OPTIONS = ["LKG", "UKG", ...Array.from({ length: 10 }, (_, i) => `Class ${i + 1}`)]
 const BOARD_OPTIONS = ["CBSE", "ICSE", "State"]
-const DOC_TYPES = ["chapter_content", "worksheet", "video", "quiz", "lab"]
+const DOC_TYPES = ["chapter_content", "worksheet", "video", "quiz"]
 
 // Per-unit accent (soft header background + matching left border/gradient,
 // reused as the chapter-card left accent bar) — cycles for subjects with
@@ -39,6 +40,25 @@ const AMBIGUOUS_DOT = "#F39C12"
 const HAS_RESOURCES_DOT = "#27AE60"
 const EMPTY_DOT = "#E74C3C"
 
+interface SubjectRow { id: string; subject_name: string }
+interface CurriculumResponse { id: string; subjects: SubjectRow[] }
+interface TopicOut { id: string; title: string }
+interface ChapterOut { id: string; number: number | null; name: string; topics: TopicOut[] }
+interface UnitOut { id: string; name: string; chapters: ChapterOut[] }
+interface SyllabusResponse { units: UnitOut[] }
+
+interface CatalogResource {
+  id: string
+  title: string
+  type: OkfResourceType
+  doc_type?: string
+  chapter_number: number
+  topic_id?: string | null
+  s3_key?: string
+  preview_s3_key?: string
+  status: string
+}
+
 export default function ResourceLibrary() {
   const showFlash = useSchoolStore((s) => s.showFlash)
 
@@ -47,10 +67,10 @@ export default function ResourceLibrary() {
   const [board, setBoard] = useState(BOARD_OPTIONS[0])
   const [cls, setCls] = useState("Class 10")
 
-  const [curriculum, setCurriculum] = useState<CurriculumOut | null>(null)
+  const [curriculum, setCurriculum] = useState<CurriculumResponse | null>(null)
   const [subjectId, setSubjectId] = useState("")
 
-  const [units, setUnits] = useState<SyllabusUnitOut[]>([])
+  const [units, setUnits] = useState<UnitOut[]>([])
   const [resources, setResources] = useState<CatalogResource[]>([])
   const [loading, setLoading] = useState(false)
   const [collapsedUnits, setCollapsedUnits] = useState<Record<string, boolean>>({})
@@ -64,26 +84,28 @@ export default function ResourceLibrary() {
   const subjectName = subjects.find((s) => s.id === subjectId)?.subject_name ?? ""
 
   useEffect(() => {
-    getAcademicYears()
-      .then((rows) => {
+    fetch(`${API_BASE}/api/academic-years`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((rows: { year_label: string }[]) => {
         const labels = rows.map((r) => r.year_label)
         setYearOptions(labels)
         setYear((prev) => prev || labels[labels.length - 1] || "")
       })
-      .catch(() => showFlash("resource", "Could not load academic years — is the API running on :8000?", 5000))
+      .catch(() => showFlash("resource", "Could not load academic years — is the API running on :8001?", 5000))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const loadCurriculum = useCallback(() => {
     if (!year) return
-    getCurriculum(year, board, cls)
-      .then((d) => {
+    fetch(`${API_BASE}/api/curriculums?year=${encodeURIComponent(year)}&board=${encodeURIComponent(board)}&class=${encodeURIComponent(cls)}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((d: CurriculumResponse) => {
         setCurriculum(d)
         setSubjectId((prev) => (d.subjects.some((s) => s.id === prev) ? prev : (d.subjects[0]?.id ?? "")))
       })
       .catch(() => {
         setCurriculum(null)
-        showFlash("resource", "Could not load curriculum — is the API running on :8000?", 5000)
+        showFlash("resource", "Could not load curriculum — is the API running on :8001?", 5000)
       })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year, board, cls])
@@ -92,16 +114,18 @@ export default function ResourceLibrary() {
 
   const loadResources = useCallback(() => {
     if (!subjectId) { setResources([]); return }
-    getSubjectResources(subjectId)
-      .then((rows) => setResources(rows))
+    fetch(`${API_BASE}/api/curriculum-subjects/${subjectId}/resources`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((rows: CatalogResource[]) => setResources(rows))
       .catch(() => showFlash("resource", "Could not load catalogued resources.", 5000))
   }, [subjectId, showFlash])
 
   useEffect(() => {
     if (!subjectId) { setUnits([]); return }
     setLoading(true)
-    getSyllabus(subjectId)
-      .then((d) => setUnits(d.units))
+    fetch(`${API_BASE}/api/curriculum-subjects/${subjectId}/syllabus`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((d: SyllabusResponse) => setUnits(d.units))
       .catch(() => showFlash("resource", "Could not load syllabus detail.", 5000))
       .finally(() => setLoading(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps

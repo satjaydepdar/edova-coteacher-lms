@@ -1,5 +1,4 @@
 import { useEffect } from "react"
-import { cn } from "@/lib/utils"
 
 // Lightweight slide-up overlay for Video/Document/Upload panels on the Learning
 // Resources page (Developer Handoff Notes: "Do NOT use full-page modals").
@@ -9,13 +8,10 @@ export function SlideUpOverlay({
   open,
   onClose,
   children,
-  wide,
 }: {
   open: boolean
   onClose: () => void
   children: React.ReactNode
-  /** Roomier width, for content (e.g. an interactive lab) that needs more than the default 640px. */
-  wide?: boolean
 }) {
   useEffect(() => {
     if (!open) return
@@ -29,10 +25,7 @@ export function SlideUpOverlay({
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center">
       <div
-        className={cn(
-          "w-full translate-y-0 rounded-t-[16px] border border-card-border bg-white shadow-xl transition-[max-width] duration-200 ease-out sm:rounded-[16px]",
-          wide ? "max-w-[1100px]" : "max-w-[640px]",
-        )}
+        className="w-full max-w-[640px] translate-y-0 rounded-t-[16px] border border-card-border bg-white shadow-xl transition-transform duration-200 ease-out sm:rounded-[16px]"
         style={{ maxHeight: "88vh", overflowY: "auto" }}
       >
         <div

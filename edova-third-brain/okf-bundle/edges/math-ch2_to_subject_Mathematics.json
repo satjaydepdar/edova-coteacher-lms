@@ -1,0 +1,9 @@
+{
+  "edge_id": "math-ch2_to_subject_Mathematics",
+  "type": "belongs_to",
+  "from": "math-ch2",
+  "to": "subject_Mathematics",
+  "doc_ids": [
+    "Mathematics_math-ch2_video_2cf97ae1"
+  ]
+}

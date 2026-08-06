@@ -32,7 +32,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-from okf_lib import ingest, load_config, read_node  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from ingest import ingest, load_config, read_node  # noqa: E402
 from classify import classify, list_chapters, DEFAULT_DOC_TYPE  # noqa: E402
 
 # doc_type folder -> ingest doc_type name (one live version per subject/chapter/doc_type)
