@@ -16,7 +16,7 @@ export function Sidebar() {
 
   // Main modules are collapsed by default; clicking a module header reveals
   // its submodule list without navigating.
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({})
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({ Teaching: true, Home: true })
   const toggleGroup = (label: string) =>
     setExpanded((prev) => ({ ...prev, [label]: !prev[label] }))
 
