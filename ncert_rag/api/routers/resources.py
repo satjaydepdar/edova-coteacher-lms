@@ -4,6 +4,7 @@ UUIDs). Same response shape as the retired clerk endpoint: manifest resources
 annotated with the real global chapter number via shared/chapter_map.py.
 """
 import json
+import re
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -36,8 +37,16 @@ def get_subject_resources(subject_id: str, repo: CurriculumRepo = Depends(get_cu
         ref = to_global_chapter_ref(r.get("chapter_id", ""))
         if not ref or ref[0] != subject_name:
             continue
+        raw_title = r.get("title", "")
+        clean_title = re.sub(r"\s*—\s*(?:upload_[a-f0-9_]+|chapter-\d+-[a-z0-9-]+|test-[a-z0-9-]+|worksheet-[a-z0-9-]+).*", "", raw_title, flags=re.IGNORECASE).strip()
+        if " — " in clean_title:
+            parts = clean_title.split(" — ")
+            if parts[0].strip().lower() == parts[1].strip().lower():
+                clean_title = parts[0].strip()
+            elif parts[1].strip().lower().startswith("upload_"):
+                clean_title = parts[0].strip()
         out.append({
-            "id": r["id"], "title": r["title"], "type": r["type"],
+            "id": r["id"], "title": clean_title, "type": r["type"],
             "doc_type": r.get("doc_type"), "chapter_number": ref[1],
             "topic_id": r.get("topic_id"),
             "s3_key": r.get("s3_key"), "preview_s3_key": r.get("previewS3Key"),

@@ -1,11 +1,11 @@
-import type { Assignment, Klass, Student } from "@/lib/types"
+import { ASSIGNMENTS_SEED, CLASSES, STUDENTS } from "@/data/seed"
+import type { Assignment, Student } from "@/lib/types"
 import { parseShortDate } from "@/lib/dates"
 import type { CalendarEntry } from "./types"
 
 // Everything below is computed from data the app already has (assignments,
-// submissions, attendance, plan entries) — passed in by the caller (the
-// DayInsightModal pulls them from useSchoolStore / seed). No nightly pipeline
-// yet — risk and mastery use the simplified formulas documented per function.
+// submissions, attendance, plan entries). No nightly pipeline yet — risk and
+// mastery use the simplified formulas documented per function.
 
 export interface PlanSnapshot {
   topic: string
@@ -42,12 +42,20 @@ export interface Mastery {
   needsHelp: number
 }
 
-export function classIdByName(classSection: string, classes: Klass[]): string | undefined {
-  return classes.find((c) => c.name === classSection)?.id
+export function classIdByName(classSection: string): string | undefined {
+  return CLASSES.find((c) => c.name === classSection)?.id
 }
 
-export function className(classId: string, classes: Klass[]): string {
-  return classes.find((c) => c.id === classId)?.name ?? classId
+export function className(classId: string): string {
+  return CLASSES.find((c) => c.id === classId)?.name ?? classId
+}
+
+function classStudents(classId: string): Student[] {
+  return STUDENTS.filter((s) => s.classId === classId)
+}
+
+function classAssignments(classId: string): Assignment[] {
+  return ASSIGNMENTS_SEED.filter((a) => a.classId === classId)
 }
 
 function sameWeek(a: Date, b: Date): boolean {
@@ -76,9 +84,8 @@ export function getPlanSnapshot(
 
 /** This week's assignments for the class: done (every student submitted),
  * overdue (due date passed), or pending. */
-export function getWeeklyCompliance(classId: string, date: Date, assignments: Assignment[]): ComplianceItem[] {
-  return assignments
-    .filter((a) => a.classId === classId)
+export function getWeeklyCompliance(classId: string, date: Date): ComplianceItem[] {
+  return classAssignments(classId)
     .filter((a) => sameWeek(parseShortDate(a.due), date))
     .map((a) => {
       const dueDate = parseShortDate(a.due)
@@ -93,18 +100,17 @@ export function getWeeklyCompliance(classId: string, date: Date, assignments: As
 
 /** Submission funnel for the class's current (latest-due, still open)
  *  assignment, plus the class average on the last graded one. */
-export function getFunnel(classId: string, date: Date, assignments: Assignment[]): Funnel | null {
-  const classAssignments = assignments
-    .filter((a) => a.classId === classId)
+export function getFunnel(classId: string, date: Date): Funnel | null {
+  const assignments = classAssignments(classId)
     .filter((a) => a.status !== "closed" || parseShortDate(a.due) <= date)
     .sort((a, b) => parseShortDate(b.due).getTime() - parseShortDate(a.due).getTime())
-  const latest = classAssignments[0]
+  const latest = assignments[0]
   if (!latest) return null
 
   const late = latest.submissions.filter(
     (s) => s.status === "submitted" && parseShortDate(s.submittedOn) > parseShortDate(latest.due),
   ).length
-  const graded = classAssignments.find((a) => a.submissions.some((s) => s.score !== null))
+  const graded = assignments.find((a) => a.submissions.some((s) => s.score !== null))
   const avgScoreLast = graded
     ? `${(graded.submissions.reduce((sum, s) => sum + (s.score ?? 0), 0) / graded.submissions.length / (graded.totalPoints / 10)).toFixed(1)}/10`
     : null
@@ -122,25 +128,16 @@ export function getFunnel(classId: string, date: Date, assignments: Assignment[]
 
 /** Simplified Figma risk formula over available data:
  * risk = avgScore% * 0.5 + attendance% * 0.2 + delayFactor * 0.3,
- * delayFactor = 100 on-time / 50 late / 0 missing-or-not-started.
- * NOTE: avgScore% assumes /20 max per assignment (flagged simplification). */
-export function getAtRisk(
-  classId: string,
-  date: Date,
-  students: Student[],
-  assignments: Assignment[],
-  limit = 5,
-): AtRiskStudent[] {
-  const classAssignments = assignments.filter((a) => a.classId === classId)
-  const gradedAssignments = classAssignments.filter((a) =>
+ * delayFactor = 100 on-time / 50 late / 0 missing-or-not-started. */
+export function getAtRisk(classId: string, date: Date, limit = 5): AtRiskStudent[] {
+  const gradedAssignments = classAssignments(classId).filter((a) =>
     a.submissions.some((s) => s.score !== null),
   )
-  const latestAssignment = classAssignments
+  const latestAssignment = classAssignments(classId)
     .filter((a) => parseShortDate(a.due) <= date)
     .sort((a, b) => parseShortDate(b.due).getTime() - parseShortDate(a.due).getTime())[0]
 
-  return students
-    .filter((s) => s.classId === classId)
+  return classStudents(classId)
     .map((student) => {
       const scores = gradedAssignments
         .flatMap((a) => a.submissions)
@@ -172,10 +169,8 @@ export function getAtRisk(
 
 /** Topic mastery from the last graded assignment: >=75% mastered,
  * 50–74 developing, <50 needs reteach. */
-export function getMastery(classId: string, assignments: Assignment[]): Mastery | null {
-  const graded = assignments
-    .filter((a) => a.classId === classId)
-    .find((a) => a.submissions.some((s) => s.score !== null))
+export function getMastery(classId: string): Mastery | null {
+  const graded = classAssignments(classId).find((a) => a.submissions.some((s) => s.score !== null))
   if (!graded) return null
   const pct = (s: number | null) => ((s ?? 0) / graded.totalPoints) * 100
   return {

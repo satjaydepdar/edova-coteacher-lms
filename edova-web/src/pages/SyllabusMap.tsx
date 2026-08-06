@@ -11,37 +11,52 @@ import {
 import {
   ACADEMIC_CALENDAR_SEED,
   ACADEMIC_YEARS,
+  APP_TODAY,
   CLASSES,
   EXAMS,
   MASTER_TIMETABLE,
+  MT_SECTIONS,
   OKF_LIBRARY,
 } from "@/data/seed"
 import { parseShortDate } from "@/lib/dates"
-import { buildOkfCoverageRows } from "@/lib/okf-alignment"
-import {
-  classNameById,
-  computeAutoPlannedEnd as autoPlannedEnd,
-  sectionLabel,
-  unitStatus,
-} from "@/lib/curriculum-utils"
 import {
   barFill,
   unitStatusStyle,
   weightageChipStyle,
 } from "@/lib/styles"
+import type { CurriculumUnit } from "@/lib/types"
 import { useAppStore } from "@/store/app-store"
 import { useSchoolStore } from "@/store/school-store"
 import { FlashBanner } from "@/components/common/FlashBanner"
 
-// ---- Local helpers: canonical implementations live in @/lib/curriculum-utils ----
+// The Settings curriculum modal writes difficulty/dependsOn onto stored units
+// (Settings.tsx), but the base CurriculumUnit type omits them — same local
+// extension as Settings.tsx so both views agree on the shape.
+type CurriculumUnitX = CurriculumUnit & { difficulty?: string; dependsOn?: string }
 
-/** Auto planned-end from periods + the section/subject's weekly load, skipping weekends & holidays.
- * Data-source wrapper: SyllabusMap resolves weekly load + holidays from the SEED
- * (Settings reads the live store instead); the walking algorithm is shared. */
+// ---- Local helpers (ported from _decomp/app.js so this screen is self-contained) ----
+
+const MONTH_NAMES_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+function formatShortDate(d: Date): string {
+  return MONTH_NAMES_SHORT[d.getMonth()] + " " + d.getDate()
+}
+
+function classNameById(id: string): string {
+  const c = CLASSES.find((x) => x.id === id)
+  return c ? c.name : id
+}
+
+function sectionLabel(id: string): string {
+  const s = MT_SECTIONS.find((x) => x.id === id)
+  return s ? s.label : id
+}
+
+/** Auto planned-end from periods + the section/subject's weekly load, skipping weekends & holidays. */
 function computeAutoPlannedEnd(
   classId: string,
-  plannedStart: string | undefined,
-  periods: number | undefined,
+  plannedStart: string,
+  periods: number,
   academicYear: string
 ): string | null {
   const cls = CLASSES.find((c) => c.id === classId)
@@ -49,7 +64,30 @@ function computeAutoPlannedEnd(
   const periodsPerWeek = MASTER_TIMETABLE.filter(
     (r) => r.sectionId === cls.sectionId && r.subject === cls.subject && r.academicYear === academicYear
   ).length
-  return autoPlannedEnd(periodsPerWeek, plannedStart, periods, ACADEMIC_CALENDAR_SEED.map((h) => h.date))
+  if (!periodsPerWeek) return null
+  const periodsPerDay = periodsPerWeek / 5
+  const teachingDaysNeeded = Math.ceil(Number(periods) / periodsPerDay)
+  const holidaySet = new Set(ACADEMIC_CALENDAR_SEED.map((h) => h.date))
+  let d = parseShortDate(plannedStart)
+  let counted = 0
+  let guard = 0
+  while (counted < teachingDaysNeeded && guard < 400) {
+    const dow = d.getDay()
+    if (dow !== 0 && dow !== 6 && !holidaySet.has(formatShortDate(d))) counted++
+    if (counted < teachingDaysNeeded) d = new Date(d.getTime() + 86400000)
+    guard++
+  }
+  return formatShortDate(d)
+}
+
+function unitStatus(row: { actual: number; plannedStart: string; plannedEnd: string }): string {
+  if (Number(row.actual) >= 100) return "Completed"
+  const start = parseShortDate(row.plannedStart)
+  const end = parseShortDate(row.plannedEnd)
+  if (!row.plannedStart || !row.plannedEnd) return Number(row.actual) > 0 ? "In Progress" : "Not Started"
+  if (APP_TODAY.getTime() < start.getTime() && Number(row.actual) === 0) return "Not Started"
+  if (APP_TODAY.getTime() > end.getTime() && Number(row.actual) < 100) return "Delayed"
+  return "In Progress"
 }
 
 // The seed CurriculumUnit type carries no per-unit difficulty; the mockup form defaults it to "Medium".
@@ -79,14 +117,14 @@ export default function SyllabusMap() {
 
   // Curriculum is shared so ticking a topic recomputes Actual % and propagates
   // cross-view (mockup: schoolConfig.curriculum).
-  const curriculum = useSchoolStore((s) => s.curriculum)
+  const curriculum = useSchoolStore((s) => s.curriculum) as CurriculumUnitX[]
   const toggleTopic = useSchoolStore((s) => s.toggleTopic)
   const showFlash = useSchoolStore((s) => s.showFlash)
   const hydrateCurriculum = useSchoolStore((s) => s.hydrateCurriculum)
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
 
-  // Server-backed syllabus hydrated from the clerk DB — Actual % reflects
-  // topics ticked as taught, persisted in the DB.
+  // Same server-backed syllabus as Lesson Planner's This Week — Actual %
+  // here reflects topics ticked there (and vice versa), persisted in the DB.
   useEffect(() => {
     hydrateCurriculum()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -107,7 +145,35 @@ export default function SyllabusMap() {
   const okfTopicOptions = OKF_LIBRARY.chapters.flatMap((ch) =>
     ch.topics.map((t) => ({ id: t.id, label: `Ch.${ch.number} — ${t.title}` }))
   )
-  const okfCoverageRows = buildOkfCoverageRows(OKF_LIBRARY.chapters, curriculum, okfFilters, "2026–27")
+  const okfCoverageRows = OKF_LIBRARY.chapters
+    .filter((ch) => {
+      if (okfFilters.topicId === "all") return true
+      const t = OKF_LIBRARY.chapters
+        .flatMap((c) => c.topics.map((tp) => ({ id: tp.id, chapterId: c.id })))
+        .find((x) => x.id === okfFilters.topicId)
+      return !!t && t.chapterId === ch.id
+    })
+    .map((ch) => {
+      const { classId, subject } = okfFilters
+      const linked = curriculum.filter(
+        (u) =>
+          u.okfChapterId === ch.id &&
+          u.academicYear === "2026–27" &&
+          (classId === "all" || u.classId === classId) &&
+          (subject === "all" || u.subject === subject)
+      )
+      const coverage = linked.length
+        ? Math.round(linked.reduce((a, u) => a + Number(u.actual || 0), 0) / linked.length)
+        : 0
+      return {
+        id: ch.id,
+        number: ch.number,
+        title: ch.title,
+        linked: linked.length > 0,
+        coverage,
+        linkedUnitsLabel: linked.map((u) => u.unit + " — " + classNameById(u.classId)).join(", "),
+      }
+    })
 
   // ---- Syllabus table computed rows ----
   const filtered = curriculum.filter(
@@ -119,10 +185,10 @@ export default function SyllabusMap() {
 
   const curriculumRows = filtered.map((r) => {
     const auto = computeAutoPlannedEnd(r.classId, r.plannedStart, r.periods, r.academicYear)
-    const displayPlannedEnd = (auto ?? r.plannedEnd) ?? ""
+    const displayPlannedEnd = auto ?? r.plannedEnd
     const status = unitStatus({ ...r, plannedEnd: displayPlannedEnd })
     const siblings = curriculum.filter(
-      (u) => u.classId === r.classId && u.academicYear === r.academicYear && (u.term ?? "Term 1") === (r.term ?? "Term 1")
+      (u) => u.classId === r.classId && u.academicYear === r.academicYear && u.term === r.term
     )
     const cumulativePeriods = siblings
       .filter((u) => parseShortDate(u.plannedStart || "Jan 1").getTime() <= parseShortDate(r.plannedStart || "Jan 1").getTime())
@@ -185,7 +251,7 @@ export default function SyllabusMap() {
     filtered.forEach((r) => {
       const status = unitStatus(r)
       lines.push(
-        [r.subject, classNameById(r.classId), r.term ?? "Term 1", r.unit, r.periods ?? 0, r.plannedStart, r.plannedEnd, r.planned ?? 0, r.actual, status, r.textbookRef, r.weightage]
+        [r.subject, classNameById(r.classId), r.term, r.unit, r.periods, r.plannedStart, r.plannedEnd, r.planned, r.actual, status, r.textbookRef, r.weightage]
           .map((v) => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`)
           .join(",")
       )
@@ -478,7 +544,7 @@ export default function SyllabusMap() {
 
               {/* Term */}
               <div style={{ ...cellBase, fontSize: 15, color: "#374151", display: "flex", alignItems: "center" }}>
-                {row.term ?? "Term 1"}
+                {row.term}
               </div>
 
               {/* Planned Dates */}
@@ -498,12 +564,12 @@ export default function SyllabusMap() {
 
               {/* Periods */}
               <div style={{ ...cellBase, fontSize: 15, color: "#374151", display: "flex", alignItems: "center" }}>
-                {row.periods ?? 0}
+                {row.periods}
               </div>
 
               {/* Planned % */}
               <div style={{ ...cellBase, fontSize: 15, color: "#374151", display: "flex", alignItems: "center" }}>
-                {row.planned ?? 0}%
+                {row.planned}%
               </div>
 
               {/* Actual % */}

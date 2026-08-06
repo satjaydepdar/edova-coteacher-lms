@@ -4,29 +4,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { FlagButton } from "./FlagButton"
-import { LabPlayer } from "./LabPlayer"
-import type { NewMistake } from "@/lib/types"
 
-interface Props {
-  addXP: (v: number) => void
-  onMistake: (m: NewMistake) => void
-  chapter: string
-  /** S3-resolved URL of this chapter/topic's catalogued lab (doc_type "lab"), if any. */
-  labUrl?: string
-}
-
-export function LabExercise({ addXP, onMistake, chapter, labUrl }: Props) {
+export function LabExercise({ addXP }: { addXP: (v: number) => void }) {
   const [angle, setAngle] = useState(45)
   const [ans, setAns] = useState("")
   const [ok, setOk] = useState<boolean | null>(null)
-
-  // A real catalogued lab for this chapter/topic takes over; otherwise fall
-  // back to the built-in demo below (same degrade-gracefully pattern as the
-  // chapter PDF/video when nothing's catalogued yet).
-  if (labUrl) {
-    return <LabPlayer labUrl={labUrl} chapter={chapter} addXP={addXP} onMistake={onMistake} />
-  }
-
   return (
     <div className="grid grid-cols-2 gap-6">
       <Card>

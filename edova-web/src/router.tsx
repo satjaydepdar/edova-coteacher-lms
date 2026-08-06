@@ -3,6 +3,7 @@ import { AppLayout } from "@/components/layout/AppLayout"
 import { useAppStore } from "@/store/app-store"
 import Login from "@/pages/Login"
 import Portal from "@/pages/Portal"
+import TeacherHome from "@/pages/TeacherHome"
 import Calendar from "@/pages/Calendar"
 import Settings from "@/pages/Settings"
 import KnowledgeGraph from "@/pages/KnowledgeGraph"
@@ -22,10 +23,14 @@ import LearningHub from "@/pages/LearningHub"
 import WikiPage from "@/pages/WikiPage"
 import StudentAssignments from "@/pages/StudentAssignments"
 
-// Bare "/" lands a student on the Learning Hub, everyone else on Calendar.
+// Bare "/" lands a student on the Learning Hub and a signed-in teacher/admin
+// on the Home dashboard. A Guest has no session, so the dashboard (which is
+// scoped to the signed-in teacher's own classes) has nothing to show them —
+// they keep landing on Calendar, exactly as before.
 function IndexRedirect() {
   const role = useAppStore((s) => s.session?.user.role)
-  return <Navigate to={role === "student" ? "/learning" : "/calendar"} replace />
+  if (role === "student") return <Navigate to="/learning" replace />
+  return <Navigate to={role ? "/home" : "/calendar"} replace />
 }
 
 export const router = createBrowserRouter([
@@ -36,6 +41,7 @@ export const router = createBrowserRouter([
     element: <AppLayout />,
     children: [
       { index: true, element: <IndexRedirect /> },
+      { path: "home", element: <TeacherHome /> },
       { path: "calendar", element: <Calendar /> },
       { path: "settings", element: <Settings /> },
       { path: "knowledge-graph", element: <KnowledgeGraph /> },

@@ -1,7 +1,7 @@
 // Real teacher/admin login against edova-backend's /auth/* (see
 // edova-backend/main.py). Guest mode (today's demo-student experience)
 // never touches this file at all.
-import { backendApi, setSessionToken, setSessionUser } from "./api-client"
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL ?? "http://localhost:8003"
 
 export interface SessionUser {
   id: string
@@ -15,27 +15,38 @@ export interface LoginResult {
   user: SessionUser
 }
 
-export async function login(email: string, password: string): Promise<LoginResult> {
-  const result = await backendApi.post<LoginResult>("/auth/login", { email, password })
-  // Push the session into the gateways + data layer so authed calls carry
-  // the bearer without reading UI state.
-  setSessionToken(result.token)
-  setSessionUser(result.user)
-  return result
-}
-
-export async function logout(_token: string): Promise<void> {
-  try {
-    await backendApi.post<{ status: string }>("/auth/logout", {})
-  } finally {
-    // Best-effort server call — the local session is cleared either way.
-    setSessionToken(null)
-    setSessionUser(null)
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(`${BACKEND_API_URL}${path}`, {
+    ...init,
+    headers: { "Content-Type": "application/json", ...init?.headers },
+  })
+  if (!res.ok) {
+    let detail = `${res.status} ${res.statusText}`
+    try {
+      const data = await res.json()
+      if (data?.detail) detail = data.detail
+    } catch { /* non-JSON error body */ }
+    throw new Error(detail)
   }
+  return res.json() as Promise<T>
 }
 
-// The bearer is the gateway's pushed session token (login/rehydrate); the
-// param survives only for signature compatibility.
-export function me(_token: string): Promise<SessionUser> {
-  return backendApi.get<SessionUser>("/auth/me")
+export function login(email: string, password: string): Promise<LoginResult> {
+  return request<LoginResult>("/auth/login", {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  })
+}
+
+export function logout(token: string): Promise<void> {
+  return request<{ status: string }>("/auth/logout", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  }).then(() => undefined)
+}
+
+export function me(token: string): Promise<SessionUser> {
+  return request<SessionUser>("/auth/me", {
+    headers: { Authorization: `Bearer ${token}` },
+  })
 }
