@@ -3,6 +3,7 @@ import { AppLayout } from "@/components/layout/AppLayout"
 import { useAppStore } from "@/store/app-store"
 import Login from "@/pages/Login"
 import Portal from "@/pages/Portal"
+import TeacherHome from "@/pages/TeacherHome"
 import Calendar from "@/pages/Calendar"
 import Settings from "@/pages/Settings"
 import KnowledgeGraph from "@/pages/KnowledgeGraph"
@@ -29,7 +30,7 @@ import StudentAssignments from "@/pages/StudentAssignments"
 function IndexRedirect() {
   const role = useAppStore((s) => s.session?.user.role)
   if (role === "student") return <Navigate to="/learning" replace />
-  return <Navigate to="/calendar" replace />
+  return <Navigate to={role ? "/home" : "/calendar"} replace />
 }
 
 export const router = createBrowserRouter([
@@ -40,6 +41,7 @@ export const router = createBrowserRouter([
     element: <AppLayout />,
     children: [
       { index: true, element: <IndexRedirect /> },
+      { path: "home", element: <TeacherHome /> },
 
       { path: "calendar", element: <Calendar /> },
       { path: "settings", element: <Settings /> },
