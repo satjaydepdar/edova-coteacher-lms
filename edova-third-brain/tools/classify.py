@@ -26,15 +26,17 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from ingest import extract_text, load_config  # noqa: E402
+from okf_lib import extract_text, load_config  # noqa: E402
 
 CHAPTER_DIR = re.compile(r"^chapter-(\d+)-(.+)$")
 SMALL_WORDS = {"and", "of", "the", "in", "its", "a", "an", "to", "do", "how"}
 STOPWORDS = {"chapter", "class", "cbse", "ncert", "notes", "worksheet", "content"}
 
-# filename cue -> doc_type folder (the destination folder under the chapter)
-DOC_TYPE_CUES = [
+# filename cue -> doc_type folder (the destination folder under the chapter).
+# Live values come from config.yaml's taxonomy.doc_type_cues (a mapping,
+# first match wins in file order); this list is the fallback when the block
+# is absent — identical to the pre-config behavior.
+_DEFAULT_DOC_TYPE_CUES = [
     ("worksheet", "worksheets"),
     ("lesson", "lesson-plans"),
     ("mcq", "question-bank"),
@@ -50,7 +52,21 @@ DOC_TYPE_CUES = [
     ("reflection", "handbook"),
     ("handbook", "handbook"),
 ]
-DEFAULT_DOC_TYPE = "handbook"  # teacher-created content catch-all (see design doc)
+_DEFAULT_DOC_TYPE = "handbook"  # teacher-created content catch-all (see design doc)
+DEFAULT_DOC_TYPE = _DEFAULT_DOC_TYPE  # public alias (auto_ingest imports it)
+
+
+def _doc_type_rules() -> tuple:
+    """(cues, default) from config.yaml taxonomy, falling back to defaults."""
+    try:
+        taxonomy = (load_config() or {}).get("taxonomy", {}) or {}
+        cues = taxonomy.get("doc_type_cues")
+        default = taxonomy.get("default_doc_type", _DEFAULT_DOC_TYPE)
+        if cues:
+            return [(str(k), str(v)) for k, v in cues.items()], default
+        return _DEFAULT_DOC_TYPE_CUES, default
+    except Exception:
+        return _DEFAULT_DOC_TYPE_CUES, _DEFAULT_DOC_TYPE
 
 PREVIEW_CHARS = 4000
 SCORE_CHARS = 50000
@@ -135,10 +151,11 @@ def _score(text: str, keyword: str) -> int:
 
 def _guess_doc_type(filename: str) -> str:
     name = filename.lower()
-    for cue, folder in DOC_TYPE_CUES:
+    cues, default = _doc_type_rules()
+    for cue, folder in cues:
         if cue in name:
             return folder
-    return DEFAULT_DOC_TYPE
+    return default
 
 
 def heuristic_classify(file_path: Path) -> dict:
@@ -243,7 +260,7 @@ def camel_classify(file_path: Path) -> dict:
         decision["rationale"] = (decision.get("rationale") or "") \
             + " [rejected: chapter_id not in taxonomy]"
     decision["backend"] = "camel"
-    decision.setdefault("doc_type", DEFAULT_DOC_TYPE)
+    decision.setdefault("doc_type", _doc_type_rules()[1])
     return decision
 
 
@@ -265,7 +282,7 @@ def classify(file_path, backend: str = "auto") -> dict:
 
 def _unavailable() -> dict:
     return {"subject": None, "chapter_id": None, "chapter_name": None,
-            "doc_type": DEFAULT_DOC_TYPE, "confidence": 0.0,
+            "doc_type": _doc_type_rules()[1], "confidence": 0.0,
             "rationale": "camel-ai not installed or no API key set", "backend": "camel"}
 
 

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { CLASSES } from "@/data/seed"
+import { CLASSES, APP_TODAY } from "@/data/seed"
 import { parseShortDate, dayLabelForDate } from "@/lib/dates"
 import {
   assignmentStatusStyle,
@@ -14,18 +14,13 @@ import {
 } from "@/lib/styles"
 import { useSchoolStore, resolveStudentDisplay } from "@/store/school-store"
 import { FlashBanner } from "@/components/common/FlashBanner"
-import { autoEvaluateSubmission } from "@/lib/assignment-types"
 import type { Assignment } from "@/lib/types"
 
-// ---- Due-date urgency (derived from `due` vs real today; NOT the workflow
+// ---- Due-date urgency (derived from `due` vs APP_TODAY; NOT the workflow
 // AssignmentStatus, which stays active/closed/graded and drives scoring). ----
 
-function dueDiffDays(due: string, dueIso?: string): number {
-  const dueDate = dueIso ? new Date(dueIso) : parseShortDate(due)
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  dueDate.setHours(0, 0, 0, 0)
-  return Math.round((dueDate.getTime() - today.getTime()) / 86400000)
+function dueDiffDays(due: string): number {
+  return Math.round((parseShortDate(due).getTime() - APP_TODAY.getTime()) / 86400000)
 }
 function urgencyOf(diff: number): DueUrgency {
   if (diff < 0) return "overdue"
@@ -69,18 +64,22 @@ export default function AssignmentTracker() {
   const hydrateRealStudents = useSchoolStore((s) => s.hydrateRealStudents)
   useEffect(() => { hydrateRealStudents() }, [hydrateRealStudents])
   const hydrateAssignments = useSchoolStore((s) => s.hydrateAssignments)
+  const refreshAssignments = useSchoolStore((s) => s.refreshAssignments)
+  useEffect(() => { hydrateAssignments() }, [hydrateAssignments])
+
+  // Live-ish updates: re-pull from the backend every 30s while the page is
+  // open, so student submissions / new assignments appear without a reload.
   useEffect(() => {
-    hydrateAssignments()
-    const timer = setInterval(() => hydrateAssignments(), 3000)
+    const timer = setInterval(() => { refreshAssignments() }, 30000)
     return () => clearInterval(timer)
-  }, [hydrateAssignments])
+  }, [refreshAssignments])
 
   // ---- Summary stats. Every number is derived from the live `assignments`
   // array / roster lengths — never a hardcoded count that could drift. The
   // two clusters use different units (assignments vs student submissions)
   // and are labeled as such so they can't be misread as one denominator. ----
   const stats = useMemo(() => {
-    const diffs = assignments.map((a) => dueDiffDays(a.due, a.dueIso))
+    const diffs = assignments.map((a) => dueDiffDays(a.due))
     const submitted = assignments.reduce((sum, a) => sum + submittedCount(a), 0)
     const slots = assignments.reduce((sum, a) => sum + a.submissions.length, 0)
     return {
@@ -102,7 +101,7 @@ export default function AssignmentTracker() {
   const atRisk = useMemo(() => {
     const map = new Map<string, { name: string; titles: string[] }>()
     for (const a of assignments) {
-      if (dueDiffDays(a.due, a.dueIso) > 0) continue
+      if (dueDiffDays(a.due) > 0) continue
       for (const sub of a.submissions) {
         if (sub.status !== "not_started" && sub.status !== "missing") continue
         const student = resolveStudentDisplay(sub.studentId, realStudents)
@@ -132,7 +131,7 @@ export default function AssignmentTracker() {
           a.title.toLowerCase().includes(q)
       )
       .slice()
-      .sort((a, b) => dueDiffDays(a.due, a.dueIso) - dueDiffDays(b.due) || a.title.localeCompare(b.title))
+      .sort((a, b) => dueDiffDays(a.due) - dueDiffDays(b.due) || a.title.localeCompare(b.title))
   }, [assignments, classFilter, search])
 
   const selected = visible.find((a) => a.id === selectedId) ?? visible[0] ?? null
@@ -291,6 +290,14 @@ export default function AssignmentTracker() {
           placeholder="Search assignments…"
           className="ml-auto h-[36px] w-[230px] rounded-[8px] border border-[#E5E7EB] bg-white px-3 text-[14px] font-[inherit] outline-none"
         />
+        <button
+          type="button"
+          onClick={() => refreshAssignments()}
+          title="Pull the latest submissions and assignments from the server"
+          className="h-[36px] cursor-pointer rounded-[8px] border border-[#E5E7EB] bg-white px-3 text-[14px] font-semibold text-text-secondary"
+        >
+          ↻ Refresh
+        </button>
       </div>
 
       {/* ---- Assignment list (left) + roster detail (right) ---- */}
@@ -306,7 +313,7 @@ export default function AssignmentTracker() {
           )}
           {visible.map((a) => {
             const cls = CLASSES.find((c) => c.id === a.classId)
-            const diff = dueDiffDays(a.due, a.dueIso)
+            const diff = dueDiffDays(a.due)
             const sub = submittedCount(a)
             const total = a.submissions.length
             const pct = total ? Math.round((sub / total) * 100) : 0
@@ -352,7 +359,7 @@ export default function AssignmentTracker() {
             {(() => {
               const a = selected
               const cls = CLASSES.find((c) => c.id === a.classId)
-              const diff = dueDiffDays(a.due, a.dueIso)
+              const diff = dueDiffDays(a.due)
               const sub = submittedCount(a)
               const total = a.submissions.length
               const pct = total ? Math.round((sub / total) * 100) : 0
@@ -366,10 +373,10 @@ export default function AssignmentTracker() {
                       <button
                         type="button"
                         onClick={() => navigate(`/assignment-tracker/${a.id}/evaluate`)}
-                        className="cursor-pointer rounded-full px-4 py-1 text-[12.5px] font-semibold text-white"
+                        className="cursor-pointer rounded-full px-3 py-1 text-[12.5px] font-semibold text-white"
                         style={{ background: "#16332B" }}
                       >
-                        {a.status === "graded" || a.submissions.some((s) => s.score != null) ? "View Marks" : "Evaluate"}
+                        Evaluate
                       </button>
                     </div>
                   </div>
@@ -403,14 +410,10 @@ export default function AssignmentTracker() {
 
                       {a.submissions.map((s) => {
                         const student = resolveStudentDisplay(s.studentId, realStudents)
-                        const hasSubmitted = s.status === "submitted" || s.status === "graded" || s.status === "late" || Boolean(s.textResponse) || s.score != null
-                        const savedScore = localStorage.getItem(`edova_score_${s.studentId}_${a.id}`) || localStorage.getItem(`edova_score_${a.id}`)
-                        const parsedSavedScore = savedScore !== null ? Number(savedScore) : null
-                        const liveEvalScore = autoEvaluateSubmission(s.textResponse, a.description, a.totalPoints)
-                        const displayScore = s.score ?? parsedSavedScore ?? liveEvalScore
-                        const isGraded = displayScore != null
-                        const value = displayScore == null ? "" : String(displayScore)
-
+                        // Any roster student can be scored directly -- there's no
+                        // real student-submission flow yet, so gating on
+                        // "submitted"/"late" would make grading impossible.
+                        const value = s.score == null ? "" : String(s.score)
                         return (
                           <div key={s.studentId} style={{ display: "contents" }}>
                             <div
@@ -423,35 +426,29 @@ export default function AssignmentTracker() {
                               className="flex items-center"
                               style={{ padding: "9px 12px", borderBottom: "1px solid #F1F5F9" }}
                             >
-                              <span style={submissionStatusStyle(isGraded ? "graded" : s.status)}>
-                                {isGraded ? "Graded" : SUBMISSION_LABEL[s.status]}
+                              <span style={submissionStatusStyle(s.status)}>
+                                {SUBMISSION_LABEL[s.status]}
                               </span>
                             </div>
                             <div
                               className="flex items-center text-[14px] text-[#374151]"
                               style={{ padding: "9px 12px", borderBottom: "1px solid #F1F5F9" }}
                             >
-                              {s.submittedOn || (hasSubmitted ? "Aug 4" : "")}
+                              {s.submittedOn}
                             </div>
                             <div
                               className="flex items-center"
                               style={{ padding: "9px 12px", borderBottom: "1px solid #F1F5F9" }}
                             >
-                              {isGraded ? (
-                                <span className="font-bold text-[#15803D] text-[14.5px]">
-                                  {displayScore} / {a.totalPoints}
-                                </span>
-                              ) : (
-                                <input
-                                  type="number"
-                                  min={0}
-                                  value={value}
-                                  onChange={(e) =>
-                                    setSubmissionScore(a.id, s.studentId, e.target.value)
-                                  }
-                                  className="h-8 w-[70px] rounded-[6px] border border-[#E5E7EB] px-2 text-[14px] outline-none"
-                                />
-                              )}
+                              <input
+                                type="number"
+                                min={0}
+                                value={value}
+                                onChange={(e) =>
+                                  setSubmissionScore(a.id, s.studentId, e.target.value)
+                                }
+                                className="h-8 w-[70px] rounded-[6px] border border-[#E5E7EB] px-2 text-[14px] outline-none"
+                              />
                             </div>
                           </div>
                         )

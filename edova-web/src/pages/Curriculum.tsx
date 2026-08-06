@@ -5,11 +5,11 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { FlashBanner } from "@/components/common/FlashBanner"
 import { useSchoolStore } from "@/store/school-store"
+import { getAcademicYears, getCurriculum, deleteSubject as apiDeleteSubject } from "@/lib/curriculum-api"
 
 // Settings > Curriculum — DB-backed (academic_years / curriculums /
-// curriculum_subjects via the ncert_rag FastAPI). Layout matches
+// curriculum_subjects via the course-CRUD API). Layout matches
 // instructions/update- settings.png.
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8001"
 
 interface Subject {
   id: string
@@ -37,26 +37,6 @@ const BOARD_OPTIONS = ["CBSE", "ICSE", "State"]
 const TYPE_BADGE: Record<Subject["type"], string> = {
   Core: "bg-[#E0E7FF] text-[#4338CA]",
   Elective: "bg-[#FFEDD5] text-[#C2410C]",
-}
-
-interface SubjectRow {
-  id: string
-  subject_code: string
-  subject_name: string
-  subject_type: "Core" | "Elective"
-  credits: number
-  total_marks: number | null
-  total_chapters: number | null
-  syllabus_json: Record<string, number>
-}
-
-interface CurriculumResponse {
-  id: string
-  year_label: string
-  board: string
-  class_label: string
-  updated_at: string
-  subjects: SubjectRow[]
 }
 
 // BM25 (k1=1.5, b=0.75) over per-subject documents built from
@@ -100,23 +80,21 @@ export default function Curriculum() {
 
   // Academic year dropdown comes from the DB, newest year selected by default.
   useEffect(() => {
-    fetch(`${API_BASE}/api/academic-years`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((rows: { year_label: string }[]) => {
+    getAcademicYears()
+      .then((rows) => {
         const labels = rows.map((r) => r.year_label)
         setYearOptions(labels)
         setYear((prev) => prev || labels[labels.length - 1] || "")
       })
-      .catch(() => showFlash("curriculum", "Could not load academic years — is the API running on :8001?", 5000))
+      .catch(() => showFlash("curriculum", "Could not load academic years — is the API running on :8000?", 5000))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const loadCurriculum = useCallback(() => {
     if (!year) return
     setLoading(true)
-    fetch(`${API_BASE}/api/curriculums?year=${encodeURIComponent(year)}&board=${encodeURIComponent(board)}&class=${encodeURIComponent(cls)}`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((d: CurriculumResponse) =>
+    getCurriculum(year, board, cls)
+      .then((d) =>
         setCurriculum({
           ...d,
           subjects: d.subjects.map((r) => ({
@@ -133,7 +111,7 @@ export default function Curriculum() {
       )
       .catch(() => {
         setCurriculum(null)
-        showFlash("curriculum", "Could not load curriculum — is the API running on :8001?", 5000)
+        showFlash("curriculum", "Could not load curriculum — is the API running on :8000?", 5000)
       })
       .finally(() => setLoading(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -162,8 +140,7 @@ export default function Curriculum() {
   const deleteSubject = async (s: Subject) => {
     if (!curriculum || !window.confirm(`Delete ${s.name} (${s.code}) from this curriculum?`)) return
     try {
-      const res = await fetch(`${API_BASE}/api/curriculums/${curriculum.id}/subjects/${s.id}`, { method: "DELETE" })
-      if (!res.ok) throw new Error(`${res.status}`)
+      await apiDeleteSubject(curriculum.id, s.id)
       loadCurriculum()
       showFlash("curriculum", "Subject deleted.")
     } catch (e) {

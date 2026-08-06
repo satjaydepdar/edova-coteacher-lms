@@ -1,0 +1,9 @@
+{
+  "edge_id": "science-ch9_to_subject_science",
+  "type": "belongs_to",
+  "from": "science-ch9",
+  "to": "subject_science",
+  "doc_ids": [
+    "science_science-ch9_chapter_content_f2002852"
+  ]
+}

@@ -200,73 +200,18 @@ function PdfCanvasViewer({
   )
 }
 
-export function MyNotesWidget({ chapter, chapterNumber, addXP }: { chapter: string; chapterNumber?: number | null; addXP: (v: number) => void }) {
-  const [note, setNote] = useState("")
-  const [saving, setSaving] = useState(false)
-  const [saved, setSaved] = useState(false)
-
-  const handleSave = async () => {
-    const text = note.trim()
-    if (!text || saving) return
-    setSaving(true)
-    try {
-      const result = await saveWikiNote({
-        chapter_number: chapterNumber ?? null,
-        chapter_name: chapter,
-        note_text: text,
-      })
-      setSaved(true)
-      setNote("")
-      addXP(5)
-      toast.success("Saved to Wiki!", {
-        description: result.truncated
-          ? `Note was trimmed to ${MAX_NOTE_CHARS} characters.`
-          : undefined,
-        action: { label: "View Wiki Page", onClick: () => window.open(`/wiki/${WIKI_SLUG}`, "_self") },
-      })
-      setTimeout(() => setSaved(false), 2000)
-    } catch {
-      toast.error("Could not save your note — try again.")
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  return (
-    <Card className="mt-4 border border-card-border shadow-sm">
-      <CardHeader className="py-3 px-4 border-b border-card-border bg-white flex-row items-center justify-between">
-        <CardTitle className="text-[14px] font-bold flex items-center gap-2">
-          <span>📝</span> My Notes — Saved to Wiki ({chapter})
-        </CardTitle>
-        <span className="text-[11px] font-semibold text-text-secondary bg-cream px-2.5 py-0.5 rounded-full border border-card-border">
-          +5 XP per note
-        </span>
-      </CardHeader>
-      <CardContent className="p-4 space-y-3 bg-white">
-        <Textarea
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          className="min-h-[110px] bg-white text-[13.5px] leading-relaxed border-card-border focus:border-ink"
-          placeholder={`Write your key takeaways and notes for ${chapter} while watching the video...`}
-        />
-        <div className="flex items-center justify-between">
-          <span className="font-mono text-[11px] text-text-secondary">{note.length} chars</span>
-          <Button variant="default" size="sm" onClick={handleSave} disabled={!note.trim() || saving} className="font-bold">
-            {saved ? "Saved to Wiki ✓" : saving ? "Saving…" : "Save to my Wiki Page"}
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
 export function PdfViewerWithNotes({ pdfUrl, pdfTitle, chapter, chapterNumber, addXP }: Props) {
   const [note, setNote] = useState("")
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
 
   // Text selected from the PDF's text layer appends here as a blockquote,
-  // same pattern as the reference spec's ChapterReader -> MyNotes flow.
+  // same pattern as the reference spec's ChapterReader -> MyNotes flow. A
+  // selection spanning multiple lines carries embedded newlines (pdfjs's
+  // text layer inserts <br> between lines), so every line needs its own
+  // "> " prefix — a single prefix on the whole string would only quote the
+  // first line and leave the rest as an unprefixed continuation, which
+  // WikiPage's line-based parser would then split into a separate paragraph.
   const handleTextSelected = (text: string) => {
     const quoted = text.split("\n").map((line) => `> ${line}`).join("\n")
     setNote((prev) => (prev ? `${prev}\n${quoted}\n` : `${quoted}\n`))

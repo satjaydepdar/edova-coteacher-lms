@@ -5,42 +5,20 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { FlashBanner } from "@/components/common/FlashBanner"
 import { useSchoolStore } from "@/store/school-store"
+import { addSubject, getAcademicYears, getCurriculum, getSyllabus, putSyllabus } from "@/lib/curriculum-api"
+import type { CurriculumOut, SyllabusUnitOut } from "@/lib/types"
 
 // Settings > Master Data — admin CRUD for the per-subject syllabus detail
-// tree (units with marks → chapters → topics), DB-backed via the ncert_rag
-// FastAPI (syllabus_units / syllabus_chapters / syllabus_topics, migration
+// tree (units with marks → chapters → topics), DB-backed via the course-CRUD
+// API (syllabus_units / syllabus_chapters / syllabus_topics, migration
 // 0017). Each academic year + board + class + subject combo owns its own
 // tree, so CBSE and ICSE syllabi stay fully independent.
 //
 // Editing model: the whole tree is edited client-side as a draft; Save
 // issues one PUT that replaces the tree atomically (and the API recomputes
 // the Curriculum tab's unit→marks summary from it).
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8001"
-
 const CLASS_OPTIONS = ["LKG", "UKG", ...Array.from({ length: 10 }, (_, i) => `Class ${i + 1}`)]
 const BOARD_OPTIONS = ["CBSE", "ICSE", "State"]
-
-// ---- API shapes ----
-
-interface SubjectRow {
-  id: string
-  s_no: number
-  subject_code: string
-  subject_name: string
-}
-
-interface CurriculumResponse {
-  id: string
-  year_label: string
-  board: string
-  class_label: string
-  subjects: SubjectRow[]
-}
-
-interface SyllabusTopicOut { id: string; s_no: number; title: string }
-interface SyllabusChapterOut { id: string; s_no: number; number: number | null; name: string; topics: SyllabusTopicOut[] }
-interface SyllabusUnitOut { id: string; s_no: number; number: number | null; name: string; marks: number | null; chapters: SyllabusChapterOut[] }
-interface SyllabusResponse { subject_id: string; subject_name: string; units: SyllabusUnitOut[] }
 
 // ---- Draft shapes (client-side editable copy; `key` is a stable React key) ----
 
@@ -84,7 +62,7 @@ export default function MasterData() {
   const [board, setBoard] = useState(BOARD_OPTIONS[0])
   const [cls, setCls] = useState("Class 10")
 
-  const [curriculum, setCurriculum] = useState<CurriculumResponse | null>(null)
+  const [curriculum, setCurriculum] = useState<CurriculumOut | null>(null)
   const [subjectId, setSubjectId] = useState("")
 
   const [draft, setDraft] = useState<DraftUnit[]>([])
@@ -104,29 +82,27 @@ export default function MasterData() {
 
   // Academic year dropdown comes from the DB, newest year selected by default.
   useEffect(() => {
-    fetch(`${API_BASE}/api/academic-years`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((rows: { year_label: string }[]) => {
+    getAcademicYears()
+      .then((rows) => {
         const labels = rows.map((r) => r.year_label)
         setYearOptions(labels)
         setYear((prev) => prev || labels[labels.length - 1] || "")
       })
-      .catch(() => showFlash("masterdata", "Could not load academic years — is the API running on :8001?", 5000))
+      .catch(() => showFlash("masterdata", "Could not load academic years — is the API running on :8000?", 5000))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Curriculum card for the year/board/class combo (get-or-create on the API).
   const loadCurriculum = useCallback(() => {
     if (!year) return
-    fetch(`${API_BASE}/api/curriculums?year=${encodeURIComponent(year)}&board=${encodeURIComponent(board)}&class=${encodeURIComponent(cls)}`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((d: CurriculumResponse) => {
+    getCurriculum(year, board, cls)
+      .then((d) => {
         setCurriculum(d)
         setSubjectId((prev) => (d.subjects.some((s) => s.id === prev) ? prev : (d.subjects[0]?.id ?? "")))
       })
       .catch(() => {
         setCurriculum(null)
-        showFlash("masterdata", "Could not load curriculum — is the API running on :8001?", 5000)
+        showFlash("masterdata", "Could not load curriculum — is the API running on :8000?", 5000)
       })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year, board, cls])
@@ -137,9 +113,8 @@ export default function MasterData() {
   const loadSyllabus = useCallback(() => {
     if (!subjectId) { setDraft([]); setDirty(false); return }
     setLoading(true)
-    fetch(`${API_BASE}/api/curriculum-subjects/${subjectId}/syllabus`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((d: SyllabusResponse) => { setDraft(toDraft(d.units)); setDirty(false) })
+    getSyllabus(subjectId)
+      .then((d) => { setDraft(toDraft(d.units)); setDirty(false) })
       .catch(() => showFlash("masterdata", "Could not load syllabus detail.", 5000))
       .finally(() => setLoading(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -157,24 +132,15 @@ export default function MasterData() {
     if (!subjectDialog || !curriculum) return
     setSavingSubject(true)
     try {
-      const res = await fetch(`${API_BASE}/api/curriculums/${curriculum.id}/subjects`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          subject_code: subjectDialog.code.trim(),
-          subject_name: subjectDialog.name.trim(),
-          subject_type: subjectDialog.type,
-          credits: 0,
-          total_marks: subjectDialog.marks.trim() === "" ? null : Number(subjectDialog.marks),
-          total_chapters: subjectDialog.chapters.trim() === "" ? null : Number(subjectDialog.chapters),
-          syllabus_json: {},
-        }),
+      const created = await addSubject(curriculum.id, {
+        subject_code: subjectDialog.code.trim(),
+        subject_name: subjectDialog.name.trim(),
+        subject_type: subjectDialog.type,
+        credits: 0,
+        total_marks: subjectDialog.marks.trim() === "" ? null : Number(subjectDialog.marks),
+        total_chapters: subjectDialog.chapters.trim() === "" ? null : Number(subjectDialog.chapters),
+        syllabus_json: {},
       })
-      if (!res.ok) {
-        const data = await res.json().catch(() => null)
-        throw new Error(data?.detail ?? `${res.status}`)
-      }
-      const created: SubjectRow = await res.json()
       setSubjectDialog(null)
       showFlash("masterdata", "Subject added — now build its units, chapters and topics below.")
       loadCurriculum()
@@ -243,31 +209,22 @@ export default function MasterData() {
     if (!subjectId) return
     setSaving(true)
     try {
-      const res = await fetch(`${API_BASE}/api/curriculum-subjects/${subjectId}/syllabus`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          units: draft
-            .filter((u) => u.name.trim())
-            .map((u) => ({
-              number: u.number.trim() === "" ? null : Number(u.number),
-              name: u.name.trim(),
-              marks: u.marks.trim() === "" ? null : Number(u.marks),
-              chapters: u.chapters
-                .filter((c) => c.name.trim())
-                .map((c) => ({
-                  number: c.number.trim() === "" ? null : Number(c.number),
-                  name: c.name.trim(),
-                  topics: c.topics,
-                })),
-            })),
-        }),
+      const d = await putSyllabus(subjectId, {
+        units: draft
+          .filter((u) => u.name.trim())
+          .map((u) => ({
+            number: u.number.trim() === "" ? null : Number(u.number),
+            name: u.name.trim(),
+            marks: u.marks.trim() === "" ? null : Number(u.marks),
+            chapters: u.chapters
+              .filter((c) => c.name.trim())
+              .map((c) => ({
+                number: c.number.trim() === "" ? null : Number(c.number),
+                name: c.name.trim(),
+                topics: c.topics,
+              })),
+          })),
       })
-      if (!res.ok) {
-        const data = await res.json().catch(() => null)
-        throw new Error(data?.detail ?? `${res.status}`)
-      }
-      const d: SyllabusResponse = await res.json()
       setDraft(toDraft(d.units))
       setDirty(false)
       showFlash("masterdata", "Syllabus saved.")

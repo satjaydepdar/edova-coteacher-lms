@@ -26,7 +26,6 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: "Teaching",
     items: [
-      { key: "home", label: "Dashboard", icon: "🏠", path: "/home" },
       { key: "assignmentTracker", label: "Assignment Tracker", icon: "📋", path: "/assignment-tracker" },
       { key: "assessmentBuilder", label: "Assessment Builder", icon: "🧮", path: "/assessment-builder" },
       { key: "resources", label: "Learning Resources", icon: "📁", path: "/resources" },
