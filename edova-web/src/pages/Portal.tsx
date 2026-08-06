@@ -1,73 +1,108 @@
 import { useNavigate } from "react-router-dom"
-import { BookOpen, GraduationCap, Building2 } from "lucide-react"
+import React from "react"
 
 export default function Portal() {
   const navigate = useNavigate()
 
-  const roles = [
-    {
-      id: "teacher",
-      title: "Teacher",
-      description: "Manage classes, assignments, and access your AI co-teacher dashboard.",
-      icon: <BookOpen className="size-8 text-[#16332B]" />,
-      color: "bg-[#F3EFE3]",
-    },
-    {
-      id: "student",
-      title: "Student",
-      description: "Access your learning hub, complete assignments, and track progress.",
-      icon: <GraduationCap className="size-8 text-[#8A4B1F]" />,
-      color: "bg-[#FBEBD6]",
-    },
-    {
-      id: "admin",
-      title: "School Admin",
-      description: "Manage users, view school analytics, and configure platform settings.",
-      icon: <Building2 className="size-8 text-[#1a365d]" />,
-      color: "bg-[#e2e8f0]",
+  const handleIframeLoad = (e: React.SyntheticEvent<HTMLIFrameElement>) => {
+    try {
+      const iframeDoc = e.currentTarget.contentDocument || e.currentTarget.contentWindow?.document
+      if (!iframeDoc) return
+
+      let attempts = 0
+      const interval = setInterval(() => {
+        attempts++
+        if (attempts > 40) {
+          clearInterval(interval)
+          return
+        }
+
+        // ====== 1. HOOK LOGIN BUTTONS ======
+        const allElements = iframeDoc.querySelectorAll('a, button, div, span')
+        let foundButtons = false
+
+        allElements.forEach(el => {
+          if ((el as any)._portalHooked) return
+          const text = el.textContent?.trim() || ''
+          const textLower = text.toLowerCase()
+
+          let role: string | null = null
+          if (textLower === 'admin login') role = 'admin'
+          else if (textLower === 'teacher login') role = 'teacher'
+          else if (textLower === 'student login') role = 'student'
+          else if (textLower === 'login' && (el.tagName === 'BUTTON' || el.tagName === 'A')) role = ''
+
+          if (role !== null) {
+            foundButtons = true
+            ;(el as any)._portalHooked = true
+            ;(el as HTMLElement).style.cursor = 'pointer'
+            el.addEventListener('click', (ev) => {
+              ev.preventDefault()
+              ev.stopPropagation()
+              ev.stopImmediatePropagation()
+              navigate(role ? `/login?role=${role}` : '/login')
+            }, true)
+          }
+        })
+
+        // ====== 2. REPLACE LOGO ======
+        // The logo text "Edova." is split across multiple <span> elements,
+        // so we find the "Education. Evolved." subtitle text and go to its parent container
+        allElements.forEach(el => {
+          if ((el as any)._logoProcessed) return
+          const htmlEl = el as HTMLElement
+          const text = (htmlEl.textContent || '').trim()
+          
+          // Look for the "Education. Evolved." subtitle div
+          if (text === 'Education. Evolved.' || text === 'EDUCATION. EVOLVED.') {
+            (el as any)._logoProcessed = true
+            // The parent of this div should be the logo container
+            const logoContainer = htmlEl.parentElement
+            if (logoContainer && !(logoContainer as any)._logoReplaced) {
+              (logoContainer as any)._logoReplaced = true
+              logoContainer.innerHTML = '<img src="/logo-cropped.png" style="height: 55px; width: auto; object-fit: contain; cursor: pointer;" alt="Edova Logo" />'
+            }
+          }
+        })
+
+        // ====== 3. HIDE ADMIN, TEACHERS, STUDENTS, LOGIN FROM HEADER ======
+        allElements.forEach(el => {
+          if ((el as any)._menuProcessed) return
+          const htmlEl = el as HTMLElement
+          const text = (htmlEl.textContent || '').trim()
+          const textUpper = text.toUpperCase()
+
+          // Only hide exact matches (not elements that contain these as part of larger text)
+          if (text.length < 15 && 
+              (textUpper === 'ADMIN' || textUpper === 'TEACHERS' || textUpper === 'STUDENTS' || textUpper === 'LOGIN')) {
+            const rect = htmlEl.getBoundingClientRect()
+            // Only hide if in the header area (top 100px)
+            if (rect.top >= 0 && rect.top < 100) {
+              (el as any)._menuProcessed = true
+              htmlEl.style.display = 'none'
+            }
+          }
+        })
+
+        if (foundButtons && attempts > 3) {
+          // Keep running a few more times to catch late-rendered elements
+          // but don't stop early
+        }
+      }, 500)
+
+    } catch (err) {
+      console.error("Could not inject iframe click handlers", err)
     }
-  ]
+  }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-cream px-4 py-12">
-      <div className="mb-12 text-center">
-        <div className="mb-6 flex justify-center">
-          <div className="flex size-14 items-center justify-center rounded-[12px] bg-ink font-display text-[28px] font-extrabold text-sidebar-text">
-            E
-          </div>
-        </div>
-        <h1 className="font-display text-[32px] font-bold tracking-tight text-ink sm:text-[40px]">
-          Welcome to Edova
-        </h1>
-        <p className="mx-auto mt-4 max-w-[500px] text-[16px] leading-relaxed text-text-secondary">
-          The intelligent LMS powered by an AI co-teacher. Please select your role to continue to the login page.
-        </p>
-      </div>
-
-      <div className="grid w-full max-w-[1000px] grid-cols-1 gap-6 sm:grid-cols-3">
-        {roles.map((role) => (
-          <button
-            key={role.id}
-            onClick={() => navigate(`/login?role=${role.id}`)}
-            className="group flex flex-col items-center rounded-[24px] bg-white p-8 text-center transition-all hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]"
-          >
-            <div className={`mb-6 flex size-20 items-center justify-center rounded-full ${role.color} transition-transform group-hover:scale-110`}>
-              {role.icon}
-            </div>
-            <h2 className="font-display text-[22px] font-bold text-ink">
-              {role.title}
-            </h2>
-            <p className="mt-3 text-[14px] leading-relaxed text-text-secondary">
-              {role.description}
-            </p>
-            <div className="mt-6 flex h-10 w-full items-center justify-center rounded-[10px] bg-sidebar text-[14px] font-semibold text-sidebar-text opacity-0 transition-opacity group-hover:opacity-100">
-              Continue as {role.title} →
-            </div>
-          </button>
-        ))}
-      </div>
-      
-
+    <div style={{ width: "100vw", height: "100vh", overflow: "hidden", margin: 0, padding: 0 }}>
+      <iframe 
+        src="/Edova-Gateway.html"
+        style={{ width: "100%", height: "100%", border: "none" }}
+        title="Edova Gateway"
+        onLoad={handleIframeLoad}
+      />
     </div>
   )
 }

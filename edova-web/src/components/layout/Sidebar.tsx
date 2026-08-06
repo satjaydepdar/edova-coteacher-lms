@@ -25,13 +25,12 @@ export function Sidebar() {
   return (
     <aside className="sticky top-0 flex h-screen w-[260px] min-w-[260px] flex-col bg-sidebar border-r border-white/8">
       {/* Logo */}
-      <div className="flex h-16 items-center gap-2.5 border-b border-white/8 px-5">
-        <div className="flex size-8 items-center justify-center rounded-[8px] bg-gold font-display text-[17px] font-extrabold text-ink">
-          E
-        </div>
-        <div className="font-display text-[18px] font-bold text-sidebar-text">
-          Edova
-        </div>
+      <div className="flex h-16 items-center justify-center border-b border-white/8">
+        <img 
+          src="/logo-cropped.png" 
+          alt="Edova Logo" 
+          className="h-14 w-auto object-contain brightness-0 invert"
+        />
       </div>
 
       {/* Nav */}

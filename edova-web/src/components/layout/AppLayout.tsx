@@ -26,10 +26,11 @@ function StudentShell() {
     <div className="min-h-screen bg-white text-ink">
       <header className="flex h-14 items-center justify-between border-b border-card-border bg-cream px-6">
         <div className="flex items-center gap-2">
-          <div className="flex size-7 items-center justify-center rounded-[6px] bg-ink font-display text-[13px] font-extrabold text-sidebar-text">
-            E
-          </div>
-          <span className="font-display text-[14px] font-bold text-ink">Edova</span>
+          <img 
+            src="/logo-cropped.png" 
+            alt="Edova Logo" 
+            className="h-8 w-auto object-contain"
+          />
         </div>
         <nav className="flex items-center gap-4">
           {studentNav.map((item) => (
