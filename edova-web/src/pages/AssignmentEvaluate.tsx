@@ -13,19 +13,12 @@ import {
   Trash2,
   ZoomIn,
   X,
+  Clock,
 } from "lucide-react"
 import { CLASSES } from "@/data/seed"
 import { useSchoolStore, resolveStudentDisplay } from "@/store/school-store"
-import { assignmentTypeOf, autoEvaluateSubmission, parseAnswerKey as parseAnswerKeyFromDesc, parseQuestions as parseQuestionsFromDesc } from "@/lib/assignment-types"
+import { assignmentTypeOf } from "@/lib/assignment-types"
 import type { Submission } from "@/lib/types"
-
-function isOptionSelected(optText: string, targetValue: string): boolean {
-  if (!optText || !targetValue) return false
-  const o = optText.trim().toLowerCase()
-  const t = targetValue.trim().toLowerCase()
-  const cleanOpt = o.replace(/^[a-d][\)\.]\s*/i, "").trim()
-  return o === t || cleanOpt === t || o.includes(t) || t.includes(cleanOpt)
-}
 
 export default function AssignmentEvaluate() {
   const { id } = useParams<{ id: string }>()
@@ -36,12 +29,6 @@ export default function AssignmentEvaluate() {
   const realStudents = useSchoolStore((s) => s.realStudents)
   const hydrateRealStudents = useSchoolStore((s) => s.hydrateRealStudents)
   useEffect(() => { hydrateRealStudents() }, [hydrateRealStudents])
-  const hydrateAssignments = useSchoolStore((s) => s.hydrateAssignments)
-  useEffect(() => {
-    hydrateAssignments()
-    const timer = setInterval(() => hydrateAssignments(), 3000)
-    return () => clearInterval(timer)
-  }, [hydrateAssignments])
 
   const assignment = assignments.find((a) => a.id === id)
 
@@ -56,17 +43,16 @@ export default function AssignmentEvaluate() {
   // Ungraded, regardless of status -- there's no real student-submission
   // flow yet, so a real assignment's roster is always "not_started" and
   // gating evaluation on "submitted"/"late" would make it permanently empty.
-  // Submissions list -- includes all students with submissions or grades
   const yetToEvaluate = useMemo(
-    () => (assignment?.submissions ?? []).filter((s) => s.score != null || s.status === "submitted" || s.status === "late" || s.status === "graded"),
+    () => (assignment?.submissions ?? []).filter((s) => s.score == null),
     [assignment]
   )
   const yetToSubmit = useMemo(
-    () => (assignment?.submissions ?? []).filter((s) => s.score == null && (s.status === "not_started" || s.status === "missing")),
+    () => (assignment?.submissions ?? []).filter((s) => s.status === "not_started" || s.status === "missing"),
     [assignment]
   )
 
-  const list = evalTab === "evaluate" ? (yetToEvaluate.length > 0 ? yetToEvaluate : assignment?.submissions ?? []) : yetToSubmit
+  const list = evalTab === "evaluate" ? yetToEvaluate : yetToSubmit
   const filteredList = useMemo(() => {
     const q = search.trim().toLowerCase()
     if (!q) return list
@@ -78,98 +64,12 @@ export default function AssignmentEvaluate() {
 
   const selected: Submission | undefined =
     (selectedStudentId && assignment?.submissions.find((s) => s.studentId === selectedStudentId)) ||
-    (evalTab === "evaluate" ? (yetToEvaluate[0] || assignment?.submissions[0]) : undefined)
+    (evalTab === "evaluate" ? yetToEvaluate[0] : undefined)
   const selectedStudent = selected ? resolveStudentDisplay(selected.studentId, realStudents) : undefined
-
-  const evaluatedQuestions = useMemo(() => {
-    if (!selected || !assignment) return []
-
-    let answersMap: Record<string, string> = {}
-    if (selected.textResponse) {
-      try {
-        const parsed = JSON.parse(selected.textResponse)
-        if (typeof parsed === "object" && parsed !== null) {
-          answersMap = parsed
-        }
-      } catch {
-        // Not JSON
-      }
-    }
-
-    const descAnswerKey = parseAnswerKeyFromDesc(assignment.description)
-    const sectionAnswerKey: Record<string, string> = {}
-    if (assignment.sections && Array.isArray(assignment.sections)) {
-      assignment.sections.forEach((sec: any, sIdx: number) => {
-        if (Array.isArray(sec.questions)) {
-          sec.questions.forEach((q: any, qIdx: number) => {
-            const qId = `${sIdx + 1}.${qIdx + 1}`
-            if (Array.isArray(q.options)) {
-              const correctOpt = q.options.find((opt: any) => opt?.correct === true)
-              if (correctOpt) {
-                sectionAnswerKey[qId] = typeof correctOpt === "string" ? correctOpt : (correctOpt?.text || "")
-              }
-            } else if (q.correctAnswer) {
-              sectionAnswerKey[qId] = String(q.correctAnswer)
-            }
-          })
-        }
-      })
-    }
-
-    const answerKey = { ...descAnswerKey, ...sectionAnswerKey }
-
-    const rawQuestions = parseQuestionsFromDesc(assignment.description)
-    const sectionQuestions: { id: string; text: string; options: string[] }[] = []
-    if (assignment.sections && Array.isArray(assignment.sections)) {
-      assignment.sections.forEach((sec: any, sIdx: number) => {
-        if (Array.isArray(sec.questions)) {
-          sec.questions.forEach((q: any, qIdx: number) => {
-            const qId = `${sIdx + 1}.${qIdx + 1}`
-            const optionsList = Array.isArray(q.options)
-              ? q.options.map((opt: any) => (typeof opt === "string" ? opt : opt?.text || ""))
-              : []
-            sectionQuestions.push({
-              id: qId,
-              text: q.text || `Question ${qId}`,
-              options: optionsList,
-            })
-          })
-        }
-      })
-    }
-
-    let finalQuestions = sectionQuestions.length > 0 ? sectionQuestions : rawQuestions
-
-    if (finalQuestions.length === 0 && Object.keys(answersMap).length > 0) {
-      finalQuestions = Object.keys(answersMap).map((k) => ({
-        id: k,
-        text: `Question ${k}`,
-        options: [],
-      }))
-    }
-
-    return finalQuestions.map((q, idx) => {
-      const studentAns = answersMap[q.id] || answersMap[`1.${idx + 1}`] || answersMap[String(idx + 1)] || ""
-      const correctAns = answerKey[q.id] || answerKey[`1.${idx + 1}`] || answerKey[String(idx + 1)] || ""
-
-      const sNorm = (studentAns || "").trim().toLowerCase()
-      const cNorm = (correctAns || "").trim().toLowerCase()
-      const isCorrect = Boolean(cNorm && sNorm && (cNorm.includes(sNorm) || sNorm.includes(cNorm)))
-
-      return {
-        id: q.id,
-        text: q.text,
-        options: q.options,
-        studentAnswer: studentAns,
-        correctAnswer: correctAns,
-        isCorrect,
-      }
-    })
-  }, [selected, assignment])
 
   function openMarksModal() {
     if (!selected) return
-    setGivenMarks(selected.score != null ? String(selected.score) : String(assignment?.totalPoints ?? 100))
+    setGivenMarks(selected.score != null ? String(selected.score) : "")
     setFeedback(selected.feedback || "")
     setShowMarksModal(true)
   }
@@ -182,6 +82,7 @@ export default function AssignmentEvaluate() {
     showFlash("homework", `Evaluation saved for ${selectedStudent?.name ?? "student"}.`)
     setShowMarksModal(false)
     setAnnotateMode(false)
+    setSelectedStudentId(null)
   }
 
   if (!assignment) {
@@ -217,20 +118,8 @@ export default function AssignmentEvaluate() {
           </span>
         </div>
         <div className="flex items-center gap-2">
-          {assignment.type === "mcq" ? (
-            <div className="flex items-center gap-2">
-              <span className="h-8 flex items-center rounded-full border border-[#BBF7D0] bg-[#F0FDF4] px-4 text-[12.5px] font-semibold text-[#166534]">
-                ✓ Auto-Graded
-              </span>
-              <button
-                onClick={openMarksModal}
-                className="h-8 rounded-full bg-ink px-4 text-[12.5px] font-semibold text-sidebar-text"
-              >
-                Edit Marks
-              </button>
-            </div>
-          ) : (
-            selected && (annotateMode ? (
+          {selected &&
+            (annotateMode ? (
               <>
                 <button
                   onClick={() => setAnnotateMode(false)}
@@ -253,8 +142,7 @@ export default function AssignmentEvaluate() {
               >
                 Evaluate
               </button>
-            ))
-          )}
+            ))}
         </div>
       </div>
 
@@ -275,7 +163,7 @@ export default function AssignmentEvaluate() {
                     : { color: "var(--edova-text-secondary)" }
                 }
               >
-                Submissions ({yetToEvaluate.length})
+                Yet to Evaluate ({yetToEvaluate.length})
               </button>
               <button
                 onClick={() => {
@@ -333,24 +221,15 @@ export default function AssignmentEvaluate() {
                     <div className="text-[11px] text-text-secondary">
                       {cls ? cls.name : assignment.classId} • {student?.rollNo}
                     </div>
-                    {evalTab === "evaluate" ? (() => {
-                      const effectiveScore = s.score ?? autoEvaluateSubmission(s.textResponse, assignment.description, assignment.totalPoints)
-                      return (
-                        <div className={`mt-1.5 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold ${
-                          effectiveScore != null
-                            ? "border-[#BBF7D0] bg-[#F0FDF4] text-[#166534]"
-                            : "border-[#FCD34D] bg-[#FEF3C7] text-[#92400E]"
-                        }`}>
-                          {effectiveScore != null
-                            ? `Auto-Graded: ${effectiveScore} / ${assignment.totalPoints}`
-                            : s.status === "late"
-                              ? "Submitted late"
-                              : s.status === "submitted"
-                                ? `Submitted ${s.submittedOn || ""}`
-                                : "Awaiting grade"}
-                        </div>
-                      )
-                    })() : (
+                    {evalTab === "evaluate" ? (
+                      <div className="mt-1.5 inline-flex rounded-full border border-[#FCD34D] bg-[#FEF3C7] px-2 py-0.5 text-[10px] font-semibold text-[#92400E]">
+                        {s.status === "late"
+                          ? "Submitted late"
+                          : s.status === "submitted"
+                            ? `Submitted ${s.submittedOn || ""}`
+                            : "Awaiting grade"}
+                      </div>
+                    ) : (
                       <div className="mt-1.5 text-[11px] text-text-muted">
                         {s.status === "missing" ? "Missing" : "Not submitted"}
                       </div>
@@ -363,32 +242,28 @@ export default function AssignmentEvaluate() {
 
           <div className="border-t border-card-border p-3 text-[11px] text-text-muted">
             {evalTab === "evaluate"
-              ? `${filteredList.length} student${filteredList.length === 1 ? "" : "s"} in submission list`
+              ? `${yetToEvaluate.length} student${yetToEvaluate.length === 1 ? "" : "s"} awaiting evaluation`
               : `${yetToSubmit.length} student${yetToSubmit.length === 1 ? "" : "s"} yet to submit`}
           </div>
         </aside>
 
         {/* viewer */}
         <div className="relative flex min-w-0 flex-col bg-[#F3F4F6]">
-          {evalTab === "evaluate" && selected && (
-            <div className="m-3 flex items-start justify-between gap-3 rounded-[12px] border border-[#BBF7D0] bg-[#F0FDF4] p-3 md:m-4">
+          {evalTab === "evaluate" && selected && !annotateMode && (
+            <div className="m-3 flex items-start justify-between gap-3 rounded-[12px] border border-[#FDE68A] bg-[#FFFBEB] p-3 md:m-4">
               <div className="flex gap-2.5">
-                <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-[#BBF7D0] bg-[#DCFCE7] text-[#166534]">
-                  <CheckCircle2 size={14} />
+                <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-[#FDE68A] bg-[#FEF3C7] text-[#92400E]">
+                  <Clock size={14} />
                 </div>
                 <div>
-                  <div className="text-[12.5px] font-semibold text-[#166534]">
-                    {assignment.type === "mcq" ? "Auto-Graded MCQ Assessment" : "Submission Evaluated"}
-                  </div>
-                  <div className="mt-0.5 text-[12px] leading-snug text-[#15803D]">
-                    {selected.score != null
-                      ? `Marks: ${selected.score} / ${assignment.totalPoints} Marks recorded automatically.`
-                      : `Total Points: ${assignment.totalPoints} Marks possible.`}
+                  <div className="text-[12.5px] font-semibold text-[#92400E]">Evaluation pending</div>
+                  <div className="mt-0.5 text-[12px] leading-snug text-[#B45309]">
+                    Add marks and feedback after reviewing the submission.
                   </div>
                 </div>
               </div>
-              <button onClick={openMarksModal} className="h-8 shrink-0 rounded-full bg-[#166534] px-3 text-[12px] font-semibold text-white">
-                {selected.score != null ? "Edit Marks" : "Add Marks"}
+              <button onClick={() => setAnnotateMode(true)} className="h-8 shrink-0 rounded-full bg-ink px-3 text-[12px] font-semibold text-sidebar-text">
+                Evaluate
               </button>
             </div>
           )}
@@ -423,98 +298,13 @@ export default function AssignmentEvaluate() {
                       </div>
                     </div>
 
-                    <div className="mt-6 space-y-5 text-[13.5px] leading-relaxed">
-                      {evaluatedQuestions.length > 0 ? (
-                        <div className="space-y-4">
-                          {evaluatedQuestions.map((q, idx) => (
-                            <div key={q.id || idx} className="rounded-[14px] border border-card-border bg-white p-4 shadow-xs space-y-3">
-                              <div className="flex items-start justify-between gap-3">
-                                <div className="flex items-center gap-2">
-                                  <span className="font-bold text-[13.5px] text-ink">Q{idx + 1}</span>
-                                  <span className="text-[11px] font-semibold text-text-muted">({q.id})</span>
-                                </div>
-                                {q.isCorrect ? (
-                                  <span className="inline-flex items-center gap-1 rounded-full border border-[#BBF7D0] bg-[#F0FDF4] px-2.5 py-0.5 text-[11px] font-semibold text-[#166534]">
-                                    <CheckCircle2 size={12} /> Correct Answer
-                                  </span>
-                                ) : (
-                                  <span className="inline-flex items-center gap-1 rounded-full border border-[#FECACA] bg-[#FEF2F2] px-2.5 py-0.5 text-[11px] font-semibold text-[#991B1B]">
-                                    <XCircle size={12} /> Incorrect Answer
-                                  </span>
-                                )}
-                              </div>
-
-                              <p className="text-[13.5px] font-medium text-ink leading-relaxed">
-                                {q.text}
-                              </p>
-
-                              {q.options && q.options.length > 0 ? (
-                                <div className="space-y-1.5 pt-1">
-                                  {q.options.map((opt, oIdx) => {
-                                    const isStudentChoice = isOptionSelected(opt, q.studentAnswer)
-                                    const isCorrectChoice = isOptionSelected(opt, q.correctAnswer)
-
-                                    let optionStyle = "border-card-border bg-cream/50 text-ink"
-                                    let icon = null
-
-                                    if (isStudentChoice && isCorrectChoice) {
-                                      optionStyle = "border-[#86EFAC] bg-[#DCFCE7] text-[#14532D] font-semibold"
-                                      icon = <CheckCircle2 size={14} className="text-[#166534] shrink-0" />
-                                    } else if (isStudentChoice && !isCorrectChoice) {
-                                      optionStyle = "border-[#FCA5A5] bg-[#FEE2E2] text-[#7F1D1D] font-semibold"
-                                      icon = <XCircle size={14} className="text-[#991B1B] shrink-0" />
-                                    } else if (isCorrectChoice) {
-                                      optionStyle = "border-[#A7F3D0] bg-[#ECFDF5] text-[#065F46] font-semibold"
-                                      icon = <Star size={14} className="text-[#166534] shrink-0" />
-                                    }
-
-                                    return (
-                                      <div key={oIdx} className={`flex items-center justify-between rounded-[10px] border p-2.5 text-[12.5px] ${optionStyle}`}>
-                                        <div className="flex items-center gap-2">
-                                          {icon}
-                                          <span>{opt}</span>
-                                        </div>
-                                        {isStudentChoice && (
-                                          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-white/80 border border-current shadow-2xs">
-                                            Student Answer
-                                          </span>
-                                        )}
-                                        {!isStudentChoice && isCorrectChoice && (
-                                          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-white/80 border border-current shadow-2xs">
-                                            Correct Answer
-                                          </span>
-                                        )}
-                                      </div>
-                                    )
-                                  })}
-                                </div>
-                              ) : (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-[12.5px]">
-                                  <div className={`rounded-[10px] border p-3 ${q.isCorrect ? "border-[#86EFAC] bg-[#DCFCE7] text-[#14532D]" : "border-[#FCA5A5] bg-[#FEE2E2] text-[#7F1D1D]"}`}>
-                                    <div className="text-[10px] font-bold uppercase tracking-wider opacity-75">Student Answer</div>
-                                    <div className="mt-1 font-semibold">{q.studentAnswer || "No answer provided"}</div>
-                                  </div>
-                                  <div className="rounded-[10px] border border-[#A7F3D0] bg-[#ECFDF5] p-3 text-[#065F46]">
-                                    <div className="text-[10px] font-bold uppercase tracking-wider opacity-75">Correct Answer</div>
-                                    <div className="mt-1 font-semibold">{q.correctAnswer || "N/A"}</div>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          ))}
+                    <div className="mt-6 space-y-5 text-[13px] leading-relaxed">
+                      <div className="relative grid h-[140px] place-items-center overflow-hidden rounded-[12px] border border-dashed border-[#D1D5DB] bg-[#F9FAFB] text-[12px] text-text-muted">
+                        <div className="text-center">
+                          <div className="mx-auto grid h-16 w-16 place-items-center rounded-full border-2 border-ink text-2xl">📄</div>
+                          <div className="mt-2">{selectedStudent?.name ?? "Student"}'s submitted work</div>
                         </div>
-                      ) : selected.textResponse ? (
-                        <div className="rounded-[12px] border border-card-border bg-[#F9FAFB] p-5 whitespace-pre-wrap font-sans text-ink">
-                          {selected.textResponse}
-                        </div>
-                      ) : (
-                        <div className="relative grid h-[140px] place-items-center overflow-hidden rounded-[12px] border border-dashed border-[#D1D5DB] bg-[#F9FAFB] text-[12px] text-text-muted">
-                          <div className="text-center">
-                            <div className="mx-auto grid h-16 w-16 place-items-center rounded-full border-2 border-ink text-2xl">📄</div>
-                            <div className="mt-2">{selectedStudent?.name ?? "Student"}'s work is not yet submitted or empty.</div>
-                          </div>
-                        </div>
-                      )}
+                      </div>
                     </div>
 
                     <div className="mt-8 flex justify-between border-t border-card-border pt-3 text-[10px] text-text-muted">

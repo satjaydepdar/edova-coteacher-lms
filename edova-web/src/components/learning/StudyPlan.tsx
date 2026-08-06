@@ -15,20 +15,18 @@ type Assignment = {
   status: "overdue" | "due_today" | "due_soon"
 }
 
+export type RecTask = { id: string; title: string; meta: string; xp: string }
+
 type Props = {
   assignments?: Assignment[]
+  // Real recommended tasks (memory-layer struggle cards + mistake journal),
+  // built by the page. Empty = nothing to recommend.
+  recommended?: RecTask[]
   onGoToChapter: (chapter: string, subject: string) => void
   onStartRecommended?: () => void
 }
 
-// Dummy recommended tasks - replace with your system plan
-const RECOMMENDED = [
-  { id: "r1", title: "Watch 10-min video on Reflection", meta: "10m • Science > Light", xp: "+10 XP" },
-  { id: "r2", title: "Take 5-question quiz", meta: "15m • +50 XP", xp: "+50 XP" },
-  { id: "r3", title: "Fix 3 mistakes in Journal", meta: "12m • High impact", xp: "+30 XP" },
-]
-
-export function StudyPlan({ assignments = [], onGoToChapter, onStartRecommended }: Props) {
+export function StudyPlan({ assignments = [], recommended = [], onGoToChapter, onStartRecommended }: Props) {
   // Whole-card accordion: closed by default so the plan doesn't eat vertical
   // space before a student has asked to see it. Separate from `showMore`,
   // which only matters once this is already open.
@@ -42,7 +40,7 @@ export function StudyPlan({ assignments = [], onGoToChapter, onStartRecommended 
   })
 
   const nextUp = sorted[0] // Single action - most urgent
-  const remainingCount = Math.max(0, sorted.length - 1 + RECOMMENDED.length)
+  const remainingCount = Math.max(0, sorted.length - 1 + recommended.length)
   const isTeacherTask = !!nextUp
   const summary = sorted.length > 0
     ? `${sorted.length} ${sorted.length === 1 ? "task" : "tasks"} • ${nextUp.title}`
@@ -103,19 +101,24 @@ export function StudyPlan({ assignments = [], onGoToChapter, onStartRecommended 
               Start Now →
             </Button>
           </div>
-        ) : (
+        ) : recommended.length > 0 ? (
           <div className="flex items-center justify-between gap-4 bg-[#F5F1E6] rounded-[8px] p-3">
             <div className="flex items-start gap-3">
               <Checkbox className="mt-0.5" />
               <div>
                 <Badge variant="okf" className="text-[10px] h-5">RECOMMENDED</Badge>
-                <p className="font-[Inter] font-semibold text-[14px] text-[#13231F] mt-1">{RECOMMENDED[0].title}</p>
-                <p className="text-[12px] text-[#6B7280] mt-0.5">{RECOMMENDED[0].meta}</p>
+                <p className="font-[Inter] font-semibold text-[14px] text-[#13231F] mt-1">{recommended[0].title}</p>
+                <p className="text-[12px] text-[#6B7280] mt-0.5">{recommended[0].meta}</p>
               </div>
             </div>
             <Button variant="default" size="default" className="shrink-0" onClick={onStartRecommended}>
               Continue
             </Button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 bg-[#F5F1E6] rounded-[8px] p-3">
+            <span className="text-[18px]">🎉</span>
+            <p className="font-[Inter] font-semibold text-[14px] text-[#13231F]">All caught up — nothing pending right now.</p>
           </div>
         )}
 
@@ -152,10 +155,11 @@ export function StudyPlan({ assignments = [], onGoToChapter, onStartRecommended 
             )}
 
             {/* Recommended */}
-            <div>
-              <p className="text-[11px] font-bold tracking-widest text-[#6B7280] mb-2">RECOMMENDED FOR YOU</p>
-              <div className="space-y-2">
-                {(nextUp ? RECOMMENDED : RECOMMENDED.slice(1)).map(r => (
+            {recommended.length > 0 && (
+              <div>
+                <p className="text-[11px] font-bold tracking-widest text-[#6B7280] mb-2">RECOMMENDED FOR YOU</p>
+                <div className="space-y-2">
+                  {(nextUp ? recommended : recommended.slice(1)).map(r => (
                   <div key={r.id} className="flex items-center justify-between bg-[#F5F1E6]/60 border border-transparent rounded-[8px] p-2.5">
                     <div className="flex items-start gap-2">
                       <Checkbox className="mt-0.5 scale-90" />
@@ -166,9 +170,10 @@ export function StudyPlan({ assignments = [], onGoToChapter, onStartRecommended 
                     </div>
                     <span className="text-[11px] font-mono text-[#6B7280]">{r.xp}</span>
                   </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </CardContent>

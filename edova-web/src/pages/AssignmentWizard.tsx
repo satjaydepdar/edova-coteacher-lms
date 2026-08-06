@@ -1,14 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {
   Check,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   X,
   Upload,
-  Calendar as CalIcon,
-  Clock,
   Sparkles,
   Paperclip,
   Plus,
@@ -27,63 +23,17 @@ import { CLASSES, STUDENTS } from "@/data/seed"
 import { useSchoolStore } from "@/store/school-store"
 import { useAppStore } from "@/store/app-store"
 import { ASSIGNMENT_TYPES } from "@/lib/assignment-types"
-import { getSubjects, getResources, getSyllabus, type LearningResource, type SyllabusUnit } from "@/lib/learning-api"
+import { getRealRosterByClassId, type RealStudent } from "@/lib/roster-api"
+import { APP_TODAY, MONTH_SHORT } from "@/lib/dates"
+import type { LearningResource } from "@/lib/learning-api"
 import { getResourceUrl } from "@/lib/media"
-import type { Assignment, AssignmentAttachment, AssignmentType } from "@/lib/types"
+import { MiniDatePicker } from "@/components/common/MiniDatePicker"
+import { useLibraryResources } from "./assignment-wizard/useLibraryResources"
+import type { Assignment, AssessmentBankItem, AssignmentAttachment, AssignmentType } from "@/lib/types"
 
 type Step = "type" | "create1" | "create2"
 
-const MONTH_SHORT = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-]
 const SUBJECTS = Array.from(new Set(CLASSES.map((c) => c.subject)))
-
-// edova-backend (Step 3 of the real classes/students migration) -- optional.
-// Not every class has a real classroom yet (only Class 10 -- Section A --
-// Mathematics does today), and the service itself may not be running. Either
-// case is a silent, graceful fallback to the CLASSES/STUDENTS seed data
-// exactly as before -- never a crash, never a visible error.
-const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL ?? "http://localhost:8003"
-
-interface RealStudent { id: string; name: string; rollNo: string }
-
-function fetchRealRosterByClassId(): Promise<Record<string, RealStudent[]>> {
-  return fetch(`${BACKEND_API_URL}/api/classrooms`)
-    .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-    .then((classrooms: { id: string; class_level: number; section: string | null; subject: string }[]) =>
-      Promise.all(
-        classrooms.map((rc) => {
-          // Match on meaning (subject + class level + section), not exact name
-          // string -- the backend and the seed data don't share a punctuation
-          // convention ("Class 10 -- Section A" vs "Class 10 — Section A").
-          const cls = CLASSES.find(
-            (c) =>
-              c.subject === rc.subject &&
-              c.name.includes(`Class ${rc.class_level}`) &&
-              (!rc.section || c.name.includes(rc.section)),
-          )
-          if (!cls) return null
-          return fetch(`${BACKEND_API_URL}/api/classrooms/${rc.id}/students`)
-            .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-            .then(
-              (
-                students: { id: string; student_number: string; first_name: string; last_name: string }[],
-              ): [string, RealStudent[]] => [
-                cls.id,
-                students.map((s) => ({ id: s.id, name: `${s.first_name} ${s.last_name}`, rollNo: s.student_number })),
-              ],
-            )
-            .catch(() => null)
-        }),
-      ),
-    )
-    .then((pairs) => Object.fromEntries(pairs.filter((p): p is [string, RealStudent[]] => p !== null)))
-    .catch((err) => {
-      console.warn("real classroom roster fetch failed, falling back to seed data:", err)
-      return {}
-    })
-}
 
 const fieldLabel = "text-[13.5px] font-semibold text-text-secondary"
 const fieldInput =
@@ -92,122 +42,55 @@ const fieldInput =
 export default function AssignmentWizard() {
   const navigate = useNavigate()
   const publishAssignment = useSchoolStore((s) => s.publishAssignment)
+  const assessmentBank = useSchoolStore((s) => s.assessmentBank)
+  const hydrateAssessments = useSchoolStore((s) => s.hydrateAssessments)
   const showFlash = useSchoolStore((s) => s.showFlash)
   const academicYear = useAppStore((s) => s.academicYear)
 
+  // Saved Assessments (Assessment Builder bank) — the "pick from saved" path.
+  useEffect(() => { hydrateAssessments() }, [hydrateAssessments])
+
   const [step, setStep] = useState<Step>("type")
   const [selectedType, setSelectedType] = useState<AssignmentType>("written")
+  const [pickedBankId, setPickedBankId] = useState<string | null>(null)
+  const pickedBank = assessmentBank.find((b) => b.id === pickedBankId) ?? null
+
+  // Picking a saved assessment pre-fills everything the builder already
+  // knows — title, objective, points, questions, and the MCQ submission
+  // type when the assessment has choice sections. The teacher only chooses
+  // class + due date.
+  function pickFromBank(item: AssessmentBankItem) {
+    setPickedBankId(item.id)
+    setSelectedType(item.sections.some((s) => s.type === "multiple_choice") ? "mcq" : "written")
+    setTitle(item.title)
+    setDescription(item.objective ?? "")
+    setMarks(String(item.totalPoints))
+    setStep("create1")
+  }
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [attachments, setAttachments] = useState<AssignmentAttachment[]>([])
   const [showUpload, setShowUpload] = useState(false)
   const [uploadTab, setUploadTab] = useState("Library")
-  const [libraryResources, setLibraryResources] = useState<LearningResource[]>([])
-  const [libraryLoading, setLibraryLoading] = useState(false)
-  const [libraryTopicTitles, setLibraryTopicTitles] = useState<Record<string, string>>({})
 
   const [selectedClassIds, setSelectedClassIds] = useState<string[]>([CLASSES[0].id])
   const [subject, setSubject] = useState(CLASSES[0].subject)
   const [marks, setMarks] = useState("20")
   const [schedule, setSchedule] = useState(false)
-  const [showSchedulePicker, setShowSchedulePicker] = useState(false)
-  const [showCalendar, setShowCalendar] = useState(false)
+  const [dueDay, setDueDay] = useState<number>(APP_TODAY.getDate() + 7)
 
-  // Use real today as the initial due date (7 days out) and calendar view
-  const realToday = new Date()
-  const initialDue = new Date(realToday)
-  initialDue.setDate(realToday.getDate() + 7)
-
-  const [dueDate, setDueDate] = useState<Date>(initialDue)
-  const [calYear, setCalYear] = useState<number>(initialDue.getFullYear())
-  const [calMonth, setCalMonth] = useState<number>(initialDue.getMonth())
-  const [dueHour12, setDueHour12] = useState<number>(11)   // 1–12
-  const [dueMinute, setDueMinute] = useState<number>(59)
-  const [duePeriod, setDuePeriod] = useState<"AM" | "PM">("PM")
-  const [calStep, setCalStep] = useState<"date" | "time">("date") // which step is active
-
-  // Schedule "go live" date+time (defaults to tomorrow at 08:00 AM)
-  const initialSchedule = new Date(realToday)
-  initialSchedule.setDate(realToday.getDate() + 1)
-  const [scheduleDate, setScheduleDate] = useState<Date>(initialSchedule)
-  const [schedCalYear, setSchedCalYear] = useState<number>(initialSchedule.getFullYear())
-  const [schedCalMonth, setSchedCalMonth] = useState<number>(initialSchedule.getMonth())
-  const [schedHour12, setSchedHour12] = useState<number>(8)  // 1–12
-  const [schedMinute, setSchedMinute] = useState<number>(0)
-  const [schedPeriod, setSchedPeriod] = useState<"AM" | "PM">("AM")
-  const [schedStep, setSchedStep] = useState<"date" | "time">("date")
+  const { resources: libraryResources, loading: libraryLoading, topicTitles: libraryTopicTitles } =
+    useLibraryResources(showUpload && uploadTab === "Library", subject)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [realRosterByClassId, setRealRosterByClassId] = useState<Record<string, RealStudent[]>>({})
 
   useEffect(() => {
-    fetchRealRosterByClassId().then(setRealRosterByClassId)
+    getRealRosterByClassId().then(setRealRosterByClassId)
   }, [])
 
   const selectedTypeObj = ASSIGNMENT_TYPES.find((t) => t.id === selectedType)!
   const availableClasses = CLASSES.filter((c) => !selectedClassIds.includes(c.id))
-
-  const monthLabel = `${MONTH_SHORT[calMonth]} ${calYear}`
-  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate()
-  const leadingBlanks = useMemo(() => {
-    const firstOfMonth = new Date(calYear, calMonth, 1).getDay()
-    return (firstOfMonth + 6) % 7 // Monday-first
-  }, [calYear, calMonth])
-
-  // Convert 12h + period to 24h for ISO
-  function to24h(h: number, period: "AM" | "PM"): number {
-    if (period === "AM") return h === 12 ? 0 : h
-    return h === 12 ? 12 : h + 12
-  }
-
-  const dueLabel = `${dueDate.getDate()} ${MONTH_SHORT[dueDate.getMonth()]} ${dueDate.getFullYear()}, ${String(dueHour12).padStart(2, "0")}:${String(dueMinute).padStart(2, "0")} ${duePeriod}`
-
-  function prevMonth() {
-    if (calMonth === 0) { setCalMonth(11); setCalYear((y) => y - 1) }
-    else setCalMonth((m) => m - 1)
-  }
-  function nextMonth() {
-    if (calMonth === 11) { setCalMonth(0); setCalYear((y) => y + 1) }
-    else setCalMonth((m) => m + 1)
-  }
-
-  const schedDaysInMonth = new Date(schedCalYear, schedCalMonth + 1, 0).getDate()
-  const schedLeadingBlanks = useMemo(() => {
-    const firstOfMonth = new Date(schedCalYear, schedCalMonth, 1).getDay()
-    return (firstOfMonth + 6) % 7
-  }, [schedCalYear, schedCalMonth])
-  const schedMonthLabel = `${MONTH_SHORT[schedCalMonth]} ${schedCalYear}`
-  const schedLabel = `${scheduleDate.getDate()} ${MONTH_SHORT[scheduleDate.getMonth()]} ${scheduleDate.getFullYear()}, ${String(schedHour12).padStart(2, "0")}:${String(schedMinute).padStart(2, "0")} ${schedPeriod}`
-
-  function prevSchedMonth() {
-    if (schedCalMonth === 0) { setSchedCalMonth(11); setSchedCalYear((y) => y - 1) }
-    else setSchedCalMonth((m) => m - 1)
-  }
-  function nextSchedMonth() {
-    if (schedCalMonth === 11) { setSchedCalMonth(0); setSchedCalYear((y) => y + 1) }
-    else setSchedCalMonth((m) => m + 1)
-  }
-
-  useEffect(() => {
-    if (!showUpload || uploadTab !== "Library") return
-    setLibraryLoading(true)
-    getSubjects()
-      .then(({ subjects }) => subjects.find((s) => s.subject_name === subject))
-      .then((match) =>
-        match
-          ? Promise.all([getResources(match.id), getSyllabus(match.id)])
-          : Promise.resolve([[], { units: [] }] as [LearningResource[], { units: SyllabusUnit[] }]),
-      )
-      .then(([resources, { units }]) => {
-        setLibraryResources(resources)
-        const titles: Record<string, string> = {}
-        for (const u of units) for (const c of u.chapters) for (const t of c.topics) titles[t.id] = t.title
-        setLibraryTopicTitles(titles)
-      })
-      .catch(() => setLibraryResources([]))
-      .finally(() => setLibraryLoading(false))
-  }, [showUpload, uploadTab, subject])
-
 
   function handleAttach() {
     setAttachments([{ name: "Worksheet Attachment.pdf", size: "342.33KB" }])
@@ -232,20 +115,7 @@ export default function AssignmentWizard() {
 
   async function handlePublish() {
     if (!title.trim() || selectedClassIds.length === 0) return
-    // Build a proper due Date using the picker's selected date + hour + minute
-    const dueDateWithTime = new Date(
-      dueDate.getFullYear(),
-      dueDate.getMonth(),
-      dueDate.getDate(),
-      to24h(dueHour12, duePeriod),
-      dueMinute,
-      0,
-    )
-    const due = `${MONTH_SHORT[dueDateWithTime.getMonth()]} ${dueDateWithTime.getDate()}`
-    const dueIso = dueDateWithTime.toISOString()
-    const scheduleIso = schedule
-      ? new Date(scheduleDate.getFullYear(), scheduleDate.getMonth(), scheduleDate.getDate(), to24h(schedHour12, schedPeriod), schedMinute, 0).toISOString()
-      : undefined
+    const due = `${MONTH_SHORT[APP_TODAY.getMonth()]} ${dueDay}`
     const totalPoints = Number(marks) || 20
     let firstId = ""
     for (const [idx, classId] of selectedClassIds.entries()) {
@@ -270,17 +140,17 @@ export default function AssignmentWizard() {
         term: "Term 2",
         academicYear,
         due,
-        dueIso,
-        scheduleIso,
         totalPoints,
         status: "active",
-        sourceAssessmentId: null,
+        sourceAssessmentId: pickedBank?.id ?? null,
         publishedToStudents: true,
         createdOn: "Just now",
         submissions,
         type: selectedType,
         description,
         attachments,
+        sections: pickedBank?.sections,
+        topicLabel: pickedBank?.topicLabel,
       }
       const finalId = await publishAssignment(assignment)
       if (idx === 0) firstId = finalId
@@ -391,6 +261,41 @@ export default function AssignmentWizard() {
             })}
           </div>
 
+          {/* Pick from Saved Assessments — pre-fills title/questions/points */}
+          <div className="mt-10">
+            <div className="mb-3 flex items-center gap-3">
+              <div className="h-px flex-1 bg-card-border" />
+              <span className="text-[13px] font-semibold text-text-secondary">Or pick from your Saved Assessments</span>
+              <div className="h-px flex-1 bg-card-border" />
+            </div>
+            {assessmentBank.length === 0 ? (
+              <div className="rounded-[12px] border border-dashed border-card-border px-4 py-5 text-center text-[13px] text-text-muted">
+                No saved assessments yet — build one in the Assessment Builder, then assign it here.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                {assessmentBank.map((b) => (
+                  <button
+                    key={b.id}
+                    onClick={() => pickFromBank(b)}
+                    className="flex items-center gap-3 rounded-[14px] border border-card-border bg-white p-4 text-left shadow-card transition-all hover:shadow"
+                  >
+                    <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-[#E9F1EC] text-[#16332B]">
+                      <Library size={17} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-[14px] font-semibold text-ink">{b.title}</div>
+                      <div className="mt-0.5 text-[12px] text-text-secondary">
+                        {b.questionCount} questions · {b.totalPoints} pts · {b.subject}
+                      </div>
+                    </div>
+                    <span className="shrink-0 text-[12px] font-semibold text-[#16332B]">Use →</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           <div className="mt-8 flex justify-end">
             <button
               onClick={() => setStep("create1")}
@@ -428,6 +333,15 @@ export default function AssignmentWizard() {
             </div>
 
             <div className="space-y-6 bg-white p-5 md:p-7">
+              {pickedBank && (
+                <div className="flex items-center gap-2 rounded-[10px] border border-[#BFE0D3] bg-[#E9F1EC] px-3.5 py-2.5 text-[13px] font-semibold text-[#16332B]">
+                  <Library size={14} />
+                  <span className="flex-1">
+                    From saved assessment — {pickedBank.questionCount} questions included
+                  </span>
+                  <X size={14} className="cursor-pointer opacity-60 hover:opacity-100" onClick={() => setPickedBankId(null)} />
+                </div>
+              )}
               <div>
                 <label className={fieldLabel}>Assignment Title</label>
                 <input
@@ -517,8 +431,8 @@ export default function AssignmentWizard() {
       {/* STEP: CREATE 2 */}
       {step === "create2" && (
         <main className="mx-auto max-w-[760px] px-4 py-8 md:px-6">
-          <div className="rounded-[20px] border border-card-border bg-cream shadow-card" style={{ overflow: "visible" }}>
-            <div className="space-y-7 bg-white p-5 md:p-7" style={{ borderRadius: "20px 20px 0 0" }}>
+          <div className="overflow-hidden rounded-[20px] border border-card-border bg-cream shadow-card">
+            <div className="space-y-7 bg-white p-5 md:p-7">
               <div>
                 <label className={fieldLabel}>Choose Classes</label>
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -581,341 +495,34 @@ export default function AssignmentWizard() {
 
                 <div>
                   <label className={fieldLabel}>End Date &amp; Time</label>
-                  <div className="relative mt-2">
-                    <button
-                      onClick={() => setShowCalendar((v) => !v)}
-                      className="flex h-11 w-full items-center justify-between rounded-[8px] border border-card-border bg-white px-3.5 text-left text-[13.5px]"
-                    >
-                      <span className="inline-flex items-center gap-2">
-                        <CalIcon size={16} className="text-text-secondary" /> {dueLabel}
-                      </span>
-                      <Clock size={16} className="text-text-muted" />
-                    </button>
-
-                    {showCalendar && (
-                      <div className="absolute right-0 top-full z-50 mt-2 w-[300px] rounded-[16px] border border-card-border bg-white p-4 shadow-xl">
-                        {calStep === "date" ? (
-                          <>
-                            {/* Month navigation header */}
-                            <div className="mb-3 flex items-center justify-between">
-                              <button
-                                onClick={prevMonth}
-                                className="flex h-7 w-7 items-center justify-center rounded-full text-text-secondary transition hover:bg-cream"
-                                aria-label="Previous month"
-                              >
-                                <ChevronLeft size={16} />
-                              </button>
-                              <div className="text-[13px] font-semibold">{monthLabel}</div>
-                              <button
-                                onClick={nextMonth}
-                                className="flex h-7 w-7 items-center justify-center rounded-full text-text-secondary transition hover:bg-cream"
-                                aria-label="Next month"
-                              >
-                                <ChevronRight size={16} />
-                              </button>
-                            </div>
-                            {/* Day-of-week labels */}
-                            <div className="mb-1 grid grid-cols-7 gap-1 text-center text-[11px] text-text-muted">
-                              {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((d) => (
-                                <div key={d} className="grid h-7 place-items-center">{d}</div>
-                              ))}
-                            </div>
-                            {/* Day grid */}
-                            <div className="grid grid-cols-7 gap-1">
-                              {Array.from({ length: leadingBlanks }).map((_, i) => (
-                                <div key={`b${i}`} />
-                              ))}
-                              {Array.from({ length: daysInMonth }).map((_, i) => {
-                                const day = i + 1
-                                const isSelected =
-                                  dueDate.getDate() === day &&
-                                  dueDate.getMonth() === calMonth &&
-                                  dueDate.getFullYear() === calYear
-                                const isPast =
-                                  new Date(calYear, calMonth, day) < new Date(new Date().setHours(0, 0, 0, 0))
-                                return (
-                                  <button
-                                    key={i}
-                                    disabled={isPast}
-                                    onClick={() => {
-                                      setDueDate(new Date(calYear, calMonth, day))
-                                      setCalStep("time") // automatically proceed to time selection step
-                                    }}
-                                    className="grid h-8 place-items-center rounded-full text-[12px] transition hover:bg-cream disabled:cursor-not-allowed disabled:opacity-30"
-                                    style={
-                                      isSelected
-                                        ? { background: "#16332B", color: "#fff", fontWeight: 600 }
-                                        : { color: "#111827" }
-                                    }
-                                  >
-                                    {day}
-                                  </button>
-                                )
-                              })}
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            {/* Step Header */}
-                            <div className="mb-3 flex items-center justify-between">
-                              <button
-                                onClick={() => setCalStep("date")}
-                                className="flex h-7 w-7 items-center justify-center rounded-full text-text-secondary transition hover:bg-cream"
-                                aria-label="Back to calendar"
-                              >
-                                <ChevronLeft size={16} />
-                              </button>
-                              <div className="text-[13px] font-semibold">Select Time</div>
-                              <div className="w-7" />
-                            </div>
-
-                            {/* 12-hour time picker */}
-                            <div className="mt-4 flex items-center justify-center gap-4">
-                              {/* Hour selector (1-12) */}
-                              <div className="flex flex-col items-center">
-                                <button
-                                  onClick={() => setDueHour12((h) => (h === 12 ? 1 : h + 1))}
-                                  className="grid h-6 w-10 place-items-center rounded text-text-secondary transition hover:bg-cream"
-                                  aria-label="Hour up"
-                                >
-                                  <ChevronLeft size={14} style={{ transform: "rotate(90deg)" }} />
-                                </button>
-                                <div className="flex h-9 w-12 items-center justify-center rounded-[8px] border border-card-border bg-cream text-[16px] font-bold tabular-nums">
-                                  {String(dueHour12).padStart(2, "0")}
-                                </div>
-                                <button
-                                  onClick={() => setDueHour12((h) => (h === 1 ? 12 : h - 1))}
-                                  className="grid h-6 w-10 place-items-center rounded text-text-secondary transition hover:bg-cream"
-                                  aria-label="Hour down"
-                                >
-                                  <ChevronLeft size={14} style={{ transform: "rotate(270deg)" }} />
-                                </button>
-                              </div>
-
-                              <span className="text-[20px] font-bold text-text-secondary">:</span>
-
-                              {/* Minute selector */}
-                              <div className="flex flex-col items-center">
-                                <button
-                                  onClick={() => setDueMinute((m) => (m + 1) % 60)}
-                                  className="grid h-6 w-10 place-items-center rounded text-text-secondary transition hover:bg-cream"
-                                  aria-label="Minute up"
-                                >
-                                  <ChevronLeft size={14} style={{ transform: "rotate(90deg)" }} />
-                                </button>
-                                <div className="flex h-9 w-12 items-center justify-center rounded-[8px] border border-card-border bg-cream text-[16px] font-bold tabular-nums">
-                                  {String(dueMinute).padStart(2, "0")}
-                                </div>
-                                <button
-                                  onClick={() => setDueMinute((m) => (m - 1 + 60) % 60)}
-                                  className="grid h-6 w-10 place-items-center rounded text-text-secondary transition hover:bg-cream"
-                                  aria-label="Minute down"
-                                >
-                                  <ChevronLeft size={14} style={{ transform: "rotate(270deg)" }} />
-                                </button>
-                              </div>
-
-                              {/* AM/PM toggle */}
-                              <div className="flex flex-col gap-1 border border-card-border rounded-[8px] p-1 bg-cream">
-                                {(["AM", "PM"] as const).map((period) => (
-                                  <button
-                                    key={period}
-                                    onClick={() => setDuePeriod(period)}
-                                    className="px-2.5 py-1 text-[11px] font-bold rounded-[6px] transition"
-                                    style={
-                                      duePeriod === period
-                                        ? { background: "#16332B", color: "#fff" }
-                                        : { color: "#4B5563" }
-                                    }
-                                  >
-                                    {period}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* Done button */}
-                            <button
-                              onClick={() => {
-                                setShowCalendar(false)
-                                setCalStep("date") // reset for next open
-                              }}
-                              className="mt-6 w-full rounded-[8px] py-2 text-[13px] font-semibold text-white transition hover:opacity-90"
-                              style={{ background: "#16332B" }}
-                            >
-                              Done
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  <MiniDatePicker day={dueDay} onChange={setDueDay} />
                 </div>
               </div>
 
-                <div className="grid grid-cols-2 gap-5">
-                  <div>
-                    <label className={fieldLabel}>Total Marks</label>
-                    <input value={marks} onChange={(e) => setMarks(e.target.value)} className={fieldInput} />
-                  </div>
-                  <div>
-                    {/* Schedule for later toggle */}
-                    <div className="flex h-11 items-center justify-between rounded-[8px] border border-card-border bg-cream px-3.5">
-                      <div>
-                        <div className="text-[11px] text-text-secondary">Schedule for later</div>
-                        <div className="-mt-0.5 text-[12.5px] font-semibold">
-                          {schedule ? schedLabel : "Publish now"}
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => { setSchedule(!schedule); setShowSchedulePicker(!schedule) }}
-                        className="relative h-6 w-10 rounded-full transition"
-                        style={{ background: schedule ? "#16332B" : "var(--edova-card-border)" }}
-                      >
-                        <span
-                          className="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition"
-                          style={{ left: schedule ? 18 : 2 }}
-                        />
-                      </button>
-                    </div>
-
-                    {/* Schedule date+time picker */}
-                    {schedule && (
-                      <div className="relative mt-2">
-                        <button
-                          onClick={() => setShowSchedulePicker((v) => !v)}
-                          className="flex h-9 w-full items-center gap-2 rounded-[8px] border border-card-border bg-white px-3 text-left text-[12.5px] font-semibold"
-                        >
-                          <CalIcon size={14} className="text-text-secondary" />
-                          {schedLabel}
-                        </button>
-
-                        {showSchedulePicker && (
-                          <div className="absolute right-0 top-full z-50 mt-2 w-[300px] rounded-[16px] border border-card-border bg-white p-4 shadow-xl">
-                            {schedStep === "date" ? (
-                              <>
-                                {/* Month navigation */}
-                                <div className="mb-3 flex items-center justify-between">
-                                  <button onClick={prevSchedMonth} className="flex h-7 w-7 items-center justify-center rounded-full text-text-secondary transition hover:bg-cream" aria-label="Prev month">
-                                    <ChevronLeft size={16} />
-                                  </button>
-                                  <div className="text-[13px] font-semibold">{schedMonthLabel}</div>
-                                  <button onClick={nextSchedMonth} className="flex h-7 w-7 items-center justify-center rounded-full text-text-secondary transition hover:bg-cream" aria-label="Next month">
-                                    <ChevronRight size={16} />
-                                  </button>
-                                </div>
-                                {/* Day-of-week labels */}
-                                <div className="mb-1 grid grid-cols-7 gap-1 text-center text-[11px] text-text-muted">
-                                  {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((d) => (
-                                    <div key={d} className="grid h-7 place-items-center">{d}</div>
-                                  ))}
-                                </div>
-                                {/* Day grid */}
-                                <div className="grid grid-cols-7 gap-1">
-                                  {Array.from({ length: schedLeadingBlanks }).map((_, i) => <div key={`b${i}`} />)}
-                                  {Array.from({ length: schedDaysInMonth }).map((_, i) => {
-                                    const day = i + 1
-                                    const isSelected = scheduleDate.getDate() === day && scheduleDate.getMonth() === schedCalMonth && scheduleDate.getFullYear() === schedCalYear
-                                    const isPast = new Date(schedCalYear, schedCalMonth, day) < new Date(new Date().setHours(0, 0, 0, 0))
-                                    return (
-                                      <button
-                                        key={i}
-                                        disabled={isPast}
-                                        onClick={() => {
-                                          setScheduleDate(new Date(schedCalYear, schedCalMonth, day))
-                                          setSchedStep("time") // automatically proceed to time selection step
-                                        }}
-                                        className="grid h-8 place-items-center rounded-full text-[12px] transition hover:bg-cream disabled:cursor-not-allowed disabled:opacity-30"
-                                        style={isSelected ? { background: "#16332B", color: "#fff", fontWeight: 600 } : { color: "#111827" }}
-                                      >
-                                        {day}
-                                      </button>
-                                    )
-                                  })}
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                {/* Step Header */}
-                                <div className="mb-3 flex items-center justify-between">
-                                  <button
-                                    onClick={() => setSchedStep("date")}
-                                    className="flex h-7 w-7 items-center justify-center rounded-full text-text-secondary transition hover:bg-cream"
-                                    aria-label="Back to calendar"
-                                  >
-                                    <ChevronLeft size={16} />
-                                  </button>
-                                  <div className="text-[13px] font-semibold">Select Time</div>
-                                  <div className="w-7" />
-                                </div>
-
-                                {/* 12-hour time picker */}
-                                <div className="mt-4 flex items-center justify-center gap-4">
-                                  {/* Hour selector */}
-                                  <div className="flex flex-col items-center">
-                                    <button onClick={() => setSchedHour12((h) => (h === 12 ? 1 : h + 1))} className="grid h-6 w-10 place-items-center rounded text-text-secondary transition hover:bg-cream">
-                                      <ChevronLeft size={14} style={{ transform: "rotate(90deg)" }} />
-                                    </button>
-                                    <div className="flex h-9 w-12 items-center justify-center rounded-[8px] border border-card-border bg-cream text-[16px] font-bold tabular-nums">
-                                      {String(schedHour12).padStart(2, "0")}
-                                    </div>
-                                    <button onClick={() => setSchedHour12((h) => (h === 1 ? 12 : h - 1))} className="grid h-6 w-10 place-items-center rounded text-text-secondary transition hover:bg-cream">
-                                      <ChevronLeft size={14} style={{ transform: "rotate(270deg)" }} />
-                                    </button>
-                                  </div>
-
-                                  <span className="text-[20px] font-bold text-text-secondary">:</span>
-
-                                  {/* Minute selector */}
-                                  <div className="flex flex-col items-center">
-                                    <button onClick={() => setSchedMinute((m) => (m + 1) % 60)} className="grid h-6 w-10 place-items-center rounded text-text-secondary transition hover:bg-cream">
-                                      <ChevronLeft size={14} style={{ transform: "rotate(90deg)" }} />
-                                    </button>
-                                    <div className="flex h-9 w-12 items-center justify-center rounded-[8px] border border-card-border bg-cream text-[16px] font-bold tabular-nums">
-                                      {String(schedMinute).padStart(2, "0")}
-                                    </div>
-                                    <button onClick={() => setSchedMinute((m) => (m - 1 + 60) % 60)} className="grid h-6 w-10 place-items-center rounded text-text-secondary transition hover:bg-cream">
-                                      <ChevronLeft size={14} style={{ transform: "rotate(270deg)" }} />
-                                    </button>
-                                  </div>
-
-                                  {/* AM/PM toggle */}
-                                  <div className="flex flex-col gap-1 border border-card-border rounded-[8px] p-1 bg-cream">
-                                    {(["AM", "PM"] as const).map((period) => (
-                                      <button
-                                        key={period}
-                                        onClick={() => setSchedPeriod(period)}
-                                        className="px-2.5 py-1 text-[11px] font-bold rounded-[6px] transition"
-                                        style={
-                                          schedPeriod === period
-                                            ? { background: "#16332B", color: "#fff" }
-                                            : { color: "#4B5563" }
-                                        }
-                                      >
-                                        {period}
-                                      </button>
-                                    ))}
-                                  </div>
-                                </div>
-
-                                <button
-                                  onClick={() => {
-                                    setShowSchedulePicker(false)
-                                    setSchedStep("date") // reset for next open
-                                  }}
-                                  className="mt-6 w-full rounded-[8px] py-2 text-[13px] font-semibold text-white transition hover:opacity-90"
-                                  style={{ background: "#16332B" }}
-                                >
-                                  Done
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
+              <div className="grid grid-cols-2 gap-5">
+                <div>
+                  <label className={fieldLabel}>Total Marks</label>
+                  <input value={marks} onChange={(e) => setMarks(e.target.value)} className={fieldInput} />
                 </div>
+                <div className="flex h-11 items-end justify-between rounded-[8px] border border-card-border bg-cream px-3.5">
+                  <div>
+                    <div className="text-[11px] text-text-secondary">Schedule for later</div>
+                    <div className="-mt-0.5 text-[12.5px] font-semibold">
+                      {schedule ? "Enabled" : "Publish now"}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setSchedule(!schedule)}
+                    className="relative h-6 w-10 rounded-full transition"
+                    style={{ background: schedule ? "#16332B" : "var(--edova-card-border)" }}
+                  >
+                    <span
+                      className="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition"
+                      style={{ left: schedule ? 18 : 2 }}
+                    />
+                  </button>
+                </div>
+              </div>
             </div>
             <div className="flex justify-between border-t border-card-border px-5 py-4 md:px-7">
               <span className="text-[12px] text-text-secondary">Step 2 of 2 • Configuration</span>

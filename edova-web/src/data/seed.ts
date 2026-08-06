@@ -2,9 +2,7 @@
 import type {
   AcademicCalendarItem,
   Announcement,
-  Assignment,
   AssessmentBankItem,
-  BankQuestionV2,
   BehaviorNote,
   CalendarEvent,
   ChatEmail,
@@ -33,12 +31,12 @@ import type {
   Student,
   Task,
   TeacherAdmin,
-  TimetableEntry,
-  TopicOption,
 } from "@/lib/types"
 
 export const TEACHER_NAME = "Meenakshi Parameswaran"
-export const APP_TODAY = new Date(2026, 6, 9) // Jul 9, 2026
+// APP_TODAY lives in lib/dates.ts (the app clock); re-exported here so
+// existing `@/data/seed` importers keep working.
+export { APP_TODAY } from "@/lib/dates"
 
 // Calendar scoping: events carry teacherId; "all" = school-wide (holidays,
 // staff meetings) shown on every teacher's calendar. Real per-teacher
@@ -67,7 +65,8 @@ export const CLASSES: Klass[] = [
   { id: "c4", name: "Class 9 — Section C", subject: "Algebra II", room: "Room 204", students: 26, schedule: "Tue, Thu, 1:00–1:45", sectionId: "sec_9c" },
   { id: "c5", name: "Class 8 — Section A", subject: "Homeroom", room: "Room 204", students: 32, schedule: "Mon–Fri, 8:15–8:30", sectionId: "sec_8a" },
   // Current focus: Class 10 Mathematics — the one class whose syllabus lives
-  // in the clerk DB (CBSE 041). "This Week" plans against this section.
+  // in the clerk DB (CBSE 041). The planner + syllabus pages work against
+  // this section.
   { id: "c10", name: "Class 10 — Section A", subject: "Mathematics", room: "Room 301", students: 30, schedule: "Mon–Fri, 9:00–9:45", sectionId: "sec_10a" },
 ]
 
@@ -92,52 +91,6 @@ export const CALENDAR_EVENTS: CalendarEvent[] = [
   { date: "Jul 11", day: "Fri", title: "Homework Due — Linear Equations", type: "deadline", time: "11:59 PM", teacherId: "t_me" },
   { date: "Jul 14", day: "Mon", title: "Staff Meeting", type: "meeting", time: "8:00 AM", teacherId: "all" },
   { date: "Jul 20", day: "Sun", title: "School Holiday — Founders Day", type: "holiday", time: "All day", teacherId: "all" },
-]
-
-export const ASSIGNMENTS_SEED: Assignment[] = [
-  { id: "a1", title: "Linear Equations Worksheet", classId: "c1", subject: "Mathematics", term: "Term 2", academicYear: "2026–27", due: "Jul 11", totalPoints: 20, status: "active", sourceAssessmentId: null, publishedToStudents: true, createdOn: "Jul 4",
-    submissions: [
-      { studentId: "s1", status: "submitted", submittedOn: "Jul 8", score: null, feedback: "" },
-      { studentId: "s2", status: "submitted", submittedOn: "Jul 9", score: null, feedback: "" },
-      { studentId: "s3", status: "not_started", submittedOn: "", score: null, feedback: "" },
-      { studentId: "s4", status: "submitted", submittedOn: "Jul 7", score: null, feedback: "" },
-      { studentId: "s5", status: "not_started", submittedOn: "", score: null, feedback: "" },
-      { studentId: "s6", status: "not_started", submittedOn: "", score: null, feedback: "" },
-      { studentId: "s7", status: "submitted", submittedOn: "Jul 8", score: null, feedback: "" },
-      { studentId: "s8", status: "not_started", submittedOn: "", score: null, feedback: "" },
-    ] },
-  { id: "a2", title: "Quadratic Functions Practice", classId: "c1", subject: "Mathematics", term: "Term 2", academicYear: "2026–27", due: "Jul 12", totalPoints: 15, status: "active", sourceAssessmentId: null, publishedToStudents: true, createdOn: "Jul 5",
-    submissions: [
-      { studentId: "s1", status: "submitted", submittedOn: "Jul 8", score: null, feedback: "" },
-      { studentId: "s2", status: "not_started", submittedOn: "", score: null, feedback: "" },
-      { studentId: "s3", status: "not_started", submittedOn: "", score: null, feedback: "" },
-      { studentId: "s4", status: "not_started", submittedOn: "", score: null, feedback: "" },
-      { studentId: "s5", status: "not_started", submittedOn: "", score: null, feedback: "" },
-      { studentId: "s6", status: "not_started", submittedOn: "", score: null, feedback: "" },
-      { studentId: "s7", status: "submitted", submittedOn: "Jul 9", score: null, feedback: "" },
-      { studentId: "s8", status: "not_started", submittedOn: "", score: null, feedback: "" },
-    ] },
-  { id: "a3", title: "Geometry Basics Quiz Prep", classId: "c3", subject: "Mathematics", term: "Term 2", academicYear: "2026–27", due: "Jul 9", totalPoints: 25, status: "closed", sourceAssessmentId: null, publishedToStudents: true, createdOn: "Jun 30",
-    submissions: [
-      { studentId: "s9", status: "submitted", submittedOn: "Jul 8", score: null, feedback: "" },
-      { studentId: "s10", status: "missing", submittedOn: "", score: null, feedback: "" },
-    ] },
-  { id: "a4", title: "Polynomial Identities", classId: "c4", subject: "Algebra II", term: "Term 2", academicYear: "2026–27", due: "Jul 15", totalPoints: 20, status: "active", sourceAssessmentId: null, publishedToStudents: true, createdOn: "Jul 6",
-    submissions: [
-      { studentId: "s11", status: "submitted", submittedOn: "Jul 8", score: null, feedback: "" },
-      { studentId: "s12", status: "not_started", submittedOn: "", score: null, feedback: "" },
-    ] },
-  { id: "a5", title: "Word Problems Set 3", classId: "c1", subject: "Mathematics", term: "Term 2", academicYear: "2026–27", due: "Jul 8", totalPoints: 20, status: "graded", sourceAssessmentId: null, publishedToStudents: true, createdOn: "Jun 28",
-    submissions: [
-      { studentId: "s1", status: "submitted", submittedOn: "Jul 7", score: 19, feedback: "Excellent work." },
-      { studentId: "s2", status: "submitted", submittedOn: "Jul 8", score: 16, feedback: "Watch sign errors." },
-      { studentId: "s3", status: "submitted", submittedOn: "Jul 8", score: 14, feedback: "Review word-problem setup." },
-      { studentId: "s4", status: "submitted", submittedOn: "Jul 7", score: 18, feedback: "" },
-      { studentId: "s5", status: "submitted", submittedOn: "Jul 8", score: 17, feedback: "" },
-      { studentId: "s6", status: "submitted", submittedOn: "Jul 8", score: 12, feedback: "Let's go over this together." },
-      { studentId: "s7", status: "submitted", submittedOn: "Jul 7", score: 20, feedback: "Perfect score!" },
-      { studentId: "s8", status: "submitted", submittedOn: "Jul 8", score: 15, feedback: "" },
-    ] },
 ]
 
 export const ASSESSMENT_BANK_SEED: AssessmentBankItem[] = []
@@ -530,16 +483,6 @@ export const ACADEMIC_YEARS = ["2025–26", "2026–27"]
 export const WEIGHTAGE_LEVELS = ["High", "Medium", "Low"]
 export const DIFFICULTY_LEVELS = ["Low", "Medium", "High"]
 
-// Current focus: every weekday period plans Class 10 — Section A Mathematics
-// (the syllabus with real detail in the clerk DB).
-export const TIMETABLE_SEED: TimetableEntry[] = [
-  { id: "tt1", day: "Monday", time: "9:00 AM", classId: "c10" },
-  { id: "tt2", day: "Tuesday", time: "9:00 AM", classId: "c10" },
-  { id: "tt3", day: "Wednesday", time: "9:00 AM", classId: "c10" },
-  { id: "tt4", day: "Thursday", time: "9:00 AM", classId: "c10" },
-  { id: "tt5", day: "Friday", time: "9:00 AM", classId: "c10" },
-]
-
 export const MT_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
 export const MT_PERIODS = [1, 2, 3, 4, 5]
 export const PERIOD_TIME_LABELS: Record<number, string> = { 1: "9:00–9:45", 2: "9:45–10:30", 3: "10:45–11:30", 4: "11:30–12:15", 5: "1:00–1:45" }
@@ -631,64 +574,6 @@ export const PALETTE_TYPES: PaletteType[] = [
   { type: "essay", label: "Essay", icon: "💬", bg: "#F5F3FF", color: "#6D28D9" },
 ]
 
-export const TOPIC_OPTIONS: TopicOption[] = [
-  { id: "photosynthesis", label: "Biology — Photosynthesis" },
-  { id: "fractions", label: "Maths — Fractions" },
-  { id: "atoms", label: "Chemistry — Atoms" },
-]
-
-// Demo video-lesson library for the Assessment Builder's "Video Lesson"
-// section type — a small local stand-in for a real video search backend.
-// `tags` back the keyword/semantic search toggle in the picker modal.
-export interface VideoLesson {
-  id: string
-  topicId: string
-  title: string
-  thumbnail: string
-  duration: string
-  tags: string[]
-}
-export const VIDEO_LIBRARY: VideoLesson[] = [
-  { id: "vid1", topicId: "photosynthesis", title: "Photosynthesis Explained: Light & Dark Reactions", thumbnail: "🌿", duration: "6:12", tags: ["chlorophyll", "light reaction", "calvin cycle", "plants"] },
-  { id: "vid2", topicId: "photosynthesis", title: "How Leaves Make Food — Animated Overview", thumbnail: "🍃", duration: "4:35", tags: ["chloroplast", "glucose", "stomata", "animation"] },
-  { id: "vid3", topicId: "photosynthesis", title: "Photosynthesis Lab: Testing for Starch", thumbnail: "🧪", duration: "8:02", tags: ["experiment", "iodine test", "lab demo"] },
-  { id: "vid4", topicId: "fractions", title: "Adding & Subtracting Fractions the Easy Way", thumbnail: "➗", duration: "5:48", tags: ["numerator", "denominator", "common denominator"] },
-  { id: "vid5", topicId: "fractions", title: "Equivalent Fractions Visualized", thumbnail: "🍕", duration: "3:57", tags: ["equivalent", "simplify", "visual model"] },
-  { id: "vid6", topicId: "fractions", title: "Mixed Numbers & Improper Fractions", thumbnail: "🔢", duration: "7:10", tags: ["mixed number", "improper fraction", "conversion"] },
-  { id: "vid7", topicId: "atoms", title: "Inside the Atom: Protons, Neutrons & Electrons", thumbnail: "⚛️", duration: "6:40", tags: ["proton", "neutron", "electron", "nucleus"] },
-  { id: "vid8", topicId: "atoms", title: "Bohr Model vs Quantum Model", thumbnail: "🌀", duration: "9:15", tags: ["bohr model", "electron shell", "quantum"] },
-]
-
-export const QUESTION_BANK_V2: Record<string, BankQuestionV2[]> = {
-  photosynthesis: [
-    { id: 1, text: "What is the primary pigment involved in photosynthesis?", difficulty: "Easy", options: ["Chlorophyll", "Carotene", "Xanthophyll", "Hemoglobin"], correct: [0] },
-    { id: 2, text: "Which gas is taken in by plants during photosynthesis?", difficulty: "Easy", options: ["Oxygen", "Carbon dioxide", "Nitrogen", "Hydrogen"], correct: [1] },
-    { id: 3, text: "In which organelle does photosynthesis occur?", difficulty: "Easy", options: ["Mitochondria", "Nucleus", "Chloroplast", "Ribosome"], correct: [2] },
-    { id: 4, text: "What are the products of photosynthesis?", difficulty: "Medium", options: ["Glucose and oxygen", "Carbon dioxide and water", "ATP and NADPH", "Proteins and lipids"], correct: [0] },
-    { id: 5, text: "Which part of photosynthesis occurs in the thylakoid membranes?", difficulty: "Medium", options: ["Calvin cycle", "Light-dependent reactions", "Krebs cycle", "Glycolysis"], correct: [1] },
-    { id: 6, text: "What is the role of NADP+ in photosynthesis?", difficulty: "Medium", options: ["Electron carrier", "Carbon source", "Oxygen acceptor", "Pigment molecule"], correct: [0] },
-    { id: 7, text: "Explain the significance of the Calvin cycle.", difficulty: "Hard", options: ["It fixes carbon into organic molecules", "It releases oxygen", "It produces ATP directly", "It breaks down glucose"], correct: [0] },
-    { id: 8, text: "How does photorespiration differ from photosynthesis?", difficulty: "Hard", options: ["It consumes oxygen and releases CO2", "It produces glucose", "It requires light only", "It occurs in mitochondria"], correct: [0] },
-    { id: 9, text: "What happens to the light energy absorbed by chlorophyll?", difficulty: "Hard", options: ["It is converted to chemical energy", "It is reflected as heat", "It is stored as starch", "It is lost as fluorescence"], correct: [0] },
-  ],
-  fractions: [
-    { id: 101, text: "What is 1/2 + 1/4?", difficulty: "Easy", options: ["1/6", "3/4", "2/6", "1/4"], correct: [1] },
-    { id: 102, text: "Which fraction is equivalent to 2/4?", difficulty: "Easy", options: ["1/2", "3/4", "1/4", "2/3"], correct: [0] },
-    { id: 103, text: "Simplify 6/8.", difficulty: "Easy", options: ["3/4", "2/3", "1/2", "4/5"], correct: [0] },
-    { id: 104, text: "What is 3/5 of 25?", difficulty: "Medium", options: ["10", "15", "20", "5"], correct: [1] },
-    { id: 105, text: "Convert 0.75 to a fraction.", difficulty: "Medium", options: ["3/4", "1/4", "2/5", "7/10"], correct: [0] },
-    { id: 106, text: "Which is greater: 2/3 or 3/5?", difficulty: "Medium", options: ["2/3", "3/5", "Equal", "Cannot tell"], correct: [0] },
-    { id: 107, text: "Solve: 2/3 ÷ 4/5.", difficulty: "Hard", options: ["5/6", "8/15", "3/10", "1/2"], correct: [0] },
-    { id: 108, text: "A recipe calls for 3/4 cup of sugar. How much for half the recipe?", difficulty: "Hard", options: ["3/8 cup", "1/2 cup", "1/4 cup", "2/3 cup"], correct: [0] },
-  ],
-  atoms: [
-    { id: 201, text: "What particle has a negative charge?", difficulty: "Easy", options: ["Proton", "Neutron", "Electron", "Nucleus"], correct: [2] },
-    { id: 202, text: "Where is most of the mass of an atom located?", difficulty: "Easy", options: ["Electron cloud", "Nucleus", "Orbitals", "Shells"], correct: [1] },
-    { id: 203, text: "What is the atomic number?", difficulty: "Medium", options: ["Number of protons", "Number of neutrons", "Number of electrons", "Mass of atom"], correct: [0] },
-    { id: 204, text: "Isotopes differ in number of _____.", difficulty: "Medium", options: ["Protons", "Neutrons", "Electrons", "Shells"], correct: [1] },
-    { id: 205, text: "Describe Bohr's model of the atom.", difficulty: "Hard", options: ["Electrons orbit nucleus in fixed paths", "Electrons form a cloud", "Atoms are indivisible", "Protons orbit neutrons"], correct: [0] },
-  ],
-}
 
 export const TEACHERS_ADMIN: TeacherAdmin[] = [
   { name: "Meenakshi Parameswaran", subject: "Mathematics", classes: 5, avgAttendance: 91, rating: 4.8 },
@@ -707,9 +592,10 @@ export const STANDARDS_OPTIONS: StandardOption[] = [
 
 export const DEFAULT_PLAN: LessonPlan = {
   topic: "Solving Linear Equations with Variables on Both Sides",
+  title: "Solving Linear Equations with Variables on Both Sides",
   className: "Class 8 — Section A", subject: "Mathematics", duration: "45", standards: ["8.EE.C.7"],
   objective: "Students will be able to solve linear equations with variables on both sides with at least 80% accuracy on independent practice.",
-  materials: ["Whiteboard & markers", "Practice worksheet (printable)", "Exit ticket slips", "Calculator (optional)"],
+  outcomes: ["Isolate the variable on one side of the equation.", "Check a solution by substitution."],
   warmup: "5 min — Quick recap: 3 review problems from the previous lesson, solved individually then checked in pairs.",
   instruction: "15 min — Direct instruction with worked examples on the board; think-aloud modeling of each solution step.",
   activity: "18 min — Small-group problem set (mixed-ability groups of 3); circulate to provide targeted support.",

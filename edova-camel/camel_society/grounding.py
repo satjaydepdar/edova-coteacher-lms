@@ -50,6 +50,29 @@ def _tokens(text: str) -> list[str]:
     return [t for t in _WORD_RE.findall((text or "").lower()) if t not in _STOP]
 
 
+# Free-form subject string -> bundle folder. Live values come from
+# edova-third-brain/config.yaml's taxonomy.subject_keywords; these defaults
+# are identical to the pre-config behavior when the file/block is missing.
+_DEFAULT_SUBJECT_KEYWORDS = {
+    "math": ["math"],
+    "science": ["scien", "physic", "chem", "bio"],
+}
+
+
+@lru_cache(maxsize=1)
+def _subject_keywords() -> dict:
+    config_path = Path(__file__).resolve().parents[2] / "edova-third-brain" / "config.yaml"
+    try:
+        import yaml
+        taxonomy = (yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}).get("taxonomy", {}) or {}
+        keywords = taxonomy.get("subject_keywords")
+        if keywords:
+            return {str(k): [str(w) for w in v] for k, v in keywords.items()}
+    except Exception:
+        pass
+    return _DEFAULT_SUBJECT_KEYWORDS
+
+
 def _normalize_subject(subject: str) -> str:
     """Map a free-form request subject ('Mathematics', 'Physics') onto the
     bundle's subject folders (math / science). Returns '' when unknown so the
@@ -57,10 +80,9 @@ def _normalize_subject(subject: str) -> str:
     s = (subject or "").lower()
     if not s:
         return ""
-    if "math" in s:
-        return "math"
-    if any(k in s for k in ("scien", "physic", "chem", "bio")):
-        return "science"
+    for folder, keywords in _subject_keywords().items():
+        if any(k in s for k in keywords):
+            return folder
     return ""
 
 
