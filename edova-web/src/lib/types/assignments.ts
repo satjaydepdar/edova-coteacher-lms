@@ -15,6 +15,8 @@ export interface Submission {
   submittedOn: string
   score: number | null
   feedback: string
+  answers?: Array<{ question_id: string; selected: string }> | null
+  textResponse?: string | null
 }
 export type AssignmentStatus = "active" | "closed" | "graded"
 

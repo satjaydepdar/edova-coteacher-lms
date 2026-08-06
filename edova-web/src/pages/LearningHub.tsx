@@ -86,11 +86,7 @@ function toStudyAssignment(a: MyAssignment): StudyAssignment | null {
   return { id: a.id, title: a.title, subject, chapter: a.topic_label || subject, dueLabel, status }
 }
 
-function subjectCode(name: string): string {
-  if (name === "Science") return "SCI"
-  if (name === "Mathematics") return "MAT"
-  return name.slice(0, 3).toUpperCase()
-}
+
 
 export default function LearningHub() {
   const [activeView, setActiveView] = useState<"learning" | "journal" | "heatmap">("learning")
@@ -98,7 +94,7 @@ export default function LearningHub() {
   // Default: 55/45 video/reading split. Theater: 72/28, for when the video
   // is what needs the room (a diagram, a worked example) rather than the text.
   const [videoFocus, setVideoFocus] = useState(false)
-  const { xp, streak, mistakes, hydrate, addXP, addMistake } = useLearningStore()
+  const { streak, mistakes, hydrate, addXP, addMistake } = useLearningStore()
 
   // Real teacher-assigned homework for logged-in students; Guest mode keeps
   // the placeholder above. `null` = not loaded / not a student session.
@@ -220,7 +216,6 @@ export default function LearningHub() {
   }, [topicId])
 
   const subjectOptions = subjects.length > 0 ? subjects : [FALLBACK_SUBJECT]
-  const subject = subjectOptions.find((s) => s.id === subjectId) ?? subjectOptions[0]
 
   const chapters = useMemo(() => units.flatMap((u) => u.chapters), [units])
   const chapterOptions = chapters.length > 0 ? chapters : [FALLBACK_CHAPTER]
@@ -280,7 +275,7 @@ export default function LearningHub() {
     ? `${getAssetUrl(chapterLab.s3_key)}${chapterLab.s3_uploaded_at ? `?v=${encodeURIComponent(chapterLab.s3_uploaded_at)}` : ""}`
     : undefined
 
-  const okf = `C10.${subjectCode(subject.subject_name)}.CH${String(chapter.number ?? 0).padStart(2, "0")}`
+
 
   const triggerClass =
     "data-[state=active]:bg-ink data-[state=active]:text-sidebar-text"
@@ -328,11 +323,9 @@ export default function LearningHub() {
               ))}
             </SelectContent>
           </Select>
-          <Badge variant="okf" className="ml-2 font-mono">{okf}</Badge>
         </div>
         <div className="flex items-center gap-3">
           <StudyMaterial chapterName={chapter.name} chapterNumber={chapter.number} resources={resources} />
-          <Badge variant="secondary">⚡ {xp} XP</Badge>
           <Badge variant="warning">🔥 {streak} day streak</Badge>
         </div>
       </Card>

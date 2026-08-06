@@ -27,8 +27,13 @@ export default function AssignmentEvaluate() {
   const setSubmissionEvaluation = useSchoolStore((s) => s.setSubmissionEvaluation)
   const showFlash = useSchoolStore((s) => s.showFlash)
   const realStudents = useSchoolStore((s) => s.realStudents)
+  const hydrateAssignments = useSchoolStore((s) => s.hydrateAssignments)
   const hydrateRealStudents = useSchoolStore((s) => s.hydrateRealStudents)
-  useEffect(() => { hydrateRealStudents() }, [hydrateRealStudents])
+
+  useEffect(() => {
+    hydrateAssignments().catch(() => {})
+    hydrateRealStudents().catch(() => {})
+  }, [hydrateAssignments, hydrateRealStudents])
 
   const assignment = assignments.find((a) => a.id === id)
 
@@ -47,12 +52,16 @@ export default function AssignmentEvaluate() {
     () => (assignment?.submissions ?? []).filter((s) => s.score == null),
     [assignment]
   )
+  const evaluated = useMemo(
+    () => (assignment?.submissions ?? []).filter((s) => s.score != null),
+    [assignment]
+  )
   const yetToSubmit = useMemo(
     () => (assignment?.submissions ?? []).filter((s) => s.status === "not_started" || s.status === "missing"),
     [assignment]
   )
 
-  const list = evalTab === "evaluate" ? yetToEvaluate : yetToSubmit
+  const list = evalTab === "evaluate" ? [...yetToEvaluate, ...evaluated] : yetToSubmit
   const filteredList = useMemo(() => {
     const q = search.trim().toLowerCase()
     if (!q) return list
@@ -64,7 +73,7 @@ export default function AssignmentEvaluate() {
 
   const selected: Submission | undefined =
     (selectedStudentId && assignment?.submissions.find((s) => s.studentId === selectedStudentId)) ||
-    (evalTab === "evaluate" ? yetToEvaluate[0] : undefined)
+    (evalTab === "evaluate" ? [...yetToEvaluate, ...evaluated][0] : undefined)
   const selectedStudent = selected ? resolveStudentDisplay(selected.studentId, realStudents) : undefined
 
   function openMarksModal() {
@@ -163,7 +172,7 @@ export default function AssignmentEvaluate() {
                     : { color: "var(--edova-text-secondary)" }
                 }
               >
-                Yet to Evaluate ({yetToEvaluate.length})
+                Evaluate ({yetToEvaluate.length + evaluated.length})
               </button>
               <button
                 onClick={() => {
@@ -222,13 +231,19 @@ export default function AssignmentEvaluate() {
                       {cls ? cls.name : assignment.classId} • {student?.rollNo}
                     </div>
                     {evalTab === "evaluate" ? (
-                      <div className="mt-1.5 inline-flex rounded-full border border-[#FCD34D] bg-[#FEF3C7] px-2 py-0.5 text-[10px] font-semibold text-[#92400E]">
-                        {s.status === "late"
-                          ? "Submitted late"
-                          : s.status === "submitted"
-                            ? `Submitted ${s.submittedOn || ""}`
-                            : "Awaiting grade"}
-                      </div>
+                      s.score != null ? (
+                        <div className="mt-1.5 inline-flex rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-2 py-0.5 text-[10px] font-semibold text-[#065F46]">
+                          Score: {s.score} / {assignment.totalPoints}
+                        </div>
+                      ) : (
+                        <div className="mt-1.5 inline-flex rounded-full border border-[#FCD34D] bg-[#FEF3C7] px-2 py-0.5 text-[10px] font-semibold text-[#92400E]">
+                          {s.status === "late"
+                            ? "Submitted late"
+                            : s.status === "submitted"
+                              ? `Submitted ${s.submittedOn || ""}`
+                              : "Awaiting grade"}
+                        </div>
+                      )
                     ) : (
                       <div className="mt-1.5 text-[11px] text-text-muted">
                         {s.status === "missing" ? "Missing" : "Not submitted"}
@@ -242,7 +257,7 @@ export default function AssignmentEvaluate() {
 
           <div className="border-t border-card-border p-3 text-[11px] text-text-muted">
             {evalTab === "evaluate"
-              ? `${yetToEvaluate.length} student${yetToEvaluate.length === 1 ? "" : "s"} awaiting evaluation`
+              ? `${yetToEvaluate.length} to evaluate • ${evaluated.length} evaluated`
               : `${yetToSubmit.length} student${yetToSubmit.length === 1 ? "" : "s"} yet to submit`}
           </div>
         </aside>
@@ -299,12 +314,46 @@ export default function AssignmentEvaluate() {
                     </div>
 
                     <div className="mt-6 space-y-5 text-[13px] leading-relaxed">
-                      <div className="relative grid h-[140px] place-items-center overflow-hidden rounded-[12px] border border-dashed border-[#D1D5DB] bg-[#F9FAFB] text-[12px] text-text-muted">
-                        <div className="text-center">
-                          <div className="mx-auto grid h-16 w-16 place-items-center rounded-full border-2 border-ink text-2xl">📄</div>
-                          <div className="mt-2">{selectedStudent?.name ?? "Student"}'s submitted work</div>
+                      {assignment.type === "mcq" && assignment.sections && assignment.sections.length > 0 ? (
+                        <div className="space-y-4">
+                          {assignment.sections.flatMap(sec => sec.questions).map((q, idx) => {
+                            const ansObj = selected?.answers?.find(a => a.question_id === q.id)
+                            const ans = ansObj?.selected || "No answer"
+                            const correctAns = q.correctAnswer || q.options?.find(o => o.correct)?.text || q.options?.find(o => o.correct)?.label || ""
+                            const isCorrect = Boolean(ansObj) && (ans === correctAns || ans === q.options?.find(o => o.correct)?.label)
+                            return (
+                              <div key={q.id} className="rounded-[12px] border border-card-border bg-[#F9FAFB] p-4 text-left">
+                                <div className="font-semibold text-ink">Q{idx + 1}. {q.text}</div>
+                                <div className="mt-2 flex items-center gap-4 text-[12px]">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-text-secondary">Student Answer:</span>
+                                    <span className={`font-semibold ${isCorrect ? "text-[#059669]" : "text-[#DC2626]"}`}>{ans}</span>
+                                    {isCorrect ? <CheckCircle2 size={14} className="text-[#059669]" /> : <XCircle size={14} className="text-[#DC2626]" />}
+                                  </div>
+                                  {!isCorrect && (
+                                    <div className="flex items-center gap-1.5">
+                                      <span className="text-text-secondary">Correct Answer:</span>
+                                      <span className="font-semibold text-[#059669]">{correctAns}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )
+                          })}
                         </div>
-                      </div>
+                      ) : selected?.textResponse ? (
+                        <div className="rounded-[12px] border border-card-border bg-[#F9FAFB] p-6 text-left whitespace-pre-wrap">
+                          <div className="mb-3 text-[14px] font-semibold text-ink">Student's Response:</div>
+                          <div className="text-[13px] text-text-secondary leading-relaxed">{selected.textResponse}</div>
+                        </div>
+                      ) : (
+                        <div className="relative grid h-[140px] place-items-center overflow-hidden rounded-[12px] border border-dashed border-[#D1D5DB] bg-[#F9FAFB] text-[12px] text-text-muted">
+                          <div className="text-center">
+                            <div className="mx-auto grid h-16 w-16 place-items-center rounded-full border-2 border-ink text-2xl">📄</div>
+                            <div className="mt-2">{selectedStudent?.name ?? "Student"}'s submitted work</div>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <div className="mt-8 flex justify-between border-t border-card-border pt-3 text-[10px] text-text-muted">

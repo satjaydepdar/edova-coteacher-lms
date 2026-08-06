@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { ArrowLeft, File, CheckCircle2, MoreHorizontal } from "lucide-react"
 import { CLASSES, APP_TODAY } from "@/data/seed"
@@ -27,6 +27,13 @@ export default function AssignmentDashboard() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const assignments = useSchoolStore((s) => s.assignments)
+  const hydrateAssignments = useSchoolStore((s) => s.hydrateAssignments)
+  const hydrateRealStudents = useSchoolStore((s) => s.hydrateRealStudents)
+
+  useEffect(() => {
+    hydrateAssignments().catch(() => {})
+    hydrateRealStudents().catch(() => {})
+  }, [hydrateAssignments, hydrateRealStudents])
 
   const assignment = assignments.find((a) => a.id === id)
 
