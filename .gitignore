@@ -20,9 +20,13 @@ graphify-out/cache/
 # services (edova-web, edova-camel, edova-backend, ncert_rag) + db/ +
 # edova-third-brain/okf-bundle (read at runtime by edova-camel grounding).
 .claude/
+.github/skills/
 instructions/
 Learning-resources/
 innuxai-edova-coteacher_S3/
 edova-interactive-learning-engine/
 _decomp/
 graphify-out/
+
+# Runtime logs
+*.log

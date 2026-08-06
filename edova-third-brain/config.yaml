@@ -21,3 +21,31 @@ s3:
 subjects: {}
 
 document_types: {}
+
+# Controlled vocabularies — edit here to extend, no code changes needed.
+# Consumers fall back to these same values hardcoded if the block is absent.
+taxonomy:
+  # check_okf.py: bundle integrity expectations
+  expected_subjects: ["math", "science", "history", "geography", "english"]
+  expected_science_subdirs: ["physics", "chemistry", "biology"]
+  # edova-camel grounding.py: free-form subject string -> bundle folder
+  subject_keywords:
+    math: ["math"]
+    science: ["scien", "physic", "chem", "bio"]
+  # classify.py: filename cue -> doc_type folder (first match wins)
+  doc_type_cues:
+    worksheet: "worksheets"
+    lesson: "lesson-plans"
+    mcq: "question-bank"
+    question: "question-bank"
+    rubric: "assessments"
+    test: "assessments"
+    quiz: "assessments"
+    assessment: "assessments"
+    activit: "activities"
+    slide: "assets"
+    video: "videos"
+    note: "handbook"
+    reflection: "handbook"
+    handbook: "handbook"
+  default_doc_type: "handbook"

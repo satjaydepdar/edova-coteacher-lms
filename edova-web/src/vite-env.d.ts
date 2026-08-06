@@ -6,6 +6,8 @@ interface ImportMetaEnv {
   readonly VITE_S3_BUCKET_URL: string
   /** Base URL of the ncert_rag FastAPI service (upload presign/complete). */
   readonly VITE_API_URL: string
+  /** Base URL of the edova-backend service (auth, classrooms, assignments, calendar). */
+  readonly VITE_BACKEND_API_URL: string
   /** Base URL of the CAMEL lesson-planning AI service (edova-camel). */
   readonly VITE_AI_API_URL: string
   /** Base URL of the Ask-the-Textbook RAG service (ncert_rag/edova-coteacher-rag). */

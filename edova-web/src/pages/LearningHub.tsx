@@ -441,7 +441,7 @@ export default function LearningHub() {
             </Card>
           </div>
         </TabsContent>
-        <TabsContent value="lab"><LabExercise addXP={addXP} /></TabsContent>
+        <TabsContent value="lab"><LabExercise addXP={addXP} onMistake={addMistake} chapter={chapter.name} /></TabsContent>
         <TabsContent value="mindmap"><Mindmap /></TabsContent>
         <TabsContent value="journal"><MistakeJournal mistakes={mistakes} /></TabsContent>
         <TabsContent value="heatmap"><Heatmap /></TabsContent>
