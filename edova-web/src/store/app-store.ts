@@ -2,7 +2,6 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import type { Role } from "@/lib/types"
 import { login as apiLogin, logout as apiLogout, type SessionUser } from "@/lib/auth"
-import { setSessionToken, setSessionUser } from "@/lib/api-client"
 
 interface AppState {
   // Role toggle (Teacher / Admin) — drives sidebar admin group + identity.
@@ -35,6 +34,12 @@ interface AppState {
   chatOpen: boolean
   toggleChat: () => void
   setChatOpen: (open: boolean) => void
+
+  // When the notification bell was last opened (ISO). Anything submitted
+  // after this counts as unread. Persisted, so "unread" survives a reload
+  // instead of every refresh re-announcing the same submissions.
+  notificationsSeenAt: string | null
+  markNotificationsSeen: () => void
 }
 
 export const useAppStore = create<AppState>()(
@@ -65,6 +70,9 @@ export const useAppStore = create<AppState>()(
       chatOpen: false,
       toggleChat: () => set((s) => ({ chatOpen: !s.chatOpen })),
       setChatOpen: (chatOpen) => set({ chatOpen }),
+
+      notificationsSeenAt: null,
+      markNotificationsSeen: () => set({ notificationsSeenAt: new Date().toISOString() }),
     }),
     {
       name: "edova-app",
@@ -73,13 +81,8 @@ export const useAppStore = create<AppState>()(
         session: s.session,
         academicYear: s.academicYear,
         sectionId: s.sectionId,
+        notificationsSeenAt: s.notificationsSeenAt,
       }),
-      // Push the persisted session back into the gateways on reload so authed
-      // calls carry the bearer without the data layer reading this store.
-      onRehydrateStorage: () => (state) => {
-        setSessionToken(state?.session?.token ?? null)
-        setSessionUser(state?.session?.user ?? null)
-      },
     }
   )
 )
