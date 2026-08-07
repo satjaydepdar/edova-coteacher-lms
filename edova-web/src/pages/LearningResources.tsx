@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "react-router-dom"
-import type { OkfResourceType } from "@/lib/types"
+import type { CatalogResource, CurriculumOut, OkfResourceType, SyllabusUnitOut } from "@/lib/types"
 import { getAssetUrl } from "@/lib/media"
 import { uploadLearningResource } from "@/lib/upload"
+import { getAcademicYears, getCurriculum, getSubjectResources, getSyllabus } from "@/lib/curriculum-api"
 import {
   Select,
   SelectContent,
@@ -27,7 +28,7 @@ import { cn } from "@/lib/utils"
 // third-brain bundle/manifest), so this page groups resources by chapter;
 // topics render as plain context text under each chapter, not as their own
 // resource-bearing cards like the old "Subtopic" model had.
-const API_BASE = import.meta.env.VITE_RAG_API_URL ?? "http://localhost:8000"
+
 const CLASS_OPTIONS = ["LKG", "UKG", ...Array.from({ length: 10 }, (_, i) => `Class ${i + 1}`)]
 const BOARD_OPTIONS = ["CBSE", "ICSE", "State"]
 
@@ -202,18 +203,6 @@ function UploadPanel({ target, onCancel, onSubmit }: { target: UploadTarget; onC
   )
 }
 
-// ---- API shapes ----
-interface SubjectRow { id: string; subject_name: string }
-interface CurriculumResponse { id: string; subjects: SubjectRow[] }
-interface TopicOut { id: string; title: string }
-interface ChapterOut { id: string; number: number | null; name: string; topics: TopicOut[] }
-interface UnitOut { id: string; name: string; chapters: ChapterOut[] }
-interface SyllabusResponse { units: UnitOut[] }
-interface CatalogResource {
-  id: string; title: string; type: OkfResourceType; doc_type?: string
-  chapter_number: number; s3_key?: string; preview_s3_key?: string; status: string
-}
-
 export default function LearningResources() {
   const [searchParams] = useSearchParams()
   const okfAssignedByClass = useSchoolStore((s) => s.okfAssignedByClass)
@@ -226,10 +215,10 @@ export default function LearningResources() {
   const [board, setBoard] = useState(BOARD_OPTIONS[0])
   const [cls, setCls] = useState("Class 10")
 
-  const [curriculum, setCurriculum] = useState<CurriculumResponse | null>(null)
+  const [curriculum, setCurriculum] = useState<CurriculumOut | null>(null)
   const [subjectId, setSubjectId] = useState("")
 
-  const [units, setUnits] = useState<UnitOut[]>([])
+  const [units, setUnits] = useState<SyllabusUnitOut[]>([])
   const [resources, setResources] = useState<CatalogResource[]>([])
   // Optimistic in-flight uploads, keyed by chapter number — page-local only
   // (not shared cross-page state; the real record lands via the manifest
@@ -248,9 +237,8 @@ export default function LearningResources() {
   const subjectName = subjects.find((s) => s.id === subjectId)?.subject_name ?? ""
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/academic-years`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((rows: { year_label: string }[]) => {
+    getAcademicYears()
+      .then((rows) => {
         const labels = rows.map((r) => r.year_label)
         setYearOptions(labels)
         setYear((prev) => prev || labels[labels.length - 1] || "")
@@ -261,9 +249,8 @@ export default function LearningResources() {
 
   const loadCurriculum = useCallback(() => {
     if (!year) return
-    fetch(`${API_BASE}/api/curriculums?year=${encodeURIComponent(year)}&board=${encodeURIComponent(board)}&class=${encodeURIComponent(cls)}`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((d: CurriculumResponse) => {
+    getCurriculum(year, board, cls)
+      .then((d) => {
         setCurriculum(d)
         setSubjectId((prev) => (d.subjects.some((s) => s.id === prev) ? prev : (d.subjects[0]?.id ?? "")))
       })
@@ -278,17 +265,15 @@ export default function LearningResources() {
 
   const loadResources = useCallback(() => {
     if (!subjectId) { setResources([]); return }
-    fetch(`${API_BASE}/api/curriculum-subjects/${subjectId}/resources`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((rows: CatalogResource[]) => setResources(rows))
+    getSubjectResources(subjectId)
+      .then((rows) => setResources(rows))
       .catch(() => showFlash("resource", "Could not load catalogued resources.", 5000))
   }, [subjectId, showFlash])
 
   useEffect(() => {
     if (!subjectId) { setUnits([]); setUnitFilter(ALL); setChapterFilter(ALL); return }
-    fetch(`${API_BASE}/api/curriculum-subjects/${subjectId}/syllabus`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((d: SyllabusResponse) => setUnits(d.units))
+    getSyllabus(subjectId)
+      .then((d) => setUnits(d.units))
       .catch(() => showFlash("resource", "Could not load syllabus detail.", 5000))
     setUnitFilter(ALL)
     setChapterFilter(ALL)
