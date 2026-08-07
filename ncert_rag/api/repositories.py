@@ -85,17 +85,10 @@ class CurriculumRepo:
         conn = _connect()
         try:
             with conn.cursor() as cur:
-                if len(subject_id) == 36 and "-" in subject_id:
-                    cur.execute(
-                        "SELECT subject_name FROM curriculum_subjects WHERE id = %s",
-                        (subject_id,),
-                    )
-                else:
-                    name_clean = subject_id.replace("sub_", "").replace("_", " ")
-                    cur.execute(
-                        "SELECT subject_name FROM curriculum_subjects WHERE LOWER(subject_name) LIKE %s LIMIT 1",
-                        (f"%{name_clean}%",),
-                    )
+                cur.execute(
+                    "SELECT subject_name FROM curriculum_subjects WHERE id = %s",
+                    (subject_id,),
+                )
                 row = cur.fetchone()
                 return row[0] if row else None
         finally:
@@ -180,14 +173,6 @@ class CurriculumRepo:
                     (curriculum_id,),
                 )
                 subjects = [_subject_row(r) for r in cur.fetchall()]
-                if not subjects:
-                    cur.execute(
-                        f"SELECT cs.{_SUBJECT_COLUMNS} FROM curriculum_subjects cs "
-                        "JOIN curriculums c ON c.id = cs.curriculum_id "
-                        "WHERE c.board = %s AND c.class_label = %s ORDER BY cs.s_no",
-                        (board, class_label),
-                    )
-                    subjects = [_subject_row(r) for r in cur.fetchall()]
             conn.commit()
             return CurriculumOut(
                 id=str(curriculum_id), year_label=year, board=board,
@@ -273,25 +258,18 @@ class CurriculumRepo:
 # ============================================================
 
 def _load_syllabus_tree(cur, subject_id: str) -> SyllabusOut:
-    if len(subject_id) == 36 and "-" in subject_id:
-        cur.execute(
-            "SELECT id, subject_name FROM curriculum_subjects WHERE id = %s", (subject_id,)
-        )
-    else:
-        name_clean = subject_id.replace("sub_", "").replace("_", " ")
-        cur.execute(
-            "SELECT id, subject_name FROM curriculum_subjects WHERE LOWER(subject_name) LIKE %s LIMIT 1",
-            (f"%{name_clean}%",),
-        )
+    cur.execute(
+        "SELECT subject_name FROM curriculum_subjects WHERE id = %s", (subject_id,)
+    )
     row = cur.fetchone()
     if not row:
         raise HTTPException(status_code=404, detail="subject not found")
-    real_subject_id, subject_name = str(row[0]), row[1]
+    subject_name = row[0]
 
     cur.execute(
         "SELECT id, s_no, number, name, marks FROM syllabus_units "
         "WHERE curriculum_subject_id = %s ORDER BY s_no",
-        (real_subject_id,),
+        (subject_id,),
     )
     unit_rows = cur.fetchall()
     unit_ids = [str(r[0]) for r in unit_rows]

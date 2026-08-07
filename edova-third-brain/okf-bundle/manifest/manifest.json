@@ -1,121 +1,9 @@
 {
-  "generated_at": "2026-08-05T13:33:43.275210+00:00",
+  "generated_at": "2026-08-07T08:38:13.507327+00:00",
   "bucket": "innuxai-edova-coteacher",
   "prefix": "Class-10/Semester-01",
-  "count": 30,
+  "count": 31,
   "resources": [
-    {
-      "id": "Mathematics_math-ch1_video_9c7e7671",
-      "title": "Real Numbers Lesson Video",
-      "type": "Video",
-      "subject": "Mathematics",
-      "chapter_id": "math-ch1",
-      "chapter_name": "Real Numbers Lesson Video",
-      "topic_id": null,
-      "doc_type": "video",
-      "s3_key": "Class-10/Semester-01/Math/Chapter-01/chapter-1-real-numbers.mp4",
-      "previewS3Key": "Class-10/Semester-01/Math/Chapter-01/chapter-1-real-numbers.mp4",
-      "status": "ready",
-      "trust": {
-        "status": "unverified"
-      }
-    },
-    {
-      "id": "Mathematics_math-ch2_video_2cf97ae1",
-      "title": "Polynomials",
-      "type": "Video",
-      "subject": "Mathematics",
-      "chapter_id": "math-ch2",
-      "chapter_name": "Polynomials",
-      "topic_id": null,
-      "doc_type": "video",
-      "s3_key": "Class-10/Semester-01/Math/Chapter-02/upload_d572d8d8_57270e984a584f1a96f49399c8895431.mp4",
-      "previewS3Key": "Class-10/Semester-01/Math/Chapter-02/upload_d572d8d8_57270e984a584f1a96f49399c8895431.mp4",
-      "status": "ready",
-      "trust": {
-        "status": "unverified"
-      }
-    },
-    {
-      "id": "Mathematics_math-ch3_video_41f5c39e",
-      "title": "Pair Of Two Linear Equations",
-      "type": "Video",
-      "subject": "Mathematics",
-      "chapter_id": "math-ch3",
-      "chapter_name": "Pair Of Two Linear Equations",
-      "topic_id": null,
-      "doc_type": "video",
-      "s3_key": "Class-10/Semester-01/Math/Chapter-03/upload_f39746fa_03f38ab9250046128d23c8934812532e.mp4",
-      "previewS3Key": "Class-10/Semester-01/Math/Chapter-03/upload_f39746fa_03f38ab9250046128d23c8934812532e.mp4",
-      "status": "ready",
-      "trust": {
-        "status": "unverified"
-      }
-    },
-    {
-      "id": "Mathematics_math-ch4_video_1599398d",
-      "title": "Quadratic Equation",
-      "type": "Video",
-      "subject": "Mathematics",
-      "chapter_id": "math-ch4",
-      "chapter_name": "Quadratic Equation",
-      "topic_id": null,
-      "doc_type": "video",
-      "s3_key": "Class-10/Semester-01/Math/Chapter-04/upload_cdc5da79_23ccb68b169b42c5af575c7fa4080394.mp4",
-      "previewS3Key": "Class-10/Semester-01/Math/Chapter-04/upload_cdc5da79_23ccb68b169b42c5af575c7fa4080394.mp4",
-      "status": "ready",
-      "trust": {
-        "status": "unverified"
-      }
-    },
-    {
-      "id": "Mathematics_math-ch5_video_61860846",
-      "title": "Arthimitic Progression",
-      "type": "Video",
-      "subject": "Mathematics",
-      "chapter_id": "math-ch5",
-      "chapter_name": "Arthimitic Progression",
-      "topic_id": null,
-      "doc_type": "video",
-      "s3_key": "Class-10/Semester-01/Math/Chapter-05/upload_d7a99c11_c5208425c5bf4565b8b3d93bbe05cc94.mp4",
-      "previewS3Key": "Class-10/Semester-01/Math/Chapter-05/upload_d7a99c11_c5208425c5bf4565b8b3d93bbe05cc94.mp4",
-      "status": "ready",
-      "trust": {
-        "status": "unverified"
-      }
-    },
-    {
-      "id": "Mathematics_math-ch6_video_66d98733",
-      "title": "Coordinate Geometry",
-      "type": "Video",
-      "subject": "Mathematics",
-      "chapter_id": "math-ch6",
-      "chapter_name": "Coordinate Geometry",
-      "topic_id": null,
-      "doc_type": "video",
-      "s3_key": "Class-10/Semester-01/Math/Chapter-06/upload_00fc8f41_e48fbaa28cc54700bc6084188b2c5d51.mp4",
-      "previewS3Key": "Class-10/Semester-01/Math/Chapter-06/upload_00fc8f41_e48fbaa28cc54700bc6084188b2c5d51.mp4",
-      "status": "ready",
-      "trust": {
-        "status": "unverified"
-      }
-    },
-    {
-      "id": "Mathematics_math-ch7_video_6e8246e5",
-      "title": "Triangles",
-      "type": "Video",
-      "subject": "Mathematics",
-      "chapter_id": "math-ch7",
-      "chapter_name": "Triangles",
-      "topic_id": null,
-      "doc_type": "video",
-      "s3_key": "Class-10/Semester-01/Math/Chapter-07/upload_ae0f1d7c_ba51c37bfbe945cda074268daabf98e9.mp4",
-      "previewS3Key": "Class-10/Semester-01/Math/Chapter-07/upload_ae0f1d7c_ba51c37bfbe945cda074268daabf98e9.mp4",
-      "status": "ready",
-      "trust": {
-        "status": "unverified"
-      }
-    },
     {
       "id": "math_math-ch11_video_e69b2c59",
       "title": "AREAS  CIRCLES  RELATED  TO \u2014 Area of a Rectangle",
@@ -131,11 +19,12 @@
       "trust": {
         "status": "teacher_reviewed",
         "reviewed_at": "2026-07-28T17:44:11.077765+00:00"
-      }
+      },
+      "s3_uploaded_at": "2026-07-28T17:44:11.529074+00:00"
     },
     {
       "id": "math_math-ch1_chapter_content_dc88ce76",
-      "title": "Real Numbers",
+      "title": "Real Numbers \u2014 chapter-1-real-numbers",
       "type": "PDF",
       "subject": "math",
       "chapter_id": "math-ch1",
@@ -147,11 +36,30 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
+    },
+    {
+      "id": "math_math-ch1_video_fb736f48",
+      "title": "Real Numbers \u2014 math Chapter 1 Real numbers",
+      "type": "Video",
+      "subject": "math",
+      "chapter_id": "math-ch1",
+      "chapter_name": "Real Numbers",
+      "topic_id": null,
+      "doc_type": "video",
+      "s3_key": "Class-10/Semester-01/Math/Chapter-01/math Chapter 1 Real numbers.mp4",
+      "previewS3Key": "Class-10/Semester-01/Math/Chapter-01/math Chapter 1 Real numbers.mp4",
+      "status": "ready",
+      "trust": {
+        "status": "teacher_reviewed",
+        "reviewed_at": "2026-08-07T08:35:19.561376+00:00"
+      },
+      "s3_uploaded_at": "2026-08-07T08:35:20.287771+00:00"
     },
     {
       "id": "math_math-ch2_chapter_content_028c9038",
-      "title": "Polynomials",
+      "title": "Polynomials \u2014 chapter-2-polynomials",
       "type": "PDF",
       "subject": "math",
       "chapter_id": "math-ch2",
@@ -163,11 +71,30 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
+    },
+    {
+      "id": "math_math-ch2_video_2cf97ae1",
+      "title": "Polynomials \u2014 math chapter 2 Polynomials",
+      "type": "Video",
+      "subject": "math",
+      "chapter_id": "math-ch2",
+      "chapter_name": "Polynomials",
+      "topic_id": null,
+      "doc_type": "video",
+      "s3_key": "Class-10/Semester-01/Math/Chapter-02/math chapter 2 Polynomials.mp4",
+      "previewS3Key": "Class-10/Semester-01/Math/Chapter-02/math chapter 2 Polynomials.mp4",
+      "status": "ready",
+      "trust": {
+        "status": "teacher_reviewed",
+        "reviewed_at": "2026-08-07T08:35:46.624719+00:00"
+      },
+      "s3_uploaded_at": "2026-08-07T08:35:47.037229+00:00"
     },
     {
       "id": "math_math-ch3_chapter_content_f3f6c6b9",
-      "title": "Pair of Linear Equations in Two Variables",
+      "title": "Pair of Linear Equations in Two Variables \u2014 chapter-3-linear-equations",
       "type": "PDF",
       "subject": "math",
       "chapter_id": "math-ch3",
@@ -179,11 +106,30 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
+    },
+    {
+      "id": "math_math-ch3_video_41f5c39e",
+      "title": "Pair of Linear Equations in Two Variables \u2014 math chapter 3 linear equations",
+      "type": "Video",
+      "subject": "math",
+      "chapter_id": "math-ch3",
+      "chapter_name": "Pair of Linear Equations in Two Variables",
+      "topic_id": null,
+      "doc_type": "video",
+      "s3_key": "Class-10/Semester-01/Math/Chapter-03/math chapter 3 linear equations.mp4",
+      "previewS3Key": "Class-10/Semester-01/Math/Chapter-03/math chapter 3 linear equations.mp4",
+      "status": "ready",
+      "trust": {
+        "status": "teacher_reviewed",
+        "reviewed_at": "2026-08-07T08:36:14.084107+00:00"
+      },
+      "s3_uploaded_at": "2026-08-07T08:36:14.660832+00:00"
     },
     {
       "id": "math_math-ch4_chapter_content_8beaf15b",
-      "title": "Quadratic Equations",
+      "title": "Quadratic Equations \u2014 chapter-4-quadratic-equations",
       "type": "PDF",
       "subject": "math",
       "chapter_id": "math-ch4",
@@ -195,11 +141,12 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
     },
     {
       "id": "math_math-ch4_chapter_content_dea48ae5",
-      "title": "Quadratic Equations",
+      "title": "Quadratic Equations \u2014 test-worksheet",
       "type": "Worksheet",
       "subject": "math",
       "chapter_id": "math-ch4",
@@ -211,11 +158,30 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-23T06:39:21.300313+00:00"
+    },
+    {
+      "id": "math_math-ch4_video_1599398d",
+      "title": "Quadratic Equations \u2014 math chapter 4 quadratic equations",
+      "type": "Video",
+      "subject": "math",
+      "chapter_id": "math-ch4",
+      "chapter_name": "Quadratic Equations",
+      "topic_id": null,
+      "doc_type": "video",
+      "s3_key": "Class-10/Semester-01/Math/Chapter-04/math chapter 4 quadratic equations.mp4",
+      "previewS3Key": "Class-10/Semester-01/Math/Chapter-04/math chapter 4 quadratic equations.mp4",
+      "status": "ready",
+      "trust": {
+        "status": "teacher_reviewed",
+        "reviewed_at": "2026-08-07T08:36:49.419904+00:00"
+      },
+      "s3_uploaded_at": "2026-08-07T08:36:49.749714+00:00"
     },
     {
       "id": "math_math-ch5_chapter_content_24f46175",
-      "title": "Arithmetic Progression",
+      "title": "Arithmetic Progression \u2014 chapter-5-arithmetic-progression",
       "type": "PDF",
       "subject": "math",
       "chapter_id": "math-ch5",
@@ -227,11 +193,30 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
+    },
+    {
+      "id": "math_math-ch5_video_61860846",
+      "title": "Arithmetic Progressions \u2014 math chapter 5 Arithmetic progression",
+      "type": "Video",
+      "subject": "math",
+      "chapter_id": "math-ch5",
+      "chapter_name": "Arithmetic Progressions",
+      "topic_id": null,
+      "doc_type": "video",
+      "s3_key": "Class-10/Semester-01/Math/Chapter-05/math chapter 5 Arithmetic progression.mp4",
+      "previewS3Key": "Class-10/Semester-01/Math/Chapter-05/math chapter 5 Arithmetic progression.mp4",
+      "status": "ready",
+      "trust": {
+        "status": "teacher_reviewed",
+        "reviewed_at": "2026-08-07T08:37:21.499993+00:00"
+      },
+      "s3_uploaded_at": "2026-08-07T08:37:21.921368+00:00"
     },
     {
       "id": "math_math-ch5_worksheet_ebc73e89",
-      "title": "Arithmetic Progression",
+      "title": "Arithmetic Progression \u2014 worksheet-standard",
       "type": "Worksheet",
       "subject": "math",
       "chapter_id": "math-ch5",
@@ -243,11 +228,12 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
     },
     {
       "id": "math_math-ch6_chapter_content_73d3ce06",
-      "title": "Triangles",
+      "title": "Triangles \u2014 chapter-6-triangles",
       "type": "PDF",
       "subject": "math",
       "chapter_id": "math-ch6",
@@ -259,11 +245,30 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
+    },
+    {
+      "id": "math_math-ch6_video_66d98733",
+      "title": "Triangles \u2014 math chapter 7 co ordinate geometry",
+      "type": "Video",
+      "subject": "math",
+      "chapter_id": "math-ch6",
+      "chapter_name": "Triangles",
+      "topic_id": null,
+      "doc_type": "video",
+      "s3_key": "Class-10/Semester-01/Math/Chapter-06/math chapter 7 co ordinate geometry.mp4",
+      "previewS3Key": "Class-10/Semester-01/Math/Chapter-06/math chapter 7 co ordinate geometry.mp4",
+      "status": "ready",
+      "trust": {
+        "status": "teacher_reviewed",
+        "reviewed_at": "2026-08-07T08:37:49.859005+00:00"
+      },
+      "s3_uploaded_at": "2026-08-07T08:37:50.237960+00:00"
     },
     {
       "id": "math_math-ch7_chapter_content_82f7b6ba",
-      "title": "Coordinate Geometry",
+      "title": "Coordinate Geometry \u2014 chapter-7-coordinate-geometry",
       "type": "PDF",
       "subject": "math",
       "chapter_id": "math-ch7",
@@ -275,7 +280,26 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
+    },
+    {
+      "id": "math_math-ch7_video_6e8246e5",
+      "title": "Coordinate Geometry \u2014 math chapter 6 Triangles",
+      "type": "Video",
+      "subject": "math",
+      "chapter_id": "math-ch7",
+      "chapter_name": "Coordinate Geometry",
+      "topic_id": null,
+      "doc_type": "video",
+      "s3_key": "Class-10/Semester-01/Math/Chapter-07/math chapter 6 Triangles.mp4",
+      "previewS3Key": "Class-10/Semester-01/Math/Chapter-07/math chapter 6 Triangles.mp4",
+      "status": "ready",
+      "trust": {
+        "status": "teacher_reviewed",
+        "reviewed_at": "2026-08-07T08:38:13.049479+00:00"
+      },
+      "s3_uploaded_at": "2026-08-07T08:38:13.458178+00:00"
     },
     {
       "id": "science_biology-ch1_chapter_content_685ec722",
@@ -291,7 +315,8 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
     },
     {
       "id": "science_biology-ch1_video_47497fa9",
@@ -307,7 +332,8 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:59:42.142090+00:00"
     },
     {
       "id": "science_biology-ch1_video_8239d1b8",
@@ -323,7 +349,8 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:59:42.142090+00:00"
     },
     {
       "id": "science_biology-ch2_chapter_content_bf4ddfa1",
@@ -339,7 +366,8 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
     },
     {
       "id": "science_biology-ch3_chapter_content_575cb5a5",
@@ -355,7 +383,8 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
     },
     {
       "id": "science_biology-ch4_chapter_content_b0357c0b",
@@ -371,7 +400,8 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
     },
     {
       "id": "science_chemistry-ch1_chapter_content_9d58fa61",
@@ -387,7 +417,8 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
     },
     {
       "id": "science_chemistry-ch2_chapter_content_8ce001e9",
@@ -403,7 +434,8 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
     },
     {
       "id": "science_chemistry-ch3_chapter_content_cda8ac2d",
@@ -419,7 +451,8 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
     },
     {
       "id": "science_chemistry-ch4_chapter_content_efbb053e",
@@ -435,7 +468,8 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
     },
     {
       "id": "science_physics-ch1_chapter_content_a647d66c",
@@ -452,7 +486,8 @@
       "trust": {
         "status": "teacher_reviewed",
         "reviewed_at": "2026-07-27T02:10:05.317845+00:00"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
     },
     {
       "id": "science_physics-ch2_chapter_content_c8ed49fa",
@@ -468,7 +503,8 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
     },
     {
       "id": "science_physics-ch3_chapter_content_640a680a",
@@ -484,7 +520,26 @@
       "status": "ready",
       "trust": {
         "status": "unverified"
-      }
+      },
+      "s3_uploaded_at": "2026-07-22T09:54:28.057539+00:00"
+    },
+    {
+      "id": "science_science-ch9_chapter_content_f2002852",
+      "title": "Light \u2014 Reflection and Refraction \u2014 index",
+      "type": "Lab",
+      "subject": "science",
+      "chapter_id": "science-ch9",
+      "chapter_name": "Light \u2014 Reflection and Refraction",
+      "topic_id": null,
+      "doc_type": "lab",
+      "s3_key": "Class-10/Semester-01/Science/Chapter-09/index.html",
+      "previewS3Key": "Class-10/Semester-01/Science/Chapter-09/index.html",
+      "status": "ready",
+      "trust": {
+        "status": "teacher_reviewed",
+        "reviewed_at": "2026-07-30T03:19:29.751485+00:00"
+      },
+      "s3_uploaded_at": "2026-07-30T06:20:46.894619+00:00"
     }
   ]
 }

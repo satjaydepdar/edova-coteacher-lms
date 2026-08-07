@@ -30,3 +30,13 @@ graphify-out/
 
 # Runtime logs
 *.log
+
+# macOS Finder metadata
+.DS_Store
+
+# Video ingest working files — source videos already pushed to S3 by
+# edova-third-brain/tools/s3_push.py; the app serves them from S3 via
+# manifest s3_key, not from these local copies.
+edova-third-brain/okf-bundle/attachments/
+edova-third-brain/subjects/*/uploads/
+ncert_rag/data/staging/*.mp4

@@ -1,6 +1,6 @@
-// App clock + short-date helpers. APP_TODAY is kept for callers that still
-// want a fixed demo "today" (data/seed.ts also exports its own copy);
-// parseShortDate/dayLabelForDate use the real current date.
+// App clock + short-date helpers. APP_TODAY is the single source of truth for
+// "today" in the demo app (data/seed.ts re-exports it so existing importers
+// keep working).
 export const APP_TODAY = new Date(2026, 6, 9) // Jul 9, 2026
 
 const MONTH_MAP: Record<string, number> = {
@@ -16,22 +16,15 @@ export function formatShortDate(d: Date): string {
 }
 
 export function parseShortDate(str: string): Date {
-  // Handle full ISO strings (e.g. from dueIso) — parse directly
-  if (str && str.includes("T")) return new Date(str)
   const parts = (str || "").trim().split(/\s+/)
   const mon = MONTH_MAP[parts[0]]
   const day = parseInt(parts[1], 10)
-  if (mon === undefined || isNaN(day)) return new Date()
-  // Use current real year so due-date diffs are always correct
-  return new Date(new Date().getFullYear(), mon, day)
+  if (mon === undefined || isNaN(day)) return new Date(2026, 0, 1)
+  return new Date(2026, mon, day)
 }
 
 export function dayLabelForDate(d: Date): string {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const target = new Date(d)
-  target.setHours(0, 0, 0, 0)
-  const diffDays = Math.round((target.getTime() - today.getTime()) / 86400000)
+  const diffDays = Math.round((d.getTime() - APP_TODAY.getTime()) / 86400000)
   if (diffDays === 0) return "Today"
   if (diffDays === 1) return "Tomorrow"
   return d.toLocaleDateString("en-US", { weekday: "short" })

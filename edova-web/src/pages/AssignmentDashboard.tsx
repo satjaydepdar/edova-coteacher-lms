@@ -1,19 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { ArrowLeft, File, CheckCircle2, MoreHorizontal, Trash2 } from "lucide-react"
-import { CLASSES } from "@/data/seed"
+import { ArrowLeft, File, CheckCircle2, MoreHorizontal } from "lucide-react"
+import { CLASSES, APP_TODAY } from "@/data/seed"
 import { parseShortDate } from "@/lib/dates"
 import { useSchoolStore } from "@/store/school-store"
 import { assignmentTypeOf } from "@/lib/assignment-types"
 import { getResourceUrl } from "@/lib/media"
 import type { Assignment } from "@/lib/types"
 
-function dueDiffDays(due: string, dueIso?: string): number {
-  const dueDate = dueIso ? new Date(dueIso) : parseShortDate(due)
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  dueDate.setHours(0, 0, 0, 0)
-  return Math.round((dueDate.getTime() - today.getTime()) / 86400000)
+function dueDiffDays(due: string): number {
+  return Math.round((parseShortDate(due).getTime() - APP_TODAY.getTime()) / 86400000)
 }
 function urgencyLabel(diff: number): string {
   if (diff < 0) return `Overdue ${-diff}d`
@@ -33,33 +29,11 @@ export default function AssignmentDashboard() {
   const assignments = useSchoolStore((s) => s.assignments)
   const hydrateAssignments = useSchoolStore((s) => s.hydrateAssignments)
   const hydrateRealStudents = useSchoolStore((s) => s.hydrateRealStudents)
-  const deleteAssignment = useSchoolStore((s) => s.deleteAssignment)
-  const [showMenu, setShowMenu] = useState(false)
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    hydrateRealStudents().catch(() => {})
     hydrateAssignments().catch(() => {})
-    const timer = setInterval(() => hydrateAssignments().catch(() => {}), 3000)
-    return () => clearInterval(timer)
+    hydrateRealStudents().catch(() => {})
   }, [hydrateAssignments, hydrateRealStudents])
-
-  // Close menu on outside click
-  useEffect(() => {
-    function onClickOutside(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setShowMenu(false)
-      }
-    }
-    document.addEventListener("mousedown", onClickOutside)
-    return () => document.removeEventListener("mousedown", onClickOutside)
-  }, [])
-
-  async function handleDelete() {
-    await deleteAssignment(id!)
-    navigate("/assignment-tracker")
-  }
 
   const assignment = assignments.find((a) => a.id === id)
 
@@ -86,7 +60,7 @@ export default function AssignmentDashboard() {
   const total = assignment.submissions.length
   const submitted = submittedCount(assignment)
   const evaluated = evaluatedCount(assignment)
-  const diff = dueDiffDays(assignment.due, assignment.dueIso)
+  const diff = dueDiffDays(assignment.due)
 
   return (
     <div>
@@ -115,57 +89,12 @@ export default function AssignmentDashboard() {
         </div>
         <div className="flex items-center gap-2">
           <button className="h-8 rounded-full border border-card-border bg-white px-3 text-[12.5px] font-semibold">Share</button>
-          {/* ⋯ Menu */}
-          <div ref={menuRef} className="relative">
-            <button
-              onClick={() => setShowMenu((v) => !v)}
-              className="grid h-8 w-8 place-items-center rounded-full border border-card-border bg-white transition hover:bg-cream"
-            >
-              <MoreHorizontal size={16} />
-            </button>
-            {showMenu && (
-              <div className="absolute right-0 top-full z-50 mt-1 w-44 overflow-hidden rounded-[12px] border border-card-border bg-white shadow-xl">
-                <button
-                  onClick={() => { setShowMenu(false); setShowDeleteConfirm(true) }}
-                  className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-[13px] font-semibold text-red-600 transition hover:bg-red-50"
-                >
-                  <Trash2 size={14} />
-                  Delete Assignment
-                </button>
-              </div>
-            )}
-          </div>
+          <button className="grid h-8 w-8 place-items-center rounded-full border border-card-border bg-white">
+            <MoreHorizontal size={16} />
+          </button>
         </div>
       </div>
 
-      {/* Delete confirmation modal */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="w-[340px] rounded-[20px] border border-card-border bg-white p-6 shadow-2xl">
-            <div className="mb-1 flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
-              <Trash2 size={18} className="text-red-600" />
-            </div>
-            <h3 className="mt-3 text-[15px] font-bold text-ink">Delete Assignment?</h3>
-            <p className="mt-1.5 text-[13px] leading-relaxed text-text-secondary">
-              <span className="font-semibold text-ink">"{assignment.title}"</span> will be permanently removed for all students. This cannot be undone.
-            </p>
-            <div className="mt-5 flex gap-2">
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                className="flex-1 rounded-[8px] border border-card-border py-2 text-[13px] font-semibold transition hover:bg-cream"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                className="flex-1 rounded-[8px] bg-red-600 py-2 text-[13px] font-semibold text-white transition hover:bg-red-700"
-              >
-                Yes, Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <div className="space-y-6">
           <div className="rounded-[20px] border border-card-border bg-cream p-6 shadow-card md:p-7">
@@ -209,7 +138,7 @@ export default function AssignmentDashboard() {
               </div>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {ongoing.map((a) => {
-                  const d = dueDiffDays(a.due, a.dueIso)
+                  const d = dueDiffDays(a.due)
                   const c = CLASSES.find((x) => x.id === a.classId)
                   return (
                     <div

@@ -5,8 +5,6 @@ export interface CalendarEntry {
   subjectChapter: string
   assignment: string
   percentCovered: number
-  /** Owning teacher — attached by the Calendar page on save (modal is teacher-agnostic). */
-  teacherId?: string
 }
 
 export type CalendarViewKey = "day" | "week" | "month" | "year"

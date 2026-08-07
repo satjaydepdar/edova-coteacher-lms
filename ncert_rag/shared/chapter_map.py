@@ -30,28 +30,22 @@ _CHAPTER_REF_RE = re.compile(r"^(math|science|biology|chemistry|physics)-ch(\d+)
 def to_okf_chapter(subject: str, chapter: str) -> tuple[str, str]:
     """Frontend chapter id -> (subject, OKF chapter id).
 
-    Supports OKF form (biology-ch1), frontend form (math10-ch01), and display form ("Chapter 1")."""
+    OKF form (biology-ch1) passes through. Raises ValueError for unmappable
+    ids (callers translate to their own error type — HTTPException, etc)."""
     if _OKF_ID_RE.fullmatch(chapter):
         return subject, chapter
-    
-    m = _FRONTEND_ID_RE.search(chapter or "")
-    if m:
-        n = int(m.group(1))
-    else:
-        num_m = re.search(r"\d+", chapter or "")
-        if num_m:
-            n = int(num_m.group(0))
-        else:
-            raise ValueError(f"cannot map chapter '{chapter}' - pass OKF chapter_id")
-
-    subj_lower = (subject or "").lower()
-    if "science" in subj_lower:
+    m = _FRONTEND_ID_RE.fullmatch(chapter)
+    if not m:
+        raise ValueError(f"cannot map chapter '{chapter}' - pass OKF chapter_id")
+    n = int(m.group(1))
+    if subject == "science":
+        # Upper-bound match, exactly like the original branch chain: n<=4
+        # chemistry, n<=8 biology, anything higher physics (unbounded).
         for domain, first, last in SCIENCE_DOMAIN_RANGES:
             if n <= last:
                 return subject, f"{domain}-ch{n - first + 1}"
         domain, first, _ = SCIENCE_DOMAIN_RANGES[-1]
         return subject, f"{domain}-ch{n - first + 1}"
-    
     return subject, f"math-ch{n}"
 
 
