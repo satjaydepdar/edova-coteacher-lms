@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils"
 // third-brain bundle/manifest), so this page groups resources by chapter;
 // topics render as plain context text under each chapter, not as their own
 // resource-bearing cards like the old "Subtopic" model had.
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8001"
+const API_BASE = import.meta.env.VITE_RAG_API_URL ?? "http://localhost:8000"
 const CLASS_OPTIONS = ["LKG", "UKG", ...Array.from({ length: 10 }, (_, i) => `Class ${i + 1}`)]
 const BOARD_OPTIONS = ["CBSE", "ICSE", "State"]
 
@@ -255,7 +255,7 @@ export default function LearningResources() {
         setYearOptions(labels)
         setYear((prev) => prev || labels[labels.length - 1] || "")
       })
-      .catch(() => showFlash("resource", "Could not load academic years — is the API running on :8001?", 5000))
+      .catch(() => showFlash("resource", "Could not load academic years — is the API running on :8000?", 5000))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -269,7 +269,7 @@ export default function LearningResources() {
       })
       .catch(() => {
         setCurriculum(null)
-        showFlash("resource", "Could not load curriculum — is the API running on :8001?", 5000)
+        showFlash("resource", "Could not load curriculum — is the API running on :8000?", 5000)
       })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year, board, cls])

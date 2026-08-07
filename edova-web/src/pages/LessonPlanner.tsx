@@ -1,14 +1,13 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import type { CSSProperties } from "react"
 import { ArrowRight, Download, RotateCw } from "lucide-react"
-import {
-  APP_TODAY,
-  CLASSES,
-  TIMETABLE_SEED,
-} from "@/data/seed"
-import type { CurriculumUnit, LessonPlan, SavedLessonPlanRecord } from "@/lib/types"
+import { CLASSES } from "@/data/seed"
+import type { AiGeneratedPlan, ApiSavedPlan, LessonPlan, NewLessonPlan, SavedLessonPlanRecord } from "@/lib/types"
+import { aiApi } from "@/lib/api-client"
+import { saveLessonPlan, updateLessonPlan } from "@/lib/curriculum-api"
+import { usePlannerData } from "./lesson-planner/usePlannerData"
 import { useSchoolStore } from "@/store/school-store"
-import { exportPlanToPdf, exportPlanToWord } from "@/lib/lesson-export"
+import { exportPlanToPdf } from "@/lib/lesson-export"
 import { FlashBanner } from "@/components/common/FlashBanner"
 import {
   PLANNER_CARD_DIVIDER,
@@ -21,54 +20,27 @@ import {
 
 // ---- local helpers (ported from _decomp/app.js) ----
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8001"
-// CAMEL lesson-plan AI service (edova-camel) — separate from the data API.
-const AI_API_BASE = import.meta.env.VITE_AI_API_URL ?? "http://localhost:8002"
-
 // Class labels match the DB curriculum class_label values; sections come
 // from the seed timetable's class names ("Class 8 — Section A").
 const PLANNER_CLASSES = Array.from({ length: 10 }, (_, i) => `Class ${i + 1}`)
 const PLANNER_SECTIONS = [...new Set(CLASSES.map((c) => c.name.split(" — ")[1]))]
 
-interface PlannerSubject {
-  id: string
-  name: string
-}
+// Concept is a cosmetic 4th-level dropdown — no such level exists in the
+// syllabus DB (Subject > Unit > Chapter > Topic only), so this is a fixed
+// mockup list, not fetched or sent anywhere.
+const CONCEPT_OPTIONS = ["Introduction", "Core Concept", "Application", "Critical Analysis"]
 
-interface PlannerSubjectRow {
-  id: string
-  subject_name: string
-  syllabus_json: Record<string, number>
-}
+const BLOOM_LEVELS = ["Remember", "Understand", "Apply", "Analyze", "Evaluate", "Create"]
 
-const CURRENT_YEAR = "2026–27"
-const MONTH_MAP: Record<string, number> = {
-  Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
-  Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11,
-}
+// NEP 2020 concept tags — checking one grounds the objective and at least
+// one generated assessment question in that concept (see edova-camel).
+const NEP_CONCEPTS = ["Application", "Concept", "Case Study", "Critical thinking"]
 
-// ---- saved-plan API (persisted library) ----
-
-// Wire shape returned by GET/POST /api/lesson-plans — snake_case, full body.
-interface ApiSavedPlan {
-  id: string
-  topic: string
-  title: string
-  class_label: string
-  section: string | null
-  subject: string
-  curriculum_subject_id: string | null
-  duration_minutes: number
-  standards: string[]
-  objective: string
-  materials: string[]
-  outcomes: string[]
-  warmup: string
-  instruction: string
-  activity: string
-  assessment: string
-  homework: string
-  created_at: string
+// The backend returns each 5E phase as "{mins} min\n• Teacher: ...\n• Students: ...".
+// Split it so the compact card can show just the duration + a one-line summary.
+function splitPhase(text: string): { duration: string; teacher: string } {
+  const [duration = "", teacherLine = ""] = (text || "").split("\n")
+  return { duration, teacher: teacherLine.replace(/^•\s*Teacher:\s*/, "") }
 }
 
 const MONTH_ABBR = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -89,13 +61,12 @@ function apiToRecord(r: ApiSavedPlan): SavedLessonPlanRecord {
     section: r.section,
     plan: {
       topic: r.topic,
-      title: r.title,
+      title: r.title || r.topic,
       className: r.section ? `${r.class_label} — ${r.section}` : r.class_label,
       subject: r.subject,
       duration: String(r.duration_minutes),
       standards: r.standards ?? [],
       objective: r.objective,
-      materials: r.materials ?? [],
       outcomes: r.outcomes ?? [],
       warmup: r.warmup,
       instruction: r.instruction,
@@ -103,43 +74,6 @@ function apiToRecord(r: ApiSavedPlan): SavedLessonPlanRecord {
       assessment: r.assessment,
       homework: r.homework,
     },
-  }
-}
-
-function parseShortDate(str: string): Date {
-  const parts = (str || "").trim().split(/\s+/)
-  const mon = MONTH_MAP[parts[0]]
-  const day = parseInt(parts[1], 10)
-  if (mon === undefined || isNaN(day)) return new Date(2026, 0, 1)
-  return new Date(2026, mon, day)
-}
-
-function unitStatus(row: { actual: number; plannedStart?: string; plannedEnd?: string }): string {
-  if (Number(row.actual) >= 100) return "Completed"
-  if (!row.plannedStart || !row.plannedEnd) return Number(row.actual) > 0 ? "In Progress" : "Not Started"
-  const start = parseShortDate(row.plannedStart)
-  const end = parseShortDate(row.plannedEnd)
-  if (APP_TODAY < start && Number(row.actual) === 0) return "Not Started"
-  if (APP_TODAY > end && Number(row.actual) < 100) return "Delayed"
-  return "In Progress"
-}
-
-function lessonStatusStyle(status: string): CSSProperties {
-  const c = status === "Ready" ? "#16A34A" : "#F59E0B"
-  const bg = status === "Ready" ? "#F0FDF4" : "#FFFBEB"
-  return { fontSize: 13, fontWeight: 600, color: c, background: bg, padding: "3px 9px", borderRadius: 999 }
-}
-
-function topicLabelStyle(done: boolean): CSSProperties {
-  return done
-    ? { fontSize: "14.5px", color: "#9CA3AF", textDecoration: "line-through" }
-    : { fontSize: "14.5px", color: "#374151" }
-}
-
-function tabStyle(active: boolean): CSSProperties {
-  return {
-    padding: "9px 16px", borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: "pointer",
-    background: active ? "#111827" : "transparent", color: active ? "#fff" : "#6B7280",
   }
 }
 
@@ -156,6 +90,11 @@ const actionBtnStyle: CSSProperties = {
   color: "#374151", background: "#F9FAFB", border: "1px solid #E5E7EB", padding: "8px 14px",
   borderRadius: 8, cursor: "pointer",
 }
+const editableFieldStyle: CSSProperties = {
+  width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", borderRadius: 6,
+  fontSize: "inherit", fontFamily: "inherit", color: "inherit", lineHeight: "inherit",
+  resize: "vertical", background: "#fff",
+}
 
 const PLAN_SECTIONS: { key: keyof LessonPlan; label: string; color: string }[] = [
   { key: "warmup", label: "Warm-Up", color: "#93C5FD" },
@@ -165,17 +104,8 @@ const PLAN_SECTIONS: { key: keyof LessonPlan; label: string; color: string }[] =
   { key: "homework", label: "Homework", color: "#D1D5DB" },
 ]
 
-// Master-syllabus tree (GET /api/curriculum-subjects/{id}/syllabus) — units
-// carry chapters carry topics. The generator's Unit + Topic dropdowns are
-// driven from this so a picked topic comes straight from the database.
-interface SyllabusTreeTopic { id: string; title: string }
-interface SyllabusTreeChapter { id: string; name: string; topics: SyllabusTreeTopic[] }
-interface SyllabusTreeUnit { id: string; name: string; chapters: SyllabusTreeChapter[] }
-
-type SubTab = "generator" | "week" | "library"
-
 export default function LessonPlanner() {
-  const [subTab, setSubTab] = useState<SubTab>("generator")
+  const [showLibrary, setShowLibrary] = useState(false)
 
   // Generator form state
   const [planTopic, setPlanTopic] = useState("")
@@ -183,76 +113,42 @@ export default function LessonPlanner() {
   const [planSection, setPlanSection] = useState(PLANNER_SECTIONS[0])
   const [planDuration, setPlanDuration] = useState("45")
 
-  const [year, setYear] = useState("")
-  const [subjects, setSubjects] = useState<PlannerSubject[]>([])
-  const [planSubjectId, setPlanSubjectId] = useState("")
   const [planUnit, setPlanUnit] = useState("")        // selected unit id (tree)
   const [planTopicSel, setPlanTopicSel] = useState("") // selected topic title
-  const [syllabusUnits, setSyllabusUnits] = useState<SyllabusTreeUnit[]>([])
+  const [planConcept, setPlanConcept] = useState("")    // cosmetic only, not sent anywhere
+  const [planBloom, setPlanBloom] = useState<string[]>([])
+  const [planNep, setPlanNep] = useState<string[]>([])
 
   const [generatedPlan, setGeneratedPlan] = useState<LessonPlan | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
-
-  const [savedLibrary, setSavedLibrary] = useState<SavedLessonPlanRecord[]>([])
   const [savingPlan, setSavingPlan] = useState(false)
+  const [showDetails, setShowDetails] = useState(false)
 
-  // This Week reads the shared curriculum so ticking a topic here updates
-  // Actual %/status live and propagates to Syllabus Map + Course Progress.
-  const curriculum = useSchoolStore((s) => s.curriculum)
-  const toggleTopic = useSchoolStore((s) => s.toggleTopic)
+  // Set when the output pane is showing a saved plan (via viewPlan), so
+  // "Save Changes" knows which record to update in place. Cleared on a
+  // fresh generation — a regenerated draft is never an in-place edit.
+  const [editingPlanId, setEditingPlanId] = useState<string | null>(null)
+  const [contentEditMode, setContentEditMode] = useState(false)
+
   const showFlash = useSchoolStore((s) => s.showFlash)
-  const hydrateCurriculum = useSchoolStore((s) => s.hydrateCurriculum)
 
-  // Pull the focus section's syllabus + taught-topic progress from the API so
-  // This Week shows real Class 10 Math units (and ticks persist server-side).
-  useEffect(() => {
-    hydrateCurriculum()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  const {
+    subjects, planSubjectId, setPlanSubjectId, syllabusUnits, savedLibrary, setSavedLibrary,
+  } = usePlannerData(planClass, apiToRecord, showFlash)
 
-  // Latest academic year, then the subject list for the chosen class from
-  // the curriculum API (currently only Class 10 Mathematics 041 exists).
+  // Reset the unit/topic pick when the subject changes (the tree reloads).
   useEffect(() => {
-    fetch(`${API_BASE}/api/academic-years`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((rows: { year_label: string }[]) => setYear(rows[rows.length - 1]?.year_label ?? ""))
-      .catch(() => showFlash("lesson", "Could not load academic years — is the API running on :8001?", 5000))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // Load the persisted plan library so it survives reload and the "Saved
-  // Plans (N)" count is correct on first paint.
-  useEffect(() => {
-    fetch(`${API_BASE}/api/lesson-plans`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((rows: ApiSavedPlan[]) => setSavedLibrary(rows.map(apiToRecord)))
-      .catch(() => { /* library stays empty if the API is down; save will surface the error */ })
-  }, [])
-
-  useEffect(() => {
-    if (!year) return
-    fetch(`${API_BASE}/api/curriculums?year=${encodeURIComponent(year)}&board=CBSE&class=${encodeURIComponent(planClass)}`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((d: { subjects: PlannerSubjectRow[] }) => {
-        const list = d.subjects.map((s) => ({ id: s.id, name: s.subject_name }))
-        setSubjects(list)
-        setPlanSubjectId(list[0]?.id ?? "")
-      })
-      .catch(() => setSubjects([]))
-  }, [year, planClass])
-
-  // Load the selected subject's full syllabus tree (units → chapters → topics)
-  // so the Unit and Topic dropdowns can be driven from the database.
-  useEffect(() => {
-    setSyllabusUnits([])
     setPlanUnit("")
     setPlanTopicSel("")
-    if (!planSubjectId) return
-    fetch(`${API_BASE}/api/curriculum-subjects/${planSubjectId}/syllabus`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((d: { units: SyllabusTreeUnit[] }) => setSyllabusUnits(d.units ?? []))
-      .catch(() => setSyllabusUnits([]))
+    setPlanConcept("")
   }, [planSubjectId])
+
+  const toggleBloom = (level: string) => {
+    setPlanBloom((prev) => (prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]))
+  }
+  const toggleNep = (concept: string) => {
+    setPlanNep((prev) => (prev.includes(concept) ? prev.filter((c) => c !== concept) : [...prev, concept]))
+  }
 
   const selectedSubject = subjects.find((s) => s.id === planSubjectId) ?? null
   const selectedUnit = syllabusUnits.find((u) => u.id === planUnit) ?? null
@@ -274,43 +170,39 @@ export default function LessonPlanner() {
     if (title) setPlanTopic(title)
   }
 
-  const handleToggleTopic = (unitId: string, topicId: string) => {
-    toggleTopic(unitId, topicId)
-    showFlash("lesson", "Marked taught — Syllabus Actual % updated.", 3000)
+  const updateField = <K extends keyof LessonPlan>(key: K, value: LessonPlan[K]) => {
+    setGeneratedPlan((prev) => (prev ? { ...prev, [key]: value } : prev))
   }
 
   const generatePlan = async () => {
     const topic = planTopic.trim()
     if (!topic) return
+    setEditingPlanId(null)
+    setContentEditMode(false)
     setIsGenerating(true)
     try {
-      const res = await fetch(`${AI_API_BASE}/api/lesson-plan`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        // Send the teaching context so the AI society grounds the plan in this
-        // exact class/subject/unit/topic instead of a hardcoded chapter.
-        body: JSON.stringify({
-          topic,
-          duration: Number(planDuration) || 45,
-          board: "CBSE",
-          class_label: planClass,
-          subject: selectedSubject?.name ?? "",
-          unit: selectedUnit?.name ?? "",
-        }),
+      // Send the teaching context so the AI society grounds the plan in this
+      // exact class/subject/unit/topic instead of a hardcoded chapter.
+      const data = await aiApi.post<AiGeneratedPlan>("/api/lesson-plan", {
+        topic,
+        duration: Number(planDuration) || 45,
+        board: "CBSE",
+        class_label: planClass,
+        subject: selectedSubject?.name ?? "",
+        unit: selectedUnit?.name ?? "",
+        nep_concepts: planNep,
       })
-      if (!res.ok) throw new Error(`API ${res.status}`)
-      const data = await res.json()
       const p = data.plan
+      setShowDetails(false)
       setGeneratedPlan({
         topic: p.topic,
-        title: p.title ?? p.topic,
+        title: p.title || p.topic,
         className: `${planClass} — ${planSection}`,
         subject: selectedSubject?.name ?? "Mathematics",
         duration: p.duration,
         standards: [],
         objective: p.objective,
-        materials: p.materials ?? [],
-        outcomes: p.outcomes ?? [],
+        outcomes: p.outcomes,
         warmup: p.warmup,
         instruction: p.instruction,
         activity: p.activity,
@@ -318,105 +210,106 @@ export default function LessonPlanner() {
         homework: p.homework,
       })
     } catch {
-      showFlash("lesson", `Could not generate — is the lesson AI service running at ${AI_API_BASE}?`, 5000)
+      showFlash("lesson", "Could not generate — is the lesson AI service running on :8002?", 5000)
     } finally {
       setIsGenerating(false)
     }
   }
 
+  const buildPlanBody = (p: LessonPlan): NewLessonPlan => ({
+    topic: p.topic,
+    title: p.title,
+    class_label: planClass,
+    section: planSection || null,
+    subject: p.subject,
+    curriculum_subject_id: planSubjectId || null,
+    duration_minutes: Number(p.duration) || Number(planDuration) || 45,
+    standards: p.standards,
+    objective: p.objective,
+    outcomes: p.outcomes.filter((o) => o.trim()),
+    warmup: p.warmup,
+    instruction: p.instruction,
+    activity: p.activity,
+    assessment: p.assessment,
+    homework: p.homework,
+    bloom_levels: planBloom,
+  })
+
+  // Creates a new saved record — the first save of a fresh draft, or
+  // (when reopened from the library with a changed Class/Section)
+  // "Assign to Another Class": the original record is left untouched.
   const saveToLibrary = async () => {
     if (!generatedPlan || savingPlan) return
-    const p = generatedPlan
     setSavingPlan(true)
     try {
-      const res = await fetch(`${API_BASE}/api/lesson-plans`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          topic: p.topic,
-          class_label: planClass,
-          section: planSection || null,
-          subject: p.subject,
-          curriculum_subject_id: planSubjectId || null,
-          duration_minutes: Number(p.duration) || Number(planDuration) || 45,
-          standards: p.standards,
-          objective: p.objective,
-          materials: p.materials,
-          warmup: p.warmup,
-          instruction: p.instruction,
-          activity: p.activity,
-          assessment: p.assessment,
-          homework: p.homework,
-        }),
-      })
-      if (!res.ok) throw new Error(`API ${res.status}`)
-      const saved: ApiSavedPlan = await res.json()
+      const saved = await saveLessonPlan(buildPlanBody(generatedPlan))
       setSavedLibrary((prev) => [apiToRecord(saved), ...prev])
-      setSubTab("library")
+      setEditingPlanId(saved.id)
+      setShowLibrary(true)
       showFlash("lesson", "Lesson plan saved to My Plans")
     } catch {
-      showFlash("lesson", "Could not save — is the API running on :8001?", 5000)
+      showFlash("lesson", "Could not save — is the API running on :8000?", 5000)
     } finally {
       setSavingPlan(false)
     }
   }
 
-  // Re-open a saved plan into the generator output pane.
-  const viewPlan = (record: SavedLessonPlanRecord) => {
-    setGeneratedPlan(record.plan)
-    setSubTab("generator")
+  // Updates the currently-open saved record in place (content edits and/or
+  // a reassigned Class/Section) — only available when a saved plan is open.
+  const saveChanges = async () => {
+    if (!generatedPlan || !editingPlanId || savingPlan) return
+    setSavingPlan(true)
+    try {
+      const saved = await updateLessonPlan(editingPlanId, buildPlanBody(generatedPlan))
+      setSavedLibrary((prev) => prev.map((r) => (r.id === saved.id ? apiToRecord(saved) : r)))
+      showFlash("lesson", "Changes saved")
+    } catch {
+      showFlash("lesson", "Could not save changes — is the API running on :8000?", 5000)
+    } finally {
+      setSavingPlan(false)
+    }
   }
 
-  // This Week rows — timetable slots linked to their in-progress syllabus unit
-  const lessonPlanRows = useMemo(() => {
-    return TIMETABLE_SEED.map((r) => {
-      const candidates = curriculum.filter(
-        (u) => u.classId === r.classId && u.academicYear === CURRENT_YEAR,
-      )
-      // Current unit = the one being taught; a fully-taught unit hands over
-      // to the next unfinished one.
-      const unit: CurriculumUnit | null =
-        candidates.find((u) => unitStatus(u) === "In Progress") ||
-        candidates.find((u) => unitStatus(u) !== "Completed") ||
-        candidates[0] || null
-      const cls = CLASSES.find((c) => c.id === r.classId)
-      return {
-        day: r.day,
-        unitId: unit ? unit.id : null,
-        className: cls ? cls.name : r.classId,
-        hasUnit: !!unit,
-        unitName: unit ? unit.unit : "",
-        topics: unit ? unit.topics : [],
-        status: unit ? unitStatus(unit) : "No Syllabus unit linked",
-      }
-    })
-  }, [curriculum])
+  // Re-open a saved plan into the generator output pane, restoring which
+  // class it's assigned to (so reassigning it means an explicit dropdown
+  // change, not a leftover from whatever was last selected).
+  const viewPlan = (record: SavedLessonPlanRecord) => {
+    setGeneratedPlan(record.plan)
+    setEditingPlanId(record.id)
+    setContentEditMode(false)
+    setPlanClass(record.classLabel)
+    setPlanSection(record.section ?? PLANNER_SECTIONS[0])
+    setPlanSubjectId(record.curriculumSubjectId ?? "")
+    setPlanTopic(record.plan.topic)
+    setPlanDuration(record.plan.duration)
+    setShowDetails(false)
+    setShowLibrary(false)
+  }
 
   const generateBtnLabel = isGenerating ? "Generating…" : "✦ Generate Lesson Plan"
 
   return (
     <div>
-      <div className="mb-1.5">
-        <div className="mb-1 font-display text-[24px] font-bold text-ink">Lesson Planner</div>
-        <div className="text-[16px] text-text-secondary">
-          Generate standards-aligned lesson plans with an AI agent, or browse this week's plan and your saved library.
+      <div className="mb-1.5 flex items-start justify-between gap-4">
+        <div>
+          <div className="mb-1 font-display text-[24px] font-bold text-ink">Lesson Planner</div>
+          <div className="text-[16px] text-text-secondary">
+            Generate standards-aligned lesson plans with an AI agent.
+          </div>
         </div>
-      </div>
-
-      <div
-        style={{
-          display: "flex", gap: 4, background: "#F1F5F9", borderRadius: 10, padding: 4,
-          width: "fit-content", margin: "16px 0 20px",
-        }}
-      >
-        <div style={tabStyle(subTab === "generator")} onClick={() => setSubTab("generator")}>✦ AI Generator</div>
-        <div style={tabStyle(subTab === "week")} onClick={() => setSubTab("week")}>This Week</div>
-        <div style={tabStyle(subTab === "library")} onClick={() => setSubTab("library")}>
+        <div
+          onClick={() => setShowLibrary((v) => !v)}
+          style={{
+            padding: "9px 16px", borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: "pointer",
+            whiteSpace: "nowrap", marginTop: 2,
+            background: showLibrary ? "#111827" : "#F1F5F9", color: showLibrary ? "#fff" : "#374151",
+          }}
+        >
           Saved Plans ({savedLibrary.length})
         </div>
       </div>
 
-      {subTab === "generator" && (
+      {!showLibrary && (
         <div>
           <FlashBanner flashKey="lesson" />
         <div style={{ display: "grid", gridTemplateColumns: "340px 1fr", gap: 20, alignItems: "start" }}>
@@ -495,6 +388,14 @@ export default function LessonPlanner() {
                 ))}
             </select>
 
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#6B7280", marginBottom: 6 }}>Concept</div>
+            <select value={planConcept} onChange={(e) => setPlanConcept(e.target.value)} style={selectStyle}>
+              <option value="">Select a concept…</option>
+              {CONCEPT_OPTIONS.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+
             <div style={{ fontSize: 14, fontWeight: 600, color: "#6B7280", marginBottom: 6 }}>
               Topic or Learning Objective
             </div>
@@ -512,6 +413,42 @@ export default function LessonPlanner() {
               <option value="45">45 minutes</option>
               <option value="60">60 minutes</option>
             </select>
+
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#6B7280", marginBottom: 6 }}>Bloom's Level</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 16 }}>
+              {BLOOM_LEVELS.map((level) => {
+                const active = planBloom.includes(level)
+                return (
+                  <div
+                    key={level}
+                    onClick={() => toggleBloom(level)}
+                    style={{
+                      fontSize: 12.5, fontWeight: 600, padding: "4px 10px", borderRadius: 999, cursor: "pointer",
+                      color: active ? "#fff" : "#374151",
+                      background: active ? "#16332B" : "#F9FAFB",
+                      border: `1px solid ${active ? "#16332B" : "#E5E7EB"}`,
+                    }}
+                  >
+                    {level}
+                  </div>
+                )
+              })}
+            </div>
+
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#6B7280", marginBottom: 6 }}>NEP Concepts</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+              {NEP_CONCEPTS.map((concept) => (
+                <label key={concept} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                  <input
+                    type="checkbox"
+                    checked={planNep.includes(concept)}
+                    onChange={() => toggleNep(concept)}
+                    style={{ width: 15, height: 15, accentColor: "#3F6E62", cursor: "pointer" }}
+                  />
+                  <span style={{ fontSize: "14.5px", color: "#374151" }}>{concept}</span>
+                </label>
+              ))}
+            </div>
 
             <div
               onClick={generatePlan}
@@ -562,8 +499,22 @@ export default function LessonPlanner() {
                   {generatedPlan.duration} min · {generatedPlan.subject}
                 </span>
               </div>
-              <div style={{ fontSize: 21, fontWeight: 700, color: "#111827", marginBottom: 4 }}>{generatedPlan.topic}</div>
-              <div style={{ fontSize: "14.5px", color: "#6B7280", marginBottom: 18 }}>{generatedPlan.className}</div>
+              {contentEditMode ? (
+                <input
+                  value={generatedPlan.title}
+                  onChange={(e) => updateField("title", e.target.value)}
+                  style={{ ...editableFieldStyle, fontSize: 21, fontWeight: 700, marginBottom: 4 }}
+                />
+              ) : (
+                <div style={{ fontSize: 21, fontWeight: 700, color: "#111827", marginBottom: 4 }}>
+                  {generatedPlan.title || generatedPlan.topic}
+                </div>
+              )}
+              {/* Live Class/Section, not the frozen value from generation time — so
+                  changing the dropdowns to reassign is visibly reflected here. */}
+              <div style={{ fontSize: "14.5px", color: "#6B7280", marginBottom: 18 }}>
+                {planClass}{planSection ? ` — ${planSection}` : ""}
+              </div>
 
               <div
                 style={{
@@ -573,47 +524,103 @@ export default function LessonPlanner() {
               >
                 Objective
               </div>
-              <div style={{ fontSize: "15.5px", color: "#111827", lineHeight: 1.6, marginBottom: 18 }}>
-                {generatedPlan.objective}
-              </div>
+              {contentEditMode ? (
+                <textarea
+                  value={generatedPlan.objective}
+                  onChange={(e) => updateField("objective", e.target.value)}
+                  rows={2}
+                  style={{ ...editableFieldStyle, fontSize: "15.5px", marginBottom: 18 }}
+                />
+              ) : (
+                <div style={{ fontSize: "15.5px", color: "#111827", lineHeight: 1.6, marginBottom: 18 }}>
+                  {generatedPlan.objective}
+                </div>
+              )}
 
-              <div
-                style={{
-                  fontSize: 14, fontWeight: 700, color: "#6B7280", textTransform: "uppercase",
-                  letterSpacing: "0.04em", marginBottom: 8,
-                }}
-              >
-                Materials
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 18 }}>
-                {generatedPlan.materials.map((mat) => (
+              {(generatedPlan.outcomes.length > 0 || contentEditMode) && (
+                <>
                   <div
-                    key={mat}
                     style={{
-                      fontSize: 14, color: "#374151", background: "#F9FAFB", border: "1px solid #E5E7EB",
-                      padding: "5px 10px", borderRadius: 999,
+                      fontSize: 14, fontWeight: 700, color: "#6B7280", textTransform: "uppercase",
+                      letterSpacing: "0.04em", marginBottom: 8,
                     }}
                   >
-                    {mat}
+                    Learning Outcomes
                   </div>
-                ))}
+                  {contentEditMode ? (
+                    <textarea
+                      value={generatedPlan.outcomes.join("\n")}
+                      onChange={(e) => updateField("outcomes", e.target.value.split("\n"))}
+                      rows={4}
+                      placeholder="One outcome per line"
+                      style={{ ...editableFieldStyle, fontSize: "14.5px", marginBottom: 18 }}
+                    />
+                  ) : (
+                    <ul style={{ margin: "0 0 18px", paddingLeft: 20 }}>
+                      {generatedPlan.outcomes.map((o, i) => (
+                        <li key={i} style={{ fontSize: "14.5px", color: "#374151", lineHeight: 1.6 }}>{o}</li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              )}
+
+              {/* Compact 5E flow — phase + duration + one line; full teacher/student
+                  breakdown and assessment/homework text live behind "Show details" */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8, marginBottom: 12 }}>
+                {PLAN_SECTIONS.map((sec) => {
+                  const { duration, teacher } = splitPhase(generatedPlan[sec.key] as string)
+                  return (
+                    <div key={sec.key} style={{ border: "1px solid #E5E7EB", borderRadius: 10, padding: 10 }}>
+                      <div style={{ fontSize: 12.5, fontWeight: 700, color: "#111827" }}>{sec.label}</div>
+                      <div style={{ fontSize: 11, color: "#9CA3AF", marginBottom: 4 }}>{duration}</div>
+                      <div style={{ fontSize: 12, color: "#6B7280", lineHeight: 1.4 }}>{teacher}</div>
+                    </div>
+                  )
+                })}
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 6 }}>
-                {PLAN_SECTIONS.map((sec) => (
-                  <div key={sec.key} style={{ display: "flex", gap: 12 }}>
-                    <div style={{ width: 6, borderRadius: 3, background: sec.color }} />
-                    <div>
-                      <div style={{ fontSize: "14.5px", fontWeight: 700, color: "#111827", marginBottom: 2 }}>
-                        {sec.label}
-                      </div>
-                      <div style={{ fontSize: 15, color: "#374151", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>
-                        {generatedPlan[sec.key] as string}
+              <div style={{ display: "flex", gap: 16, marginBottom: showDetails ? 14 : 6 }}>
+                <div
+                  onClick={() => setShowDetails((v) => !v)}
+                  style={{ fontSize: 13, fontWeight: 600, color: "#3F6E62", cursor: "pointer" }}
+                >
+                  {showDetails ? "▴ Hide details" : "▾ Show details"}
+                </div>
+                <div
+                  onClick={() => setContentEditMode((v) => !v)}
+                  style={{ fontSize: 13, fontWeight: 600, color: contentEditMode ? "#B45309" : "#3F6E62", cursor: "pointer" }}
+                >
+                  {contentEditMode ? "✓ Done editing" : "✎ Edit"}
+                </div>
+              </div>
+
+              {showDetails && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 6 }}>
+                  {PLAN_SECTIONS.map((sec) => (
+                    <div key={sec.key} style={{ display: "flex", gap: 12 }}>
+                      <div style={{ width: 6, borderRadius: 3, background: sec.color }} />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: "14.5px", fontWeight: 700, color: "#111827", marginBottom: 2 }}>
+                          {sec.label}
+                        </div>
+                        {contentEditMode ? (
+                          <textarea
+                            value={generatedPlan[sec.key] as string}
+                            onChange={(e) => updateField(sec.key, e.target.value)}
+                            rows={4}
+                            style={{ ...editableFieldStyle, fontSize: 15 }}
+                          />
+                        ) : (
+                          <div style={{ fontSize: 15, color: "#374151", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>
+                            {generatedPlan[sec.key] as string}
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
 
               {/* Actions */}
               <div
@@ -625,21 +632,46 @@ export default function LessonPlanner() {
                 <div onClick={generatePlan} style={actionBtnStyle}>
                   <RotateCw size={15} /> Regenerate
                 </div>
-                <div onClick={() => exportPlanToWord(generatedPlan)} style={actionBtnStyle}>📄 Export to Word</div>
                 <div onClick={() => exportPlanToPdf(generatedPlan)} style={actionBtnStyle}>
                   <Download size={15} /> Export to PDF
                 </div>
-                <div
-                  onClick={saveToLibrary}
-                  style={{
-                    fontSize: "14.5px", fontWeight: 700, color: "#fff", background: "#16332B",
-                    padding: "8px 16px", borderRadius: 8,
-                    cursor: savingPlan ? "not-allowed" : "pointer",
-                    opacity: savingPlan ? 0.6 : 1,
-                  }}
-                >
-                  {savingPlan ? "Saving…" : "Save to My Plans"}
-                </div>
+                {editingPlanId ? (
+                  <>
+                    <div
+                      onClick={saveChanges}
+                      style={{
+                        fontSize: "14.5px", fontWeight: 700, color: "#fff", background: "#16332B",
+                        padding: "8px 16px", borderRadius: 8,
+                        cursor: savingPlan ? "not-allowed" : "pointer",
+                        opacity: savingPlan ? 0.6 : 1,
+                      }}
+                    >
+                      {savingPlan ? "Saving…" : "Save Changes"}
+                    </div>
+                    <div
+                      onClick={saveToLibrary}
+                      style={{
+                        ...actionBtnStyle,
+                        cursor: savingPlan ? "not-allowed" : "pointer",
+                        opacity: savingPlan ? 0.6 : 1,
+                      }}
+                    >
+                      Assign to Another Class
+                    </div>
+                  </>
+                ) : (
+                  <div
+                    onClick={saveToLibrary}
+                    style={{
+                      fontSize: "14.5px", fontWeight: 700, color: "#fff", background: "#16332B",
+                      padding: "8px 16px", borderRadius: 8,
+                      cursor: savingPlan ? "not-allowed" : "pointer",
+                      opacity: savingPlan ? 0.6 : 1,
+                    }}
+                  >
+                    {savingPlan ? "Saving…" : "Save to My Plans"}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -647,49 +679,7 @@ export default function LessonPlanner() {
         </div>
       )}
 
-      {subTab === "week" && (
-        <div>
-          <FlashBanner flashKey="lesson" />
-          <div style={{ fontSize: "13.5px", color: "#6B7280", marginBottom: 12 }}>
-            Each slot is linked to its Syllabus unit — tick a topic here as you teach it, and its Actual % updates automatically in Syllabus Map.
-          </div>
-          <div className="rounded-[12px] border border-card-border bg-cream shadow-card" style={{ padding: "8px 20px" }}>
-            {lessonPlanRows.map((row, i) => (
-              <div key={i} style={{ padding: "14px 0", borderBottom: "1px solid #F1F5F9" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                  <div style={{ width: 90, fontSize: 15, fontWeight: 700, color: "#111827" }}>{row.day}</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: "15.5px", fontWeight: 600, color: "#111827" }}>{row.unitName}</div>
-                    <div style={{ fontSize: 14, color: "#6B7280", marginTop: 2 }}>{row.className}</div>
-                  </div>
-                  <div style={lessonStatusStyle(row.hasUnit ? row.status : "Draft")}>{row.status}</div>
-                </div>
-                {row.hasUnit && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 18px", margin: "8px 0 4px 106px" }}>
-                    {row.topics.map((topic) => (
-                      <div
-                        key={topic.id}
-                        style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}
-                        onClick={() => row.unitId && handleToggleTopic(row.unitId, topic.id)}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={topic.done}
-                          readOnly
-                          style={{ width: 15, height: 15, accentColor: "#3F6E62", cursor: "pointer" }}
-                        />
-                        <span style={topicLabelStyle(topic.done)}>{topic.name}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {subTab === "library" && savedLibrary.length === 0 && (
+      {showLibrary && savedLibrary.length === 0 && (
         <div
           className="rounded-[12px] border border-card-border bg-cream shadow-card"
           style={{ padding: 48, textAlign: "center", color: "#9CA3AF", fontSize: 15 }}
@@ -697,7 +687,7 @@ export default function LessonPlanner() {
           No saved plans yet — generate a lesson and click “Save to My Plans”.
         </div>
       )}
-      {subTab === "library" && savedLibrary.length > 0 && (
+      {showLibrary && savedLibrary.length > 0 && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
           {savedLibrary.map((record) => {
             const lib = record.plan
