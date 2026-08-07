@@ -137,15 +137,38 @@ function PdfCanvasViewer({
 
   useEffect(() => {
     let cancelled = false
+    let retryTimer: ReturnType<typeof setTimeout> | undefined
+    let task: ReturnType<typeof getDocument> | null = null
     setPdf(null)
     setError(false)
-    const task = getDocument({ url: pdfUrl })
-    task.promise
-      .then((doc) => { if (!cancelled) setPdf(doc) })
-      .catch((err) => { console.error(`PDF load failed: name=${err?.name} message=${err?.message}`); if (!cancelled) setError(true) })
+
+    // Safari intermittently throws a generic "Load failed" TypeError on
+    // cross-origin fetches (confirmed with a raw fetch() bypassing pdf.js
+    // entirely -- same failure, no pdf.js involved). Plain same-URL retries
+    // kept failing identically, which points to Safari reusing the same
+    // broken connection/socket rather than a one-off flake -- so each retry
+    // busts the URL to force a genuinely new connection.
+    const MAX_ATTEMPTS = 4
+    const attempt = (n: number) => {
+      const url = n === 1 ? pdfUrl : `${pdfUrl}${pdfUrl!.includes("?") ? "&" : "?"}_retry=${n}`
+      task = getDocument({ url, disableRange: true, disableStream: true })
+      task.promise
+        .then((doc) => { if (!cancelled) setPdf(doc) })
+        .catch(() => {
+          if (cancelled) return
+          if (n < MAX_ATTEMPTS) {
+            retryTimer = setTimeout(() => { if (!cancelled) attempt(n + 1) }, 700 * n)
+          } else {
+            setError(true)
+          }
+        })
+    }
+    attempt(1)
+
     return () => {
       cancelled = true
-      task.destroy()
+      clearTimeout(retryTimer)
+      task?.destroy()
     }
   }, [pdfUrl])
 
