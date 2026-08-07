@@ -107,6 +107,11 @@ export const ADMIN_IDENTITY = {
   initials: "AR",
   roleLabel: "Administrator",
 }
+export const STUDENT_IDENTITY = {
+  name: "Student Demo",
+  initials: "SD",
+  roleLabel: "Student",
+}
 
 // Real-login identity display -- Sidebar/Topbar use this instead of the
 // TEACHER_IDENTITY/ADMIN_IDENTITY placeholders once `session` is set.

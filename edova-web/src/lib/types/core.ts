@@ -31,5 +31,6 @@ export interface NavGroup {
   label: string
   adminOnly?: boolean
   teacherOnly?: boolean
+  studentOnly?: boolean
   items: NavItem[]
 }

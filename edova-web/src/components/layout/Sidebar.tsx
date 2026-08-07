@@ -2,7 +2,7 @@ import { useState } from "react"
 import { NavLink, useNavigate } from "react-router-dom"
 import { LogOut } from "lucide-react"
 import { NAV_GROUPS } from "@/lib/nav"
-import { useAppStore, TEACHER_IDENTITY, ADMIN_IDENTITY, identityFromUser } from "@/store/app-store"
+import { useAppStore, TEACHER_IDENTITY, ADMIN_IDENTITY, STUDENT_IDENTITY, identityFromUser } from "@/store/app-store"
 
 export function Sidebar() {
   const navigate = useNavigate()
@@ -11,9 +11,9 @@ export function Sidebar() {
   const logout = useAppStore((s) => s.logout)
   const identity = session
     ? identityFromUser(session.user)
-    : role === "admin" ? ADMIN_IDENTITY : TEACHER_IDENTITY
+    : role === "admin" ? ADMIN_IDENTITY : role === "student" ? STUDENT_IDENTITY : TEACHER_IDENTITY
   const groups = NAV_GROUPS.filter(
-    (g) => (!g.adminOnly || role === "admin") && (!g.teacherOnly || role === "teacher")
+    (g) => (!g.adminOnly || role === "admin") && (!g.teacherOnly || role === "teacher") && (!g.studentOnly || role === "student")
   )
 
   // Main modules are collapsed by default; clicking a module header reveals

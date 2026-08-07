@@ -32,7 +32,11 @@ export default function Login() {
 
   // Already signed in (persisted) or already chose Guest this page load --
   // skip straight into the app instead of re-prompting.
-  if (session || guestMode) {
+  if (session) {
+    const r = session.user.role
+    return <Navigate to={r === "student" ? "/learning" : r === "admin" ? "/settings" : "/"} replace />
+  }
+  if (guestMode) {
     return <Navigate to="/" replace />
   }
 
@@ -43,7 +47,7 @@ export default function Login() {
     try {
       await login(email, password, role)
       const loggedInRole = useAppStore.getState().session?.user.role
-      navigate(loggedInRole === "student" ? "/learning" : "/")
+      navigate(loggedInRole === "student" ? "/learning" : loggedInRole === "admin" ? "/settings" : "/")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Invalid credentials")
     } finally {
@@ -53,7 +57,7 @@ export default function Login() {
 
   function handleGuest() {
     continueAsGuest()
-    navigate("/")
+    navigate(role === "student" ? "/learning" : role === "admin" ? "/settings" : "/")
   }
 
   return (

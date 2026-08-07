@@ -5,19 +5,22 @@ import type { NavGroup, ViewKey } from "./types"
 export const NAV_GROUPS: NavGroup[] = [
   {
     label: "Home",
+    teacherOnly: true,
     items: [
-      { key: "calendar", label: "My Calendar", icon: "📅", path: "/calendar" },
+      { key: "calendar", label: "My Calendar", icon: "🗓️", path: "/calendar" },
     ],
   },
   {
     label: "Administration",
+    adminOnly: true,
     items: [
       { key: "settings", label: "Settings", icon: "⚙️", path: "/settings" },
-      { key: "knowledgeGraph", label: "Knowledge Graph", icon: "🗂️", path: "/knowledge-graph" },
+      { key: "knowledgeGraph", label: "Knowledge Graph", icon: "🕸️", path: "/knowledge-graph" },
     ],
   },
   {
     label: "Planning",
+    teacherOnly: true,
     items: [
       { key: "lessonPlanner", label: "Lesson Planner", icon: "📝", path: "/lesson-planner" },
       { key: "curriculumMap", label: "Syllabus Map", icon: "🗺️", path: "/curriculum-map" },
@@ -25,15 +28,17 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     label: "Teaching",
+    teacherOnly: true,
     items: [
-      { key: "home", label: "Dashboard", icon: "📊", path: "/" },
-      { key: "assignmentTracker", label: "Assignment Tracker", icon: "📋", path: "/assignment-tracker" },
-      { key: "assessmentBuilder", label: "Assessment Builder", icon: "🧮", path: "/assessment-builder" },
-      { key: "resources", label: "Learning Resources", icon: "📁", path: "/resources" },
+      { key: "home", label: "Dashboard", icon: "🏫", path: "/" },
+      { key: "assignmentTracker", label: "Assignment Tracker", icon: "📊", path: "/assignment-tracker" },
+      { key: "assessmentBuilder", label: "Assessment Builder", icon: "📋", path: "/assessment-builder" },
+      { key: "resources", label: "Learning Resources", icon: "📚", path: "/resources" },
     ],
   },
   {
     label: "Student",
+    studentOnly: true,
     items: [
       { key: "learning", label: "Learning Hub", icon: "🎓", path: "/learning" },
       { key: "studentAssignments", label: "My Assignments", icon: "📑", path: "/my-assignments" },
@@ -44,10 +49,11 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     label: "Communication",
+    teacherOnly: true,
     items: [
-      { key: "announcements", label: "Student Communication", icon: "📣", path: "/announcements" },
-      { key: "parentCommunication", label: "Parent Communication", icon: "💬", path: "/parent-communication" },
-      { key: "reports", label: "Reports", icon: "📄", path: "/reports" },
+      { key: "announcements", label: "Student Communication", icon: "📢", path: "/announcements" },
+      { key: "parentCommunication", label: "Parent Communication", icon: "👨‍👩‍👧‍👦", path: "/parent-communication" },
+      { key: "reports", label: "Reports", icon: "📈", path: "/reports" },
     ],
   },
 ]
