@@ -1,7 +1,7 @@
 import psycopg2
 
 def cleanup_pg_academic_years():
-    conn = psycopg2.connect('postgresql://postgres:postgres@localhost:5433/edova')
+    conn = psycopg2.connect('postgresql://postgres:postgres@localhost:5432/edova')
     cur = conn.cursor()
     
     # 1. Get canonical ID for 2026-27

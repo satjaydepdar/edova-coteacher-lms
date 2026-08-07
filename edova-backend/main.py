@@ -15,6 +15,7 @@ from routers.assignments import router as assignments_router
 from routers.auth import router as auth_router
 from routers.calendar import router as calendar_router
 from routers.classrooms import router as classrooms_router
+from routers.dashboard import router as dashboard_router
 from settings import settings
 
 app = FastAPI(title="Edova Backend", version="0.1.0")
@@ -46,3 +47,4 @@ app.include_router(auth_router)
 app.include_router(classrooms_router)
 app.include_router(assignments_router)
 app.include_router(calendar_router)
+app.include_router(dashboard_router)

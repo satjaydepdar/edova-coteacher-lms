@@ -1,6 +1,8 @@
 // App shell — navigation + identity primitives.
 
 export type ViewKey =
+  | "home"
+  | "teacherHome"
   | "calendar"
   | "settings"
   | "knowledgeGraph"
