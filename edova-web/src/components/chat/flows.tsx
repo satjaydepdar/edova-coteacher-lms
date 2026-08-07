@@ -13,6 +13,17 @@ import {
 } from "./cards"
 import type { ChatMsg, Chip, MsgKind, MsgRenderCtx } from "./types"
 
+// Helper to render **bold** inline without a full markdown parser
+const renderFormattedText = (text: string) => {
+  if (!text) return text
+  return text.split(/(\*\*.*?\*\*)/).map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={i}>{part.slice(2, -2)}</strong>
+    }
+    return <span key={i}>{part}</span>
+  })
+}
+
 export type MsgFactory = (kind: MsgKind, extra: Partial<ChatMsg>, chips?: Chip[]) => ChatMsg
 export type FlowHandler = (mk: MsgFactory, chipId: string) => ChatMsg
 
@@ -77,17 +88,35 @@ export const MESSAGE_RENDERERS: Record<MsgKind, (m: ChatMsg, ctx: MsgRenderCtx) 
       ))}
     </div>
   ),
-  text: (m) => <div>{m.text}</div>,
-  textbook: (m) => (
-    <div>
-      <div className="whitespace-pre-line">{m.text}</div>
-      {m.sourceRef && (
-        <div className="mt-2 border-t border-[#E5E7EB] pt-1.5 text-[11.5px] text-text-muted">
-          Source: {m.sourceRef}
+  text: (m) => <div>{renderFormattedText(m.text || "")}</div>,
+  textbook: (m) => {
+    // If the text starts with **Title**, extract it and render it as a bold heading
+    const match = m.text.match(/^\*\*(.*?)\*\*\n\n([\s\S]*)$/);
+    if (match) {
+      return (
+        <div>
+          <div className="font-bold text-[15px] mb-2">{match[1]}</div>
+          <div className="whitespace-pre-line text-justify">{renderFormattedText(match[2])}</div>
+          {m.sourceRef && (
+            <div className="mt-2 border-t border-[#E5E7EB] pt-1.5 text-[11.5px] text-text-muted whitespace-pre-line">
+              {m.sourceRef}
+            </div>
+          )}
         </div>
-      )}
-    </div>
-  ),
+      )
+    }
+    
+    return (
+      <div>
+        <div className="whitespace-pre-line text-justify">{renderFormattedText(m.text || "")}</div>
+        {m.sourceRef && (
+          <div className="mt-2 border-t border-[#E5E7EB] pt-1.5 text-[11.5px] text-text-muted whitespace-pre-line">
+            {m.sourceRef}
+          </div>
+        )}
+      </div>
+    )
+  },
   worksheet: (m, ctx) =>
     m.topicId ? (
       <WorksheetCard topicId={m.topicId} diffLevel={ctx.diffLevel} setDiffLevel={ctx.setDiffLevel} />

@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { Navigate, useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { Navigate, useNavigate, useLocation } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAppStore } from "@/store/app-store"
@@ -7,19 +7,24 @@ import { useAppStore } from "@/store/app-store"
 type RoleTab = "student" | "teacher" | "admin"
 
 const ROLE_TABS: { key: RoleTab; label: string }[] = [
-  { key: "student", label: "Student" },
-  { key: "teacher", label: "Teacher" },
   { key: "admin", label: "Admin" },
+  { key: "teacher", label: "Teacher" },
+  { key: "student", label: "Student" },
 ]
 
 export default function Login() {
   const navigate = useNavigate()
+  const location = useLocation()
+  
   const login = useAppStore((s) => s.login)
   const continueAsGuest = useAppStore((s) => s.continueAsGuest)
   const session = useAppStore((s) => s.session)
   const guestMode = useAppStore((s) => s.guestMode)
 
-  const [role, setRole] = useState<RoleTab>("student")
+  const searchParams = new URLSearchParams(location.search)
+  const defaultRole = (searchParams.get("role") as RoleTab) || "student"
+
+  const [role, setRole] = useState<RoleTab>(defaultRole)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -27,7 +32,11 @@ export default function Login() {
 
   // Already signed in (persisted) or already chose Guest this page load --
   // skip straight into the app instead of re-prompting.
-  if (session || guestMode) {
+  if (session) {
+    const r = session.user.role
+    return <Navigate to={r === "student" ? "/learning" : r === "admin" ? "/settings" : "/"} replace />
+  }
+  if (guestMode) {
     return <Navigate to="/" replace />
   }
 
@@ -36,11 +45,11 @@ export default function Login() {
     setError("")
     setSubmitting(true)
     try {
-      await login(email, password)
+      await login(email, password, role)
       const loggedInRole = useAppStore.getState().session?.user.role
-      navigate(loggedInRole === "student" ? "/learning" : "/")
+      navigate(loggedInRole === "student" ? "/learning" : loggedInRole === "admin" ? "/settings" : "/")
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Sign in failed")
+      setError(err instanceof Error ? err.message : "Invalid credentials")
     } finally {
       setSubmitting(false)
     }
@@ -48,21 +57,40 @@ export default function Login() {
 
   function handleGuest() {
     continueAsGuest()
-    navigate("/")
+    navigate(role === "student" ? "/learning" : role === "admin" ? "/settings" : "/")
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-cream px-4">
       <div className="w-full max-w-[380px] rounded-[16px] bg-white p-7 shadow-[0_1px_3px_rgba(0,0,0,0.08),0_8px_24px_rgba(0,0,0,0.06)]">
         {/* Logo */}
-        <div className="mb-6 flex items-center gap-2.5">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-[8px] bg-ink font-display text-[18px] font-extrabold text-sidebar-text">
-            E
-          </div>
-          <div>
-            <div className="font-display text-[16px] font-bold leading-tight text-ink">Edova</div>
-            <div className="text-[11px] font-semibold tracking-[0.08em] text-text-secondary">
-              COTEACHER
+        <div className="mb-6 flex justify-center">
+          <img 
+            src="/logo-cropped.png" 
+            alt="Edova Logo" 
+            className="h-20 w-auto object-contain"
+            onError={(e) => {
+              // Fallback if they haven't uploaded it yet
+              const target = e.currentTarget;
+              const parent = target.parentElement;
+              if (parent) {
+                target.style.display = 'none';
+                if (target.nextElementSibling) {
+                  (target.nextElementSibling as HTMLElement).style.display = 'flex';
+                }
+              }
+            }}
+          />
+          {/* Fallback text logo just in case */}
+          <div className="hidden items-center gap-2.5">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-[8px] bg-ink font-display text-[18px] font-extrabold text-sidebar-text">
+              E
+            </div>
+            <div>
+              <div className="font-display text-[16px] font-bold leading-tight text-ink">Edova</div>
+              <div className="text-[11px] font-semibold tracking-[0.08em] text-text-secondary">
+                COTEACHER
+              </div>
             </div>
           </div>
         </div>
@@ -140,14 +168,6 @@ export default function Login() {
             className="mt-5 h-11 w-full rounded-[10px] text-[14.5px]"
           >
             {submitting ? "Signing in…" : "Sign in"}
-          </Button>
-          <Button
-            type="button"
-            variant="gold"
-            onClick={handleGuest}
-            className="mt-2.5 h-11 w-full rounded-[10px] text-[14.5px]"
-          >
-            Continue as Guest
           </Button>
         </form>
       </div>

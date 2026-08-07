@@ -21,14 +21,13 @@ foreach ($s in $services) {
     Write-Host ("SKIP   {0} - already running" -f $s.Name) -ForegroundColor DarkGray
     continue
   }
-  $log = Join-Path $logs (($s.Dir -replace '[/\\]', '-') + ".log")
   $dir = Join-Path $root $s.Dir
-  Start-Process powershell -ArgumentList "-NoProfile", "-Command", "Set-Location '$dir'; $($s.Cmd) *> '$log'" -WindowStyle Minimized
+  Start-Process cmd -ArgumentList "/k", "cd /d `"$dir`" && $($s.Cmd)" -WindowStyle Minimized
   Write-Host ("START  {0}" -f $s.Name) -ForegroundColor Green
 }
 
-Write-Host "`nWaiting for services to come up..." -ForegroundColor Cyan
-Start-Sleep -Seconds 10
+Write-Host "`nWaiting for services to come up (this takes ~30s for the AI models)..." -ForegroundColor Cyan
+Start-Sleep -Seconds 30
 
 Write-Host ""
 foreach ($s in $services) {

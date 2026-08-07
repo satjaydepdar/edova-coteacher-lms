@@ -15,7 +15,7 @@ interface AppState {
   // (Guest mode — today's demo experience, unchanged). Persisted so a real
   // login survives a reload.
   session: { token: string; user: SessionUser } | null
-  login: (email: string, password: string) => Promise<void>
+  login: (email: string, password: string, expectedRole?: Role) => Promise<void>
   logout: () => void
 
   // "Continue as Guest" for this page load only -- deliberately NOT
@@ -50,8 +50,11 @@ export const useAppStore = create<AppState>()(
       setRole: (role) => set({ role }),
 
       session: null,
-      login: async (email, password) => {
+      login: async (email, password, expectedRole) => {
         const { token, user } = await apiLogin(email, password)
+        if (expectedRole && user.role !== expectedRole) {
+          throw new Error("Invalid credentials")
+        }
         set({ session: { token, user }, role: user.role })
       },
       logout: () => {
@@ -103,6 +106,11 @@ export const ADMIN_IDENTITY = {
   name: "Principal A. Reyes",
   initials: "AR",
   roleLabel: "Administrator",
+}
+export const STUDENT_IDENTITY = {
+  name: "Student Demo",
+  initials: "SD",
+  roleLabel: "Student",
 }
 
 // Real-login identity display -- Sidebar/Topbar use this instead of the

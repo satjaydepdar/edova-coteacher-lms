@@ -17,7 +17,7 @@ class Settings:
     GEMINI_EMBEDDING_MODEL = os.getenv("GEMINI_EMBEDDING_MODEL", "gemini-embedding-2")
 
     # LlamaParse — PDF extraction (see extraction/llamaparse_extractor.py)
-    LLAMA_CLOUD_API = os.getenv("LLAMA_CLOUD_API")
+    LLAMA_CLOUD_API = os.getenv("LLAMA_CLOUD_API") or os.getenv("LLAMA_CLOUD_API_KEY")
 
     # Database — same Postgres instance/database as the main Edova app
     # (db/), not a standalone ncert_db. knowledge_chunks is a global,

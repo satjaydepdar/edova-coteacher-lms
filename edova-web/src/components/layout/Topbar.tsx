@@ -89,8 +89,13 @@ export function Topbar() {
       </div>
       <div className="flex items-center gap-3">
         <div className="flex items-center rounded-full bg-[#F3EFE3] p-[3px]">
-          {toggle("teacher", "Teacher")}
-          {toggle("admin", "Admin")}
+          {!session && toggle("teacher", "Teacher")}
+          {!session && toggle("admin", "Admin")}
+          {session && (
+            <div className="rounded-full bg-[#16332B] px-4 py-1.5 text-[14.5px] font-semibold text-white">
+              {role === "admin" ? "Admin" : role === "student" ? "Student" : "Teacher"}
+            </div>
+          )}
         </div>
         <div className="h-6 w-px bg-[#E5E1D2]" />
         <div className="relative" ref={bellRef}>

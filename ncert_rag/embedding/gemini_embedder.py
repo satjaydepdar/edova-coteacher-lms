@@ -46,9 +46,20 @@ class GeminiEmbedder:
             for title, text in zip(titles, documents)
         ]
 
-        result = self.client.models.embed_content(
-            model=self.model_name,
-            contents=prefixed,
-            config=types.EmbedContentConfig(output_dimensionality=self.dimension),
-        )
-        return [list(e.values) for e in result.embeddings]
+        import time
+        from google.genai import errors
+        
+        while True:
+            try:
+                result = self.client.models.embed_content(
+                    model=self.model_name,
+                    contents=prefixed,
+                    config=types.EmbedContentConfig(output_dimensionality=self.dimension),
+                )
+                return [list(e.values) for e in result.embeddings]
+            except errors.ClientError as e:
+                if e.code == 429:
+                    print("  [Rate limit hit, sleeping for 40 seconds...]")
+                    time.sleep(40)
+                else:
+                    raise

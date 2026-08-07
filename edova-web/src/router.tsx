@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { useAppStore } from "@/store/app-store"
 import Login from "@/pages/Login"
+import Portal from "@/pages/Portal"
 import TeacherHome from "@/pages/TeacherHome"
 import Calendar from "@/pages/Calendar"
 import Settings from "@/pages/Settings"
@@ -33,6 +34,7 @@ function IndexRedirect() {
 }
 
 export const router = createBrowserRouter([
+  { path: "/welcome", element: <Portal /> },
   { path: "/login", element: <Login /> },
   {
     path: "/",
@@ -40,6 +42,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <IndexRedirect /> },
       { path: "home", element: <TeacherHome /> },
+
       { path: "calendar", element: <Calendar /> },
       { path: "settings", element: <Settings /> },
       { path: "knowledge-graph", element: <KnowledgeGraph /> },

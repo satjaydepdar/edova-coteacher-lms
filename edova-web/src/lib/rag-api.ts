@@ -31,8 +31,33 @@ function toChatTurns(history: RagHistoryMsg[]): Array<{ user: string; assistant:
 export async function askTextbook(query: string, history: RagHistoryMsg[]): Promise<TextbookAnswer> {
   const data = await ragApi.post<RagChatResponse>("/chat", { message: query, history: toChatTurns(history) })
   const explanation = data?.response || "I couldn't find that in the textbook."
-  const source = data?.sources?.[0]
-  const refParts = [source?.doc_id, source?.page_number ? `Page ${source.page_number}` : ""]
-    .filter((p): p is string => typeof p === "string" && p !== "")
-  return { explanation, sourceRef: refParts.join(" · ") }
+  if (!data?.sources || data.sources.length === 0) {
+    return { explanation, sourceRef: "" }
+  }
+
+  const source = data.sources[0]
+  const docId = source.doc_id || ""
+  
+  // Format the chapter name nicely: "chapter 1 - life process" -> "Life Process"
+  const chapterName = docId
+    .replace(/^chapter \d+ - /i, "")
+    .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
+
+  // Collect all unique pages and sort them
+  const pageNumbers = Array.from(new Set(data.sources.map(s => s.page_number).filter(Boolean))) as number[]
+  pageNumbers.sort((a, b) => a - b)
+  
+  let pageStr = ""
+  if (pageNumbers.length === 1) {
+    pageStr = `Page: ${pageNumbers[0]}`
+  } else if (pageNumbers.length > 1) {
+    if (pageNumbers[pageNumbers.length - 1] - pageNumbers[0] === pageNumbers.length - 1) {
+      pageStr = `Pages: ${pageNumbers[0]}-${pageNumbers[pageNumbers.length - 1]}`
+    } else {
+      pageStr = `Pages: ${pageNumbers.join(", ")}`
+    }
+  }
+
+  const sourceRef = `Source:\nChapter: ${chapterName}\n${pageStr}`
+  return { explanation, sourceRef }
 }
