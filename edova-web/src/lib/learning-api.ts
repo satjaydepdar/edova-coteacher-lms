@@ -3,7 +3,7 @@
 // (subjects → syllabus units/chapters/topics → chapter resources) behind the
 // breadcrumb dropdowns. Field names follow the clerk API exactly
 // (subject_name, chapter_number, s3_key, …).
-import { clerkApi, getSessionUser } from "@/lib/api-client"
+import { clerkApi, ragApi, getSessionUser } from "@/lib/api-client"
 import { recordMemoryEvent } from "@/lib/memory-api"
 import type { Mistake, NewMistake, QuizQuestion } from "@/lib/types"
 
@@ -133,18 +133,21 @@ export function getQuiz(topicId: string) {
   )
 }
 
-export function getSubjects(year = "2026–27", board = "CBSE", classLabel = "Class 10") {
-  return clerkApi.get<{ subjects: LearningSubject[] }>(
+// Moved from clerk (ncert_rag/clerk) to the Postgres RAG app (ragApi, :8000)
+// along with the rest of the course-CRUD contract — see curriculum-api.ts.
+// Same paths/shapes; clerk no longer serves these routes at all (404s).
+export function getSubjects(year = "2026-27", board = "CBSE", classLabel = "Class 10") {
+  return ragApi.get<{ subjects: LearningSubject[] }>(
     `/api/curriculums?year=${encodeURIComponent(year)}&board=${encodeURIComponent(board)}&class=${encodeURIComponent(classLabel)}`,
   )
 }
 
 export function getSyllabus(subjectId: string) {
-  return clerkApi.get<{ units: SyllabusUnit[] }>(`/api/curriculum-subjects/${subjectId}/syllabus`)
+  return ragApi.get<{ units: SyllabusUnit[] }>(`/api/curriculum-subjects/${subjectId}/syllabus`)
 }
 
 export function getResources(subjectId: string) {
-  return clerkApi.get<LearningResource[]>(`/api/curriculum-subjects/${subjectId}/resources`)
+  return ragApi.get<LearningResource[]>(`/api/curriculum-subjects/${subjectId}/resources`)
 }
 
 export function verifyResource(resourceId: string) {

@@ -142,7 +142,7 @@ function PdfCanvasViewer({
     const task = getDocument({ url: pdfUrl })
     task.promise
       .then((doc) => { if (!cancelled) setPdf(doc) })
-      .catch(() => { if (!cancelled) setError(true) })
+      .catch((err) => { console.error(`PDF load failed: name=${err?.name} message=${err?.message}`); if (!cancelled) setError(true) })
     return () => {
       cancelled = true
       task.destroy()

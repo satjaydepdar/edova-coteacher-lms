@@ -329,3 +329,51 @@ class CalendarRepo:
             (user_id,),
         )
         return cur.fetchall()
+
+
+class ResourceAssignmentRepo:
+    """resource_assignments -- a teacher assigning a catalogued Learning
+    Resource (OKF video/PDF) to a class. Distinct from AssignmentRepo
+    (homework/grades/submissions); this is purely "this class can see this
+    resource in Learning Hub," so it's a plain upsert with no status model."""
+
+    @staticmethod
+    def create(cur, new_id: str, classroom_id: str, resource_id: str, resource_title: str,
+               resource_type: str, chapter_number, s3_key, assigned_by: str):
+        cur.execute(
+            """
+            INSERT INTO resource_assignments
+                (id, classroom_id, resource_id, resource_title, resource_type,
+                 chapter_number, s3_key, assigned_by)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (classroom_id, resource_id) DO UPDATE SET
+                resource_title = EXCLUDED.resource_title,
+                resource_type = EXCLUDED.resource_type,
+                chapter_number = EXCLUDED.chapter_number,
+                s3_key = EXCLUDED.s3_key,
+                assigned_at = NOW()
+            RETURNING id, classroom_id, resource_id, resource_title, resource_type,
+                      chapter_number, s3_key, assigned_at
+            """,
+            (new_id, classroom_id, resource_id, resource_title, resource_type,
+             chapter_number, s3_key, assigned_by),
+        )
+        return cur.fetchone()
+
+    @staticmethod
+    def list_for_student(cur, student_id: str):
+        cur.execute(
+            """
+            SELECT ra.id, ra.resource_id, ra.resource_title, ra.resource_type,
+                   ra.chapter_number, ra.s3_key, ra.assigned_at,
+                   s.name AS subject
+            FROM resource_assignments ra
+            JOIN classrooms c ON c.id = ra.classroom_id
+            JOIN subjects s ON s.id = c.subject_id
+            JOIN enrollments e ON e.classroom_id = ra.classroom_id
+                AND e.student_id = %s AND e.status = 'active'
+            ORDER BY ra.assigned_at DESC
+            """,
+            (student_id,),
+        )
+        return cur.fetchall()

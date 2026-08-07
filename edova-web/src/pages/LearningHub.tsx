@@ -15,6 +15,7 @@ import { useLearningStore } from "@/store/learning-store"
 import { useAppStore } from "@/store/app-store"
 import { RecommendationCards } from "@/components/common/RecommendationCards"
 import { getMyAssignments, type MyAssignment } from "@/lib/student-api"
+import { getMyResourceAssignments, type MyResourceAssignment } from "@/lib/resource-assignments-api"
 import { getRecommendations } from "@/lib/memory-api"
 import type { RecTask } from "@/components/learning/StudyPlan"
 import { APP_TODAY } from "@/lib/dates"
@@ -99,13 +100,31 @@ export default function LearningHub() {
   // Real teacher-assigned homework for logged-in students; Guest mode keeps
   // the placeholder above. `null` = not loaded / not a student session.
   const session = useAppStore((s) => s.session)
+  const isRealStudent = session?.user.role === "student"
   const [realAssignments, setRealAssignments] = useState<StudyAssignment[] | null>(null)
   useEffect(() => {
-    if (session?.user.role !== "student") return
+    if (!isRealStudent) return
     getMyAssignments()
       .then((rows) => setRealAssignments(rows.map(toStudyAssignment).filter((a) => a !== null)))
       .catch(() => { /* keep placeholder */ })
-  }, [session])
+  }, [isRealStudent])
+
+  // Resources (videos/PDFs) a teacher assigned straight from Learning
+  // Resources -- a separate, dedicated concept from the homework
+  // assignments above. `null` = not loaded yet / Guest mode, where the
+  // full demo catalog stays browsable; otherwise Learning Hub only shows
+  // chapters/media that appear in this list.
+  const [assignedRaw, setAssignedRaw] = useState<MyResourceAssignment[] | null>(null)
+  useEffect(() => {
+    if (!isRealStudent) return
+    getMyResourceAssignments()
+      .then(setAssignedRaw)
+      .catch(() => { /* keep the full catalog browsable */ })
+  }, [isRealStudent])
+  const assignedS3Keys = useMemo(
+    () => (assignedRaw ? new Set(assignedRaw.map((r) => r.s3_key).filter((k): k is string => !!k)) : null),
+    [assignedRaw],
+  )
 
   // Real recommended tasks: memory-layer struggle cards (works for the demo
   // student in Guest mode too) + the live mistake journal.
@@ -165,6 +184,22 @@ export default function LearningHub() {
       .catch(() => { /* keep the fallback subject */ })
   }, [])
 
+  // Real student: once both the subject list and the assigned-resources list
+  // are in, jump off the Science default onto whichever subject actually has
+  // assigned content (if the default has none) -- runs once so it doesn't
+  // fight a manual subject switch afterward.
+  const autoPickedSubjectRef = useRef(false)
+  useEffect(() => {
+    if (autoPickedSubjectRef.current || !isRealStudent || !assignedRaw || subjects.length === 0) return
+    autoPickedSubjectRef.current = true
+    if (assignedRaw.length === 0) return
+    const assignedSubjectNames = new Set(assignedRaw.map((r) => r.subject))
+    const current = subjects.find((s) => s.id === subjectId)
+    if (current && assignedSubjectNames.has(current.subject_name)) return
+    const target = subjects.find((s) => assignedSubjectNames.has(s.subject_name))
+    if (target) setSubjectId(target.id)
+  }, [isRealStudent, assignedRaw, subjects, subjectId])
+
   // Syllabus tree of the picked subject; default to the Light chapter (or the
   // first chapter for any other subject) and its Laws of Reflection topic.
   useEffect(() => {
@@ -217,11 +252,27 @@ export default function LearningHub() {
 
   const subjectOptions = subjects.length > 0 ? subjects : [FALLBACK_SUBJECT]
 
+  // Resources actually assigned to this student -- Guest mode / not-yet-
+  // loaded (assignedS3Keys === null) keeps the full demo catalog browsable.
+  const assignedResources = useMemo(
+    () =>
+      !isRealStudent || !assignedS3Keys
+        ? resources
+        : resources.filter((r) => r.s3_key != null && assignedS3Keys.has(r.s3_key)),
+    [resources, assignedS3Keys, isRealStudent],
+  )
+
   const chapters = useMemo(() => units.flatMap((u) => u.chapters), [units])
-  const chapterOptions = chapters.length > 0 ? chapters : [FALLBACK_CHAPTER]
+  const chapterOptionsAll = chapters.length > 0 ? chapters : [FALLBACK_CHAPTER]
+  // Real student: only chapters with at least one assigned resource are
+  // selectable -- an empty list here means nothing's been assigned yet.
+  const chapterOptions =
+    isRealStudent && assignedS3Keys
+      ? chapterOptionsAll.filter((c) => assignedResources.some((r) => r.chapter_number === c.number))
+      : chapterOptionsAll
   const chapter = chapterOptions.find((c) => c.id === chapterId) ?? chapterOptions[0]
 
-  const topicOptions = chapter.topics.length > 0 ? chapter.topics : [FALLBACK_TOPIC]
+  const topicOptions = chapter && chapter.topics.length > 0 ? chapter.topics : [FALLBACK_TOPIC]
   const topic = topicOptions.find((t) => t.id === topicId) ?? topicOptions[0]
 
   const onChapterChange = (id: string) => {
@@ -231,6 +282,15 @@ export default function LearningHub() {
     const laws = topics.find((t) => t.title === FALLBACK_TOPIC.title) ?? topics[0]
     setTopicId(laws.id)
   }
+
+  // Once the assigned-only chapter list is known, snap off a chapter that's
+  // no longer selectable (e.g. the syllabus effect's default pick wasn't
+  // actually assigned) onto the first one that is.
+  useEffect(() => {
+    if (chapterOptions.length === 0) return
+    if (!chapterOptions.some((c) => c.id === chapterId)) onChapterChange(chapterOptions[0].id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chapterOptions.map((c) => c.id).join(",")])
 
   // Wired to StudyPlan's "Start Now" / Heatmap's chapter cells — jumps the
   // breadcrumb selection straight to that subject/chapter and opens Learn.
@@ -258,16 +318,16 @@ export default function LearningHub() {
   // topic tag is how a student finds the one that's actually about what
   // they're looking at.
   const chapterPdf =
-    resources.find((r) => r.doc_type === "chapter_content" && r.topic_id === topicId && r.s3_key) ??
-    resources.find((r) => r.doc_type === "chapter_content" && r.chapter_number === chapter.number && r.s3_key)
+    assignedResources.find((r) => r.doc_type === "chapter_content" && r.topic_id === topicId && r.s3_key) ??
+    assignedResources.find((r) => r.doc_type === "chapter_content" && r.chapter_number === chapter?.number && r.s3_key)
   const pdfUrl = chapterPdf?.s3_key ? getAssetUrl(chapterPdf.s3_key) : undefined
   const chapterVideo =
-    resources.find((r) => r.type === "Video" && r.topic_id === topicId && r.s3_key) ??
-    resources.find((r) => r.type === "Video" && r.chapter_number === chapter.number && r.s3_key)
+    assignedResources.find((r) => r.type === "Video" && r.topic_id === topicId && r.s3_key) ??
+    assignedResources.find((r) => r.type === "Video" && r.chapter_number === chapter?.number && r.s3_key)
   const videoUrl = chapterVideo?.s3_key ? getAssetUrl(chapterVideo.s3_key) : undefined
   const chapterLab =
-    resources.find((r) => r.doc_type === "lab" && r.topic_id === topicId && r.s3_key) ??
-    resources.find((r) => r.doc_type === "lab" && r.chapter_number === chapter.number && r.s3_key)
+    assignedResources.find((r) => r.doc_type === "lab" && r.topic_id === topicId && r.s3_key) ??
+    assignedResources.find((r) => r.doc_type === "lab" && r.chapter_number === chapter?.number && r.s3_key)
   // Cache-bust with the upload timestamp -- a lab file gets edited in place
   // at the same S3 key, and browsers otherwise keep serving whatever they
   // first cached for that URL even after the object changes.
@@ -325,7 +385,9 @@ export default function LearningHub() {
           </Select>
         </div>
         <div className="flex items-center gap-3">
-          <StudyMaterial chapterName={chapter.name} chapterNumber={chapter.number} resources={resources} />
+          {chapter && (
+            <StudyMaterial chapterName={chapter.name} chapterNumber={chapter.number} resources={assignedResources} />
+          )}
           <Badge variant="warning">🔥 {streak} day streak</Badge>
         </div>
       </Card>
@@ -334,77 +396,88 @@ export default function LearningHub() {
         <StudyPlan assignments={realAssignments ?? ASSIGNMENTS} recommended={recTasks} onGoToChapter={goToChapter} />
       </div>
 
-      <Tabs
-        value={activeView === "learning" ? tab : activeView}
-        onValueChange={(v: string) => {
-          if (["journal", "heatmap"].includes(v)) setActiveView(v as "journal" | "heatmap")
-          else { setActiveView("learning"); setTab(v) }
-        }}
-        className="mt-8"
-      >
-        <TabsList className="gap-2 bg-transparent">
-          <TabsTrigger value="learn" className={triggerClass}>Learn</TabsTrigger>
-          <TabsTrigger value="lab" className={triggerClass}>Lab Exercise</TabsTrigger>
-          <TabsTrigger value="mindmap" className={triggerClass}>Mindmap</TabsTrigger>
-          <TabsTrigger value="journal" className={triggerClass}>
-            Mistake Journal <Badge variant="danger" className="ml-2">{mistakes.length}</Badge>
-          </TabsTrigger>
-          <TabsTrigger value="heatmap" className={triggerClass}>Heatmap</TabsTrigger>
-        </TabsList>
+      {!chapter && (
+        <Card className="mt-8 px-6 py-16 text-center">
+          <p className="text-[15px] font-semibold text-ink">No videos assigned yet</p>
+          <p className="mt-1 text-sm text-text-secondary">
+            Your teacher hasn't assigned any Learning Resources for this subject yet — try another subject above, or check back soon.
+          </p>
+        </Card>
+      )}
 
-        <TabsContent value="learn" className="mt-6">
-          <div className="mb-3 flex justify-end">
-            <div className="flex items-center rounded-full bg-secondary p-[3px]">
-              <button
-                type="button"
-                onClick={() => setVideoFocus(false)}
-                className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition-colors ${
-                  !videoFocus ? "bg-ink text-sidebar-text" : "text-text-secondary"
-                }`}
-              >
-                Default
-              </button>
-              <button
-                type="button"
-                onClick={() => setVideoFocus(true)}
-                className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition-colors ${
-                  videoFocus ? "bg-ink text-sidebar-text" : "text-text-secondary"
-                }`}
-              >
-                Theater
-              </button>
+      {chapter && (
+        <Tabs
+          value={activeView === "learning" ? tab : activeView}
+          onValueChange={(v: string) => {
+            if (["journal", "heatmap"].includes(v)) setActiveView(v as "journal" | "heatmap")
+            else { setActiveView("learning"); setTab(v) }
+          }}
+          className="mt-8"
+        >
+          <TabsList className="gap-2 bg-transparent">
+            <TabsTrigger value="learn" className={triggerClass}>Learn</TabsTrigger>
+            <TabsTrigger value="lab" className={triggerClass}>Lab Exercise</TabsTrigger>
+            <TabsTrigger value="mindmap" className={triggerClass}>Mindmap</TabsTrigger>
+            <TabsTrigger value="journal" className={triggerClass}>
+              Mistake Journal <Badge variant="danger" className="ml-2">{mistakes.length}</Badge>
+            </TabsTrigger>
+            <TabsTrigger value="heatmap" className={triggerClass}>Heatmap</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="learn" className="mt-6">
+            <div className="mb-3 flex justify-end">
+              <div className="flex items-center rounded-full bg-secondary p-[3px]">
+                <button
+                  type="button"
+                  onClick={() => setVideoFocus(false)}
+                  className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition-colors ${
+                    !videoFocus ? "bg-ink text-sidebar-text" : "text-text-secondary"
+                  }`}
+                >
+                  Default
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setVideoFocus(true)}
+                  className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition-colors ${
+                    videoFocus ? "bg-ink text-sidebar-text" : "text-text-secondary"
+                  }`}
+                >
+                  Theater
+                </button>
+              </div>
             </div>
-          </div>
-          <div
-            className={`grid gap-6 transition-[grid-template-columns] duration-300 ${
-              videoFocus ? "grid-cols-[72%_28%]" : "grid-cols-[55%_45%]"
-            }`}
-          >
-            {/* key remounts the player per topic so quiz progress resets */}
-            <VideoPlayerWithQuiz
-              key={topic.id}
-              questions={quiz ?? undefined}
-              chapter={chapter.name}
-              videoUrl={videoUrl}
-              addXP={addXP}
-              onMistake={addMistake}
-            />
-            <PdfViewerWithNotes
-              pdfUrl={pdfUrl}
-              pdfTitle={chapterPdf?.title}
-              chapter={chapter.name}
-              chapterNumber={chapter.number}
-              addXP={addXP}
-            />
-          </div>
-        </TabsContent>
-        <TabsContent value="lab">
-          <LabExercise key={topic.id} addXP={addXP} onMistake={addMistake} chapter={chapter.name} labUrl={labUrl} />
-        </TabsContent>
-        <TabsContent value="mindmap"><Mindmap /></TabsContent>
-        <TabsContent value="journal"><MistakeJournal mistakes={mistakes} /></TabsContent>
-        <TabsContent value="heatmap"><Heatmap /></TabsContent>
-      </Tabs>
+            <div
+              className={`grid gap-6 transition-[grid-template-columns] duration-300 ${
+                videoFocus ? "grid-cols-[72%_28%]" : "grid-cols-[55%_45%]"
+              }`}
+            >
+              {/* key remounts the player per topic so quiz progress resets */}
+              <VideoPlayerWithQuiz
+                key={topic.id}
+                questions={quiz ?? undefined}
+                chapter={chapter.name}
+                videoUrl={videoUrl}
+                addXP={addXP}
+                onMistake={addMistake}
+              />
+              <PdfViewerWithNotes
+                pdfUrl={pdfUrl}
+                pdfTitle={chapterPdf?.title}
+                chapter={chapter.name}
+                chapterNumber={chapter.number}
+                addXP={addXP}
+              />
+            </div>
+          </TabsContent>
+          <TabsContent value="lab">
+            <LabExercise key={topic.id} addXP={addXP} onMistake={addMistake} chapter={chapter.name} labUrl={labUrl} />
+          </TabsContent>
+          <TabsContent value="mindmap"><Mindmap /></TabsContent>
+          <TabsContent value="journal"><MistakeJournal mistakes={mistakes} /></TabsContent>
+          <TabsContent value="heatmap"><Heatmap /></TabsContent>
+        </Tabs>
+      )}
     </div>
   )
 }
