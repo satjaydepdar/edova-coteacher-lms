@@ -3,7 +3,6 @@ import { PageHeader } from "@/components/common/PageHeader"
 import { McqQuiz } from "@/components/student/McqQuiz"
 import { submissionStatusStyle, SUBMISSION_LABEL } from "@/lib/styles"
 import { getMyAssignments, submitMyAssignment, type MyAssignment } from "@/lib/student-api"
-import { getSubjects, type LearningSubject } from "@/lib/learning-api"
 import { useAppStore } from "@/store/app-store"
 import {
   LayoutGrid,
@@ -84,7 +83,7 @@ export default function StudentAssignments() {
 
   // Real Backend Data States
   const [assignments, setAssignments] = useState<MyAssignment[]>([])
-  const [subjects, setSubjects] = useState<SubjectChip[]>(DEFAULT_SUBJECT_CHIPS)
+  const subjects: SubjectChip[] = DEFAULT_SUBJECT_CHIPS
   const [loading, setLoading] = useState(true)
   const [openId, setOpenId] = useState<string | null>(null)
   const [draft, setDraft] = useState("")
@@ -96,32 +95,11 @@ export default function StudentAssignments() {
   const session = useAppStore((s) => s.session)
   const isStudent = session?.user?.role === "student"
 
-  // 1. Fetch live Class 10 subjects from backend API
-  useEffect(() => {
-    getSubjects()
-      .then((res) => {
-        if (res.subjects && res.subjects.length > 0) {
-          const liveChips: SubjectChip[] = [
-            { id: "all", label: "All Lessons", icon: LayoutGrid },
-            ...res.subjects.map((sub: LearningSubject) => {
-              const name = sub.subject_name.toLowerCase()
-              let icon = BookOpen
-              let id = sub.id
-              if (name.includes("math")) { icon = Calculator; id = "math" }
-              else if (name.includes("sci")) { icon = SearchIcon; id = "sci" }
-              else if (name.includes("eng")) { icon = BookOpen; id = "eng" }
-              else if (name.includes("social") || name.includes("ss")) { icon = Users; id = "ss" }
-              else if (name.includes("computer") || name.includes("cs")) { icon = Laptop; id = "cs" }
-              return { id, label: sub.subject_name, icon }
-            })
-          ]
-          setSubjects(liveChips)
-        }
-      })
-      .catch(() => {
-        // Fallback to default 5 subjects
-      })
-  }, [])
+  // Subject chips are the fixed Class 10 set (Math/Science/English/Social
+  // Studies/Computer Science) -- the filter below matches by these fixed
+  // keyword ids against assignment title/classroom text, not real DB
+  // subject rows, so chips intentionally don't depend on what curriculum
+  // subjects actually exist yet (today: only Math + Science are seeded).
 
   // 2. Fetch real student assignments from backend database API
   const loadAssignments = useCallback(() => {

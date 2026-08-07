@@ -133,6 +133,9 @@ export function getQuiz(topicId: string) {
   )
 }
 
+// Moved from clerk (ncert_rag/clerk) to the Postgres RAG app (ragApi, :8000)
+// along with the rest of the course-CRUD contract — see curriculum-api.ts.
+// Same paths/shapes; clerk no longer serves these routes at all (404s).
 export function getSubjects(year = "2026-27", board = "CBSE", classLabel = "Class 10") {
   return ragApi.get<{ subjects: LearningSubject[] }>(
     `/api/curriculums?year=${encodeURIComponent(year)}&board=${encodeURIComponent(board)}&class=${encodeURIComponent(classLabel)}`,

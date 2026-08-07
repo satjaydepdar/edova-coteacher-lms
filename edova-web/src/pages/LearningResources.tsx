@@ -18,6 +18,8 @@ import { FlashBanner } from "@/components/common/FlashBanner"
 import { SlideUpOverlay } from "@/components/common/SlideUpOverlay"
 import { useSchoolStore } from "@/store/school-store"
 import { cn } from "@/lib/utils"
+import { CLASSES } from "@/data/seed"
+import { assignResourceToClassroom } from "@/lib/resource-assignments-api"
 
 // Rebuilt on the real Master Data syllabus tree + the catalogued-resources
 // API (see Settings > Resource Library / ResourceLibrary.tsx and api.py's
@@ -374,35 +376,40 @@ export default function LearningResources() {
 
   const openPreview = (resource: DisplayResource) => setPreview(resource)
 
-  const publishAssignment = useSchoolStore((s) => s.publishAssignment)
+  const hydrateRealStudents = useSchoolStore((s) => s.hydrateRealStudents)
 
+  // Assigning a resource here is a Learning Hub concept, not homework -- it
+  // writes to resource_assignments (see resource-assignments-api.ts), a
+  // separate table/endpoint from the Assignment Tracker's `assignments`.
+  // Learning Hub reads that table directly to decide what a student sees.
   const handleAssignOne = async (resourceId: string) => {
     assignOkfResources(cls, [resourceId])
     const resItem = resources.find((r) => r.id === resourceId)
     const resTitle = resItem ? resItem.title : "Assigned Learning Resource"
     const s3Key = resItem?.s3_key || resItem?.preview_s3_key || ""
 
-    const newAssignment = {
-      id: `a_res_${Date.now()}`,
-      title: resTitle,
-      classId: cls,
-      subject: subjectName || "Mathematics",
-      term: "Term 2",
-      academicYear: year,
-      due: "Tomorrow, 11:59 PM",
-      dueIso: new Date(Date.now() + 86400000).toISOString(),
-      totalPoints: 10,
-      status: "active" as const,
-      sourceAssessmentId: null,
-      publishedToStudents: true,
-      createdOn: "Just now",
-      type: (resItem?.type === "Video" ? "video" : resItem?.type === "PPT" ? "reading" : "homework") as any,
-      description: `Please watch and review the ${resTitle} learning material assigned for your class.`,
-      attachments: s3Key ? [{ name: resTitle, size: "N/A", s3Key }] : [],
-      submissions: [],
+    // `cls` is a plain label ("Class 10"); resolve the real CLASSES id, then
+    // the real backend classroom UUID, to actually persist the assignment.
+    const realClass =
+      CLASSES.find((c) => c.name.startsWith(cls) && c.subject === (subjectName || "Mathematics")) ??
+      CLASSES.find((c) => c.name.startsWith(cls))
+    await hydrateRealStudents()
+    const realClassroomId = realClass ? useSchoolStore.getState().realClassroomIdByFakeId[realClass.id] : undefined
+
+    if (realClassroomId && resItem) {
+      try {
+        await assignResourceToClassroom(realClassroomId, {
+          resource_id: resItem.id,
+          resource_title: resTitle,
+          resource_type: resItem.type,
+          chapter_number: resItem.chapter_number ?? null,
+          s3_key: s3Key || null,
+        })
+      } catch (err) {
+        console.warn("resource assignment publish failed, staying local-only:", err)
+      }
     }
 
-    await publishAssignment(newAssignment)
     showFlash("resource", `Assigned "${resTitle}" to ${cls}.`)
   }
 
