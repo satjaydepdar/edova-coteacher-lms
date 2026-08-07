@@ -98,6 +98,8 @@ export interface Assignment {
   term: string
   academicYear: string
   due: string
+  dueIso?: string
+  scheduleIso?: string
   totalPoints: number
   status: AssignmentStatus
   sourceAssessmentId: string | null
