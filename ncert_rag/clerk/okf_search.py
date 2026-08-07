@@ -19,9 +19,15 @@ import json
 import math
 import os
 import re
-import sqlite3
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 import yaml
+import sys
+from pathlib import Path
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent))
+from config.settings import settings
 
 from okf_dashboard import collect
 
@@ -103,33 +109,27 @@ def _node_bodies(bundle):
     return bodies
 
 
-def syllabus_topics(db_path, okf_chapters):
+def syllabus_topics(okf_chapters):
     """Syllabus topics joined to the OKF chapter they belong to, matched by
-    normalized chapter name inside the same subject (clerk ids like ch_xxx
-    never appear in the bundle — names are the shared key, both are NCERT).
-
-    okf_chapters: {(subject_slug, chapter_id): chapter_name} from the bundle.
-    Returns [{topic_id, title, subject, chapter_id}] — chapter_id is "" when
-    the syllabus chapter has no OKF counterpart yet (topic exists, no shelf).
+    normalized chapter name inside the same subject.
     """
-    if not os.path.exists(db_path):
-        return []
     by_name = {}
     for (subject, chapter_id), chapter_name in okf_chapters.items():
         by_name[(subject, _norm(chapter_name))] = chapter_id
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
+    conn = psycopg2.connect(settings.DATABASE_URL)
     try:
-        rows = conn.execute(
-            """
-            SELECT t.id AS topic_id, t.title AS title,
-                   c.name AS chapter_name, s.subject_name AS subject_name
-            FROM syllabus_topics t
-            JOIN syllabus_chapters c ON c.id = t.chapter_id
-            JOIN syllabus_units u ON u.id = c.unit_id
-            JOIN subjects s ON s.id = u.subject_id
-            """
-        ).fetchall()
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute(
+                """
+                SELECT t.id AS topic_id, t.title AS title,
+                       c.name AS chapter_name, s.subject_name AS subject_name
+                FROM syllabus_topics t
+                JOIN syllabus_chapters c ON c.id = t.chapter_id
+                JOIN syllabus_units u ON u.id = c.unit_id
+                JOIN curriculum_subjects s ON s.id = u.curriculum_subject_id
+                """
+            )
+            rows = cur.fetchall()
     finally:
         conn.close()
     topics = []
@@ -146,7 +146,7 @@ def syllabus_topics(db_path, okf_chapters):
     return topics
 
 
-def search(bundle, db_path, query, limit=12):
+def search(bundle, query, limit=12):
     """Ranked matches across all four entity levels for one query string."""
     query_terms = _tokens(query)
     if len(query.strip()) < 2 or not query_terms:
@@ -155,7 +155,7 @@ def search(bundle, db_path, query, limit=12):
     data = collect(bundle)
     docs = data["nodes"]
     chapters = {(d["subject"], d["chapter_id"]): d["chapter_name"] for d in docs}
-    topics = syllabus_topics(db_path, chapters)
+    topics = syllabus_topics(chapters)
 
     fulltext = _load_json(os.path.join(bundle, "indexes", "fulltext.json"), {}) or {}
     doc_terms = {}

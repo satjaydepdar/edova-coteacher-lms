@@ -1,7 +1,12 @@
 import os
 import json
 import re
-import sqlite3
+import psycopg2
+import sys
+from pathlib import Path
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent))
+from config.settings import settings
 import base64
 import fitz # PyMuPDF
 from typing import List, Dict, Any
@@ -11,7 +16,6 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGener
 from langchain_text_splitters import MarkdownHeaderTextSplitter
 
 from langchain_core.messages import HumanMessage
-import sqlite_vec
 
 class DocumentAgent:
     def __init__(self, db_path: str = "vectors45.db"):
@@ -34,11 +38,10 @@ class DocumentAgent:
         self._init_db()
 
     def _init_db(self):
-        conn = sqlite3.connect(self.db_path)
-        conn.enable_load_extension(True)
-        sqlite_vec.load(conn)
-        conn.execute("CREATE VIRTUAL TABLE IF NOT EXISTS vec_chunks USING vec0(embedding float[3072]);")
-        conn.execute("CREATE TABLE IF NOT EXISTS chunks_meta (rowid INTEGER PRIMARY KEY, text TEXT, metadata TEXT);")
+        conn = psycopg2.connect(settings.DATABASE_URL)
+        cur = conn.cursor()
+        cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")
+        cur.execute("CREATE TABLE IF NOT EXISTS vec_chunks (rowid SERIAL PRIMARY KEY, text TEXT, metadata TEXT, embedding vector(768));")
         conn.commit()
         conn.close()
 
@@ -116,43 +119,31 @@ class DocumentAgent:
                 if i + batch_size < len(texts):
                     time.sleep(60)
 
-            print("Adding to SQLiteVec database...")
-            conn = sqlite3.connect(self.db_path)
-            conn.enable_load_extension(True)
-            sqlite_vec.load(conn)
-            
+            print("Adding to pgvector database...")
+            conn = psycopg2.connect(settings.DATABASE_URL)
             cursor = conn.cursor()
             for i, emb in enumerate(embs):
-                import struct
-                emb_bytes = struct.pack(f"<{len(emb)}f", *emb)
-                
-                cursor.execute("INSERT INTO chunks_meta (text, metadata) VALUES (?, ?)", 
-                             (texts[i], json.dumps(metadatas[i])))
-                rowid = cursor.lastrowid
-                cursor.execute("INSERT INTO vec_chunks (rowid, embedding) VALUES (?, ?)", 
-                             (rowid, emb_bytes))
+                cursor.execute(
+                    "INSERT INTO vec_chunks (text, metadata, embedding) VALUES (%s, %s, %s)", 
+                    (texts[i], json.dumps(metadatas[i]), str(emb))
+                )
             conn.commit()
             conn.close()
             print("Database update complete!")
 
     def retrieve(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
         query_embedding = self.embeddings.embed_query(query)
-        import struct
-        query_emb_bytes = struct.pack(f"<{len(query_embedding)}f", *query_embedding)
         
-        conn = sqlite3.connect(self.db_path)
-        conn.enable_load_extension(True)
-        sqlite_vec.load(conn)
-        
+        conn = psycopg2.connect(settings.DATABASE_URL)
         cursor = conn.cursor()
         cursor.execute(
             """
-            SELECT chunks_meta.text, chunks_meta.metadata
+            SELECT text, metadata
             FROM vec_chunks
-            JOIN chunks_meta ON vec_chunks.rowid = chunks_meta.rowid
-            WHERE embedding MATCH ? AND k = ?
+            ORDER BY embedding <=> %s::vector
+            LIMIT %s
             """,
-            (query_emb_bytes, top_k)
+            (str(query_embedding), top_k)
         )
         rows = cursor.fetchall()
         conn.close()

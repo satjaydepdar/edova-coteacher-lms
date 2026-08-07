@@ -35,9 +35,11 @@ Run:  AWS_PROFILE=admin python -m uvicorn api:app --port 8001   (from clerk/)
 import json
 import os
 import re
-import sqlite3
+import psycopg2
+from psycopg2.extras import RealDictCursor
 import sys
 import uuid
+from config.settings import settings
 from contextlib import contextmanager
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -48,7 +50,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 HERE = Path(__file__).resolve().parent
-DB_PATH = HERE / "clerk.db"
 
 # Third-brain pipeline as a library: every app upload is catalogued straight
 # into the OKF bundle and the consumer manifest refreshed, so an upload is
@@ -96,16 +97,29 @@ app.add_middleware(
 
 # ---------- storage ----------
 
+class PgWrapper:
+    def __init__(self, conn):
+        self.conn = conn
+    def execute(self, sql, params=()):
+        cur = self.conn.cursor(cursor_factory=RealDictCursor)
+        # Simple string replace works because we don't use ? inside literals in these queries
+        sql = sql.replace('?', '%s')
+        cur.execute(sql, params)
+        return cur
+    def commit(self):
+        self.conn.commit()
+    def close(self):
+        self.conn.close()
+
 @contextmanager
 def db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
+    conn = psycopg2.connect(settings.DATABASE_URL)
+    wrapper = PgWrapper(conn)
     try:
-        yield conn
-        conn.commit()
+        yield wrapper
+        wrapper.commit()
     finally:
-        conn.close()
+        wrapper.close()
 
 
 def now_iso() -> str:
@@ -156,30 +170,30 @@ CREATE TABLE IF NOT EXISTS section_topic_progress (
   topic_id TEXT REFERENCES syllabus_topics(id) ON DELETE CASCADE,
   taught_on TEXT, UNIQUE(section_id, topic_id)
 );
-CREATE TABLE IF NOT EXISTS students (
+CREATE TABLE IF NOT EXISTS clerk_students (
   id TEXT PRIMARY KEY, name TEXT NOT NULL, xp INTEGER NOT NULL DEFAULT 0,
   streak INTEGER NOT NULL DEFAULT 0, last_activity TEXT  -- ISO date YYYY-MM-DD
 );
-CREATE TABLE IF NOT EXISTS student_mistakes (
-  id TEXT PRIMARY KEY, student_id TEXT NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+CREATE TABLE IF NOT EXISTS clerk_student_mistakes (
+  id TEXT PRIMARY KEY, student_id TEXT NOT NULL REFERENCES clerk_students(id) ON DELETE CASCADE,
   topic_id TEXT, chapter TEXT NOT NULL, question TEXT NOT NULL,
   your_answer TEXT NOT NULL, correct_answer TEXT NOT NULL,
   solution TEXT NOT NULL, created_at TEXT NOT NULL
 );
-CREATE TABLE IF NOT EXISTS student_flags (
-  id TEXT PRIMARY KEY, student_id TEXT NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+CREATE TABLE IF NOT EXISTS clerk_student_flags (
+  id TEXT PRIMARY KEY, student_id TEXT NOT NULL REFERENCES clerk_students(id) ON DELETE CASCADE,
   context TEXT NOT NULL, created_at TEXT NOT NULL
 );
-CREATE TABLE IF NOT EXISTS quizzes (
+CREATE TABLE IF NOT EXISTS clerk_quizzes (
   id TEXT PRIMARY KEY, topic_id TEXT NOT NULL REFERENCES syllabus_topics(id) ON DELETE CASCADE,
   questions TEXT NOT NULL  -- JSON array [{q, opts:[str], ans:int, exp:str}]
 );
-CREATE TABLE IF NOT EXISTS student_wiki_pages (
+CREATE TABLE IF NOT EXISTS clerk_student_wiki_pages (
   id TEXT PRIMARY KEY, student_id TEXT NOT NULL UNIQUE, slug TEXT NOT NULL UNIQUE,
   title TEXT NOT NULL, content_markdown TEXT NOT NULL DEFAULT '',
   created_at TEXT NOT NULL, updated_at TEXT NOT NULL
 );
-CREATE TABLE IF NOT EXISTS student_chapter_notes (
+CREATE TABLE IF NOT EXISTS clerk_student_chapter_notes (
   id TEXT PRIMARY KEY, student_id TEXT NOT NULL,
   chapter_number INTEGER, chapter_name TEXT NOT NULL,
   note_text TEXT NOT NULL, created_at TEXT NOT NULL
@@ -224,7 +238,7 @@ SEED_SYLLABUS = {
 }
 
 
-def seed(conn: sqlite3.Connection):
+def seed(conn: PgWrapper):
     if conn.execute("SELECT COUNT(*) FROM academic_years").fetchone()[0]:
         return
     conn.execute("INSERT INTO academic_years (id, s_no, year_label) VALUES (?, 1, ?)",
@@ -270,14 +284,14 @@ SEED_QUIZ_QUESTIONS = [
 ]
 
 
-def seed_gamification(conn: sqlite3.Connection):
+def seed_gamification(conn: PgWrapper):
     conn.execute(
-        "INSERT OR IGNORE INTO students (id, name, xp, streak, last_activity)"
+        "INSERT INTO clerk_students (id, name, xp, streak, last_activity)"
         " VALUES ('stu_demo', 'Aarav Sharma', 1240, 7, NULL)")
     conn.execute(
         "INSERT OR IGNORE INTO student_mistakes"
         " (id, student_id, topic_id, chapter, question, your_answer, correct_answer, solution, created_at)"
-        " VALUES ('mis_seed_reflection', 'stu_demo', NULL, ?, ?, ?, ?, ?, '2026-07-24')",
+        " VALUES ('mis_seed_reflection', 'stu_demo', NULL, ?, ?, ?, ?, ?, '2026-07-24') ON CONFLICT (id) DO NOTHING",
         ("Light — Reflection and Refraction", "Angle of incidence = ?", "30°", "45°",
          "Use law: i = r. Mirror angle was 45°"))
     # Resolve the quiz topic at seed time: 'Laws of Reflection' under the
@@ -292,11 +306,11 @@ def seed_gamification(conn: sqlite3.Connection):
     ).fetchone()
     if topic:
         conn.execute(
-            "INSERT OR IGNORE INTO quizzes (id, topic_id, questions) VALUES ('quiz_seed_reflection', ?, ?)",
+            "INSERT INTO clerk_quizzes (id, topic_id, questions) VALUES ('quiz_seed_reflection', ?, ?) ON CONFLICT (id) DO NOTHING",
             (topic["id"], json.dumps(SEED_QUIZ_QUESTIONS)))
 
 
-def _ensure_column(conn: sqlite3.Connection, table: str, col: str, coltype: str):
+def _ensure_column(conn: PgWrapper, table: str, col: str, coltype: str):
     cols = [r[1] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()]
     if col not in cols:
         conn.execute(f"ALTER TABLE {table} ADD COLUMN {col} {coltype}")
@@ -311,7 +325,7 @@ with db() as _conn:
 
 # ---------- serializers ----------
 
-def mistake_row(r: sqlite3.Row) -> dict:
+def mistake_row(r: dict) -> dict:
     return {
         "id": r["id"], "q": r["question"], "yourAns": r["your_answer"],
         "correct": r["correct_answer"], "chapter": r["chapter"],
@@ -327,17 +341,17 @@ def mistake_row(r: sqlite3.Row) -> dict:
 # student out of their own Learning Hub. `name` comes from the real session,
 # so a caller that doesn't have one (an id typed by hand, say) still 404s on
 # an unknown id rather than silently minting blank students.
-def _get_or_create_student(conn: sqlite3.Connection, student_id: str, name: Optional[str]) -> sqlite3.Row:
-    stu = conn.execute("SELECT * FROM students WHERE id=?", (student_id,)).fetchone()
+def _get_or_create_student(conn: PgWrapper, student_id: str, name: Optional[str]) -> dict:
+    stu = conn.execute("SELECT * FROM clerk_students WHERE id=?", (student_id,)).fetchone()
     if stu:
         return stu
     if name is None:
         raise HTTPException(status_code=404, detail="student not found")
     conn.execute(
-        "INSERT OR IGNORE INTO students (id, name, xp, streak, last_activity) VALUES (?, ?, 0, 0, NULL)",
+        "INSERT INTO clerk_students (id, name, xp, streak, last_activity) VALUES (?, ?, 0, 0, NULL) ON CONFLICT (id) DO NOTHING",
         (student_id, name),
     )
-    return conn.execute("SELECT * FROM students WHERE id=?", (student_id,)).fetchone()
+    return conn.execute("SELECT * FROM clerk_students WHERE id=?", (student_id,)).fetchone()
 
 
 @app.get("/api/students/{student_id}/gamification")
@@ -345,8 +359,8 @@ def get_gamification(student_id: str, name: Optional[str] = None):
     with db() as conn:
         stu = _get_or_create_student(conn, student_id, name)
         rows = conn.execute(
-            "SELECT * FROM student_mistakes WHERE student_id=?"
-            " ORDER BY created_at DESC, rowid DESC", (student_id,)).fetchall()
+            "SELECT * FROM clerk_student_mistakes WHERE student_id=?"
+            " ORDER BY created_at DESC, id DESC", (student_id,)).fetchall()
         return {"student_id": stu["id"], "xp": stu["xp"], "streak": stu["streak"],
                 "mistakes": [mistake_row(r) for r in rows]}
 
@@ -360,7 +374,7 @@ def add_xp(student_id: str, body: XpIn):
     """Add XP and roll the daily streak: same day -> unchanged, yesterday ->
     +1, anything else (gap or first activity) -> reset to 1."""
     with db() as conn:
-        stu = conn.execute("SELECT * FROM students WHERE id=?", (student_id,)).fetchone()
+        stu = conn.execute("SELECT * FROM clerk_students WHERE id=?", (student_id,)).fetchone()
         if not stu:
             raise HTTPException(status_code=404, detail="student not found")
         today = date.today().isoformat()
@@ -371,7 +385,7 @@ def add_xp(student_id: str, body: XpIn):
         else:
             streak = 1
         xp = stu["xp"] + body.delta
-        conn.execute("UPDATE students SET xp=?, streak=?, last_activity=? WHERE id=?",
+        conn.execute("UPDATE clerk_students SET xp=?, streak=?, last_activity=? WHERE id=?",
                      (xp, streak, today, student_id))
         return {"xp": xp, "streak": streak}
 
@@ -388,7 +402,7 @@ class MistakeIn(BaseModel):
 @app.post("/api/students/{student_id}/mistakes")
 def add_mistake(student_id: str, body: MistakeIn):
     with db() as conn:
-        stu = conn.execute("SELECT 1 FROM students WHERE id=?", (student_id,)).fetchone()
+        stu = conn.execute("SELECT 1 FROM clerk_students WHERE id=?", (student_id,)).fetchone()
         if not stu:
             raise HTTPException(status_code=404, detail="student not found")
         mid = new_id("mis")
@@ -399,7 +413,7 @@ def add_mistake(student_id: str, body: MistakeIn):
             (mid, student_id, body.topic_id, body.chapter, body.q, body.yourAns,
              body.correct, body.solution, date.today().isoformat()))
         return mistake_row(
-            conn.execute("SELECT * FROM student_mistakes WHERE id=?", (mid,)).fetchone())
+            conn.execute("SELECT * FROM clerk_student_mistakes WHERE id=?", (mid,)).fetchone())
 
 
 class FlagIn(BaseModel):
@@ -409,11 +423,11 @@ class FlagIn(BaseModel):
 @app.post("/api/students/{student_id}/flags")
 def add_flag(student_id: str, body: FlagIn):
     with db() as conn:
-        stu = conn.execute("SELECT 1 FROM students WHERE id=?", (student_id,)).fetchone()
+        stu = conn.execute("SELECT 1 FROM clerk_students WHERE id=?", (student_id,)).fetchone()
         if not stu:
             raise HTTPException(status_code=404, detail="student not found")
         conn.execute(
-            "INSERT INTO student_flags (id, student_id, context, created_at) VALUES (?,?,?,?)",
+            "INSERT INTO clerk_student_flags (id, student_id, context, created_at) VALUES (?,?,?,?)",
             (new_id("flg"), student_id, body.context, now_iso()))
         return {"status": "ok"}
 
@@ -423,7 +437,7 @@ def get_quiz(topic_id: str):
     """Quiz questions for a topic; empty list (not 404) when no quiz is
     seeded — the frontend hides the quiz on empty."""
     with db() as conn:
-        row = conn.execute("SELECT * FROM quizzes WHERE topic_id=?", (topic_id,)).fetchone()
+        row = conn.execute("SELECT * FROM clerk_quizzes WHERE topic_id=?", (topic_id,)).fetchone()
         return {"topic_id": topic_id,
                 "questions": json.loads(row["questions"]) if row else []}
 
@@ -441,7 +455,7 @@ MAX_NOTE_CHARS = 1000
 IST = timezone(timedelta(hours=5, minutes=30))
 
 
-def wiki_row(r: sqlite3.Row, truncated: Optional[bool] = None) -> dict:
+def wiki_row(r: dict, truncated: Optional[bool] = None) -> dict:
     out = {"slug": r["slug"], "title": r["title"],
            "content_markdown": r["content_markdown"], "updated_at": r["updated_at"]}
     # Only meaningful right after a save — omitted (not just False) on every
@@ -452,9 +466,9 @@ def wiki_row(r: sqlite3.Row, truncated: Optional[bool] = None) -> dict:
     return out
 
 
-def _get_or_create_wiki(conn: sqlite3.Connection, student_id: str, student_name: str) -> sqlite3.Row:
+def _get_or_create_wiki(conn: PgWrapper, student_id: str, student_name: str) -> dict:
     row = conn.execute(
-        "SELECT * FROM student_wiki_pages WHERE student_id=?", (student_id,)).fetchone()
+        "SELECT * FROM clerk_student_wiki_pages WHERE student_id=?", (student_id,)).fetchone()
     if row:
         return row
     ts = now_iso()
@@ -462,11 +476,11 @@ def _get_or_create_wiki(conn: sqlite3.Connection, student_id: str, student_name:
         "INSERT INTO student_wiki_pages"
         " (id, student_id, slug, title, content_markdown, created_at, updated_at)"
         " VALUES (?,?,?,?,?,?,?)"
-        " ON CONFLICT(student_id) DO NOTHING",
+        " ON CONFLICT (student_id) DO NOTHING",
         (new_id("wiki"), student_id, f"student-{student_id}",
          f"{student_name}'s Learning Wiki", "", ts, ts))
     return conn.execute(
-        "SELECT * FROM student_wiki_pages WHERE student_id=?", (student_id,)).fetchone()
+        "SELECT * FROM clerk_student_wiki_pages WHERE student_id=?", (student_id,)).fetchone()
 
 
 @app.get("/api/students/{student_id}/wiki")
@@ -490,7 +504,7 @@ def add_wiki_note(student_id: str, body: WikiNoteIn):
     truncated = len(text) > MAX_NOTE_CHARS
     text = text[:MAX_NOTE_CHARS]
     with db() as conn:
-        stu = conn.execute("SELECT * FROM students WHERE id=?", (student_id,)).fetchone()
+        stu = conn.execute("SELECT * FROM clerk_students WHERE id=?", (student_id,)).fetchone()
         if not stu:
             raise HTTPException(status_code=404, detail="student not found")
         _get_or_create_wiki(conn, student_id, stu["name"])
@@ -506,11 +520,11 @@ def add_wiki_note(student_id: str, body: WikiNoteIn):
         block = (f"\n\n### [{datetime.now(IST).strftime('%d-%m-%Y')}] {chapter_label}\n"
                  f"{text}\n")
         conn.execute(
-            "UPDATE student_wiki_pages SET content_markdown = content_markdown || ?,"
+            "UPDATE clerk_student_wiki_pages SET content_markdown = content_markdown || ?,"
             " updated_at = ? WHERE student_id = ?",
             (block, created, student_id))
         row = conn.execute(
-            "SELECT * FROM student_wiki_pages WHERE student_id=?", (student_id,)).fetchone()
+            "SELECT * FROM clerk_student_wiki_pages WHERE student_id=?", (student_id,)).fetchone()
         return wiki_row(row, truncated=truncated)
 
 
@@ -699,7 +713,7 @@ def okf_graph():
     try:
         data = okf_dashboard.collect(OKF_BUNDLE)
         chapters = {(d["subject"], d["chapter_id"]): d["chapter_name"] for d in data["nodes"]}
-        data["topics"] = okf_search.syllabus_topics(str(DB_PATH), chapters)
+        data["topics"] = okf_search.syllabus_topics(chapters)
         return data
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"could not build graph: {exc}")
@@ -711,7 +725,7 @@ def okf_search_view(q: str, limit: int = 12):
     one ranked list for the Knowledge Graph page's non-cascading search box.
     Short or empty queries return no matches, never an error."""
     try:
-        return {"query": q, "matches": okf_search.search(OKF_BUNDLE, str(DB_PATH), q, limit)}
+        return {"query": q, "matches": okf_search.search(OKF_BUNDLE, q, limit)}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"search failed: {exc}")
 
