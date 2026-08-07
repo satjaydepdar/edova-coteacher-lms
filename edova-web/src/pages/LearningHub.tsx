@@ -22,6 +22,7 @@ import {
   currentStudentId,
   getQuiz,
   getResources,
+  getStudentSubjects,
   getSubjects,
   getSyllabus,
   type LearningResource,
@@ -154,15 +155,27 @@ export default function LearningHub() {
     hydrate()
   }, [hydrate])
 
-  // Subjects for the fixed demo curriculum (Class 10, CBSE, 2026–27).
+  // Subjects for the fixed demo curriculum or the student's real classes.
   useEffect(() => {
-    getSubjects()
-      .then((d) => {
-        setSubjects(d.subjects)
-        const science = d.subjects.find((s) => s.subject_name === FALLBACK_SUBJECT.subject_name) ?? d.subjects[0]
-        if (science) setSubjectId(science.id)
-      })
-      .catch(() => { /* keep the fallback subject */ })
+    Promise.all([
+      getStudentSubjects().catch(() => ({ subjects: [] })),
+      getSubjects()
+    ]).then(([enrolledRes, allRes]) => {
+      const enrolledNames = new Set(enrolledRes.subjects.map(s => s.subject_name.toLowerCase()))
+      
+      // If student has no enrollments (e.g. guest mode), show all or fallback
+      let available = allRes.subjects
+      if (enrolledNames.size > 0) {
+        available = available.filter(s => enrolledNames.has(s.subject_name.toLowerCase()))
+      }
+      
+      // If none match, fallback to the all available
+      if (available.length === 0) available = allRes.subjects
+
+      setSubjects(available)
+      const science = available.find((s) => s.subject_name === FALLBACK_SUBJECT.subject_name) ?? available[0]
+      if (science) setSubjectId(science.id)
+    }).catch(() => { /* keep the fallback subject */ })
   }, [])
 
   // Syllabus tree of the picked subject; default to the Light chapter (or the

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { Bell, Search } from "lucide-react"
-import { useAppStore, TEACHER_IDENTITY, ADMIN_IDENTITY, identityFromUser } from "@/store/app-store"
+import { useAppStore, TEACHER_IDENTITY, ADMIN_IDENTITY, STUDENT_IDENTITY, identityFromUser } from "@/store/app-store"
 import { getTeacherActivity, type Activity } from "@/lib/dashboard-api"
 import type { Role } from "@/lib/types"
 
@@ -24,7 +24,7 @@ export function Topbar() {
   const markSeen = useAppStore((s) => s.markNotificationsSeen)
   const identity = session
     ? identityFromUser(session.user)
-    : role === "admin" ? ADMIN_IDENTITY : TEACHER_IDENTITY
+    : role === "admin" ? ADMIN_IDENTITY : role === "student" ? STUDENT_IDENTITY : TEACHER_IDENTITY
   const navigate = useNavigate()
   const location = useLocation()
 

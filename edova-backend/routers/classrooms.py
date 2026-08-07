@@ -3,8 +3,10 @@
 import uuid
 from typing import List, Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel
+
+from deps import _authenticated_user, _student_id_for_user
 
 from repositories import ClassroomRepo, get_conn
 
@@ -62,5 +64,25 @@ def list_classroom_students(classroom_id: str):
             if not ClassroomRepo.exists(cur, classroom_id):
                 raise HTTPException(status_code=404, detail="classroom not found")
             return ClassroomRepo.list_students(cur, classroom_id)
+    finally:
+        conn.close()
+
+
+class SubjectOut(BaseModel):
+    id: str
+    subject_name: str
+
+
+@router.get("/api/students/me/subjects", response_model=List[SubjectOut])
+def list_my_subjects(authorization: Optional[str] = Header(None)):
+    user, _ = _authenticated_user(authorization)
+    conn = get_conn()
+    try:
+        with conn.cursor() as cur:
+            student_id = _student_id_for_user(cur, user["id"])
+            return [
+                SubjectOut(id=r["id"], subject_name=r["subject_name"])
+                for r in ClassroomRepo.list_student_subjects(cur, student_id)
+            ]
     finally:
         conn.close()

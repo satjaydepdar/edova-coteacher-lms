@@ -96,6 +96,20 @@ class ClassroomRepo:
         )
         return cur.fetchall()
 
+    @staticmethod
+    def list_student_subjects(cur, student_id: str):
+        cur.execute(
+            """
+            SELECT DISTINCT s.id, s.name AS subject_name
+            FROM enrollments e
+            JOIN classrooms c ON c.id = e.classroom_id
+            JOIN subjects s ON s.id = c.subject_id
+            WHERE e.student_id = %s AND e.status = 'active'
+            """,
+            (student_id,),
+        )
+        return cur.fetchall()
+
 
 class AssignmentRepo:
     """assignments + submissions + grades."""
@@ -221,7 +235,7 @@ class AssignmentRepo:
     def list_submissions(cur, assignment_id: str):
         cur.execute(
             """
-            SELECT student_id, status, submitted_at, is_late, text_response
+            SELECT student_id, status, submitted_at, is_late, text_response, answers
             FROM submissions WHERE assignment_id = %s
             """,
             (assignment_id,),
