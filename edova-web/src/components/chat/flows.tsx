@@ -91,7 +91,7 @@ export const MESSAGE_RENDERERS: Record<MsgKind, (m: ChatMsg, ctx: MsgRenderCtx) 
   text: (m) => <div>{renderFormattedText(m.text || "")}</div>,
   textbook: (m) => {
     // If the text starts with **Title**, extract it and render it as a bold heading
-    const match = m.text.match(/^\*\*(.*?)\*\*\n\n([\s\S]*)$/);
+    const match = (m.text || "").match(/^\*\*(.*?)\*\*\n\n([\s\S]*)$/);
     if (match) {
       return (
         <div>

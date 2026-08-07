@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Navigate, useNavigate, useLocation } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,7 +17,7 @@ export default function Login() {
   const location = useLocation()
   
   const login = useAppStore((s) => s.login)
-  const continueAsGuest = useAppStore((s) => s.continueAsGuest)
+
   const session = useAppStore((s) => s.session)
   const guestMode = useAppStore((s) => s.guestMode)
 
@@ -55,10 +55,6 @@ export default function Login() {
     }
   }
 
-  function handleGuest() {
-    continueAsGuest()
-    navigate(role === "student" ? "/learning" : role === "admin" ? "/settings" : "/")
-  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-cream px-4">
