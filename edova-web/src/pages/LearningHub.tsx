@@ -467,7 +467,7 @@ export default function LearningHub() {
             >
               {/* key remounts the player per topic so quiz progress resets */}
               <VideoPlayerWithQuiz
-                key={topic.id}
+                key={topic?.id ?? "no-topic"}
                 questions={quiz ?? undefined}
                 chapter={chapter.name}
                 videoUrl={videoUrl}
@@ -483,8 +483,8 @@ export default function LearningHub() {
               />
             </div>
           </TabsContent>
-          <TabsContent value="lab">
-            <LabExercise key={topic.id} addXP={addXP} onMistake={addMistake} chapter={chapter.name} labUrl={labUrl} />
+          <TabsContent value="lab" className="mt-6">
+            <LabExercise key={topic?.id ?? "no-topic"} addXP={addXP} onMistake={addMistake} chapter={chapter.name} labUrl={labUrl} />
           </TabsContent>
           <TabsContent value="mindmap"><Mindmap /></TabsContent>
           <TabsContent value="journal"><MistakeJournal mistakes={mistakes} /></TabsContent>

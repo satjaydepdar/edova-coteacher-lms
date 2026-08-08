@@ -41,7 +41,7 @@ class DocumentAgent:
         conn = psycopg2.connect(settings.DATABASE_URL)
         cur = conn.cursor()
         cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")
-        cur.execute("CREATE TABLE IF NOT EXISTS vec_chunks (rowid SERIAL PRIMARY KEY, text TEXT, metadata TEXT, embedding vector(768));")
+        cur.execute("CREATE TABLE IF NOT EXISTS rag_vec_chunks (rowid SERIAL PRIMARY KEY, text TEXT, metadata TEXT, embedding vector(768));")
         conn.commit()
         conn.close()
 
@@ -124,7 +124,7 @@ class DocumentAgent:
             cursor = conn.cursor()
             for i, emb in enumerate(embs):
                 cursor.execute(
-                    "INSERT INTO vec_chunks (text, metadata, embedding) VALUES (%s, %s, %s)", 
+                    "INSERT INTO rag_vec_chunks (text, metadata, embedding) VALUES (%s, %s, %s)", 
                     (texts[i], json.dumps(metadatas[i]), str(emb))
                 )
             conn.commit()
@@ -139,7 +139,7 @@ class DocumentAgent:
         cursor.execute(
             """
             SELECT text, metadata
-            FROM vec_chunks
+            FROM rag_vec_chunks
             ORDER BY embedding <=> %s::vector
             LIMIT %s
             """,

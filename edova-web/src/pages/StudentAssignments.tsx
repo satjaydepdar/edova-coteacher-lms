@@ -353,7 +353,14 @@ export default function StudentAssignments() {
 
                       <h4 className="text-[15px] font-bold text-[#1A2E26] mb-1">{a.title}</h4>
                       <p className="text-[13px] text-[#6B7280] mb-4">
-                        {a.description || "Your teacher has assigned you homework. Complete it before the deadline."}
+                        {(() => {
+                          let desc = a.description || "Your teacher has assigned you homework. Complete it before the deadline."
+                          if (desc.includes("__ANSWER_KEY__")) {
+                            desc = desc.replace(/__ANSWER_KEY__:\{.*?\}\s*/, "")
+                            if (desc.length > 120) desc = desc.slice(0, 120) + "..."
+                          }
+                          return desc
+                        })()}
                       </p>
 
                       {/* Real Progress Bar */}

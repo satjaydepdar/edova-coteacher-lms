@@ -90,13 +90,13 @@ export function AssignModal({
         <div style={{ fontSize: 14, fontWeight: 600, color: "#7A9298", marginBottom: 6 }}>Class &amp; Section</div>
         <div style={{ fontSize: 15.5, fontWeight: 700, color: "#13231F", background: "#fff", border: "1px solid #DDD8CF", borderRadius: 8, padding: "9px 12px", marginBottom: 14 }}>{classNameById(state.classId)}</div>
         <div style={{ fontSize: 14, fontWeight: 600, color: "#7A9298", marginBottom: 6 }}>Due Date</div>
-        <input value={state.due} onChange={(e) => onChange({ ...state, due: e.target.value })} placeholder="e.g. Jul 20" style={{ width: "100%", height: 38, padding: "0 12px", border: "1px solid #DDD8CF", borderRadius: 8, fontSize: 15, fontFamily: "inherit", marginBottom: 14 }} />
+        <input type="date" value={state.due} onChange={(e) => onChange({ ...state, due: e.target.value })} style={{ width: "100%", height: 38, padding: "0 12px", border: "1px solid #DDD8CF", borderRadius: 8, fontSize: 15, fontFamily: "inherit", marginBottom: 14, color: state.due ? "#13231F" : "#9CA3AF" }} />
         <div style={{ fontSize: 14, fontWeight: 600, color: "#7A9298", marginBottom: 6 }}>Total Points</div>
         <input value={state.totalPoints} type="number" onChange={(e) => onChange({ ...state, totalPoints: e.target.value })} style={{ width: "100%", height: 38, padding: "0 12px", border: "1px solid #DDD8CF", borderRadius: 8, fontSize: 15, fontFamily: "inherit", marginBottom: 4 }} />
         <div style={{ fontSize: 13, color: "#9CA3AF", marginBottom: 18 }}>Publishes immediately to every student in this class.</div>
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, paddingTop: 14, borderTop: "1px solid #E5E7EB" }}>
           <div onClick={onClose} style={{ fontSize: 14.5, fontWeight: 600, color: "#374151", background: "#fff", border: "1px solid #DDD8CF", padding: "9px 16px", borderRadius: 8, cursor: "pointer" }}>Cancel</div>
-          <div onClick={onConfirm} style={{ fontSize: 14.5, fontWeight: 700, color: "#fff", background: "#16332B", padding: "9px 18px", borderRadius: 8, cursor: "pointer" }}>Assign &amp; Publish</div>
+          <div onClick={state.due ? onConfirm : undefined} style={{ fontSize: 14.5, fontWeight: 700, color: "#fff", background: "#16332B", padding: "9px 18px", borderRadius: 8, cursor: state.due ? "pointer" : "not-allowed", opacity: state.due ? 1 : 0.5 }}>Assign &amp; Publish</div>
         </div>
       </div>
     </div>

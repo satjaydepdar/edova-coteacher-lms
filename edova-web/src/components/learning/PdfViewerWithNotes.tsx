@@ -7,14 +7,15 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { FlagButton } from "./FlagButton"
 import { Badge } from "@/components/ui/badge"
-import { MAX_NOTE_CHARS, saveWikiNote, STUDENT_ID } from "@/lib/learning-api"
+import { MAX_NOTE_CHARS, saveWikiNote, currentStudentId } from "@/lib/learning-api"
+
 import "./pdf-text-layer.css"
 
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl
 
 const PAGE_SCALE = 1.3
 const MIN_SELECTION_CHARS = 5
-const WIKI_SLUG = `student-${STUDENT_ID}`
+const WIKI_SLUG = () => `student-${currentStudentId()}`
 // Reserved height for a page not yet rendered, before we know any page's
 // real size — replaced by the actual height the moment a page renders.
 const PLACEHOLDER_PAGE_HEIGHT = 900
@@ -257,7 +258,7 @@ export function PdfViewerWithNotes({ pdfUrl, pdfTitle, chapter, chapterNumber, a
         description: result.truncated
           ? `Note was trimmed to ${MAX_NOTE_CHARS} characters.`
           : undefined,
-        action: { label: "View Wiki Page", onClick: () => window.open(`/wiki/${WIKI_SLUG}`, "_self") },
+        action: { label: "View Wiki Page", onClick: () => window.open(`/wiki/${WIKI_SLUG()}`, "_self") },
       })
       setTimeout(() => setSaved(false), 2000)
     } catch {

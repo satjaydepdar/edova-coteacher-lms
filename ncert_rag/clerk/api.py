@@ -39,6 +39,10 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import sys
 import uuid
+import sys
+from pathlib import Path
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent))
 from config.settings import settings
 from contextlib import contextmanager
 from datetime import date, datetime, timedelta, timezone
@@ -49,7 +53,6 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-HERE = Path(__file__).resolve().parent
 
 # Third-brain pipeline as a library: every app upload is catalogued straight
 # into the OKF bundle and the consumer manifest refreshed, so an upload is
@@ -102,8 +105,6 @@ class PgWrapper:
         self.conn = conn
     def execute(self, sql, params=()):
         cur = self.conn.cursor(cursor_factory=RealDictCursor)
-        # Simple string replace works because we don't use ? inside literals in these queries
-        sql = sql.replace('?', '%s')
         cur.execute(sql, params)
         return cur
     def commit(self):
@@ -130,150 +131,6 @@ def new_id(prefix: str) -> str:
     return f"{prefix}_{uuid.uuid4().hex[:12]}"
 
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS academic_years (
-  id TEXT PRIMARY KEY, s_no INTEGER, year_label TEXT UNIQUE
-);
-CREATE TABLE IF NOT EXISTS curriculums (
-  id TEXT PRIMARY KEY, year_label TEXT, board TEXT, class_label TEXT,
-  updated_at TEXT, UNIQUE(year_label, board, class_label)
-);
-CREATE TABLE IF NOT EXISTS subjects (
-  id TEXT PRIMARY KEY, curriculum_id TEXT REFERENCES curriculums(id) ON DELETE CASCADE,
-  s_no INTEGER, subject_code TEXT, subject_name TEXT, subject_type TEXT,
-  credits INTEGER, total_marks INTEGER, total_chapters INTEGER, syllabus_json TEXT
-);
-CREATE TABLE IF NOT EXISTS syllabus_units (
-  id TEXT PRIMARY KEY, subject_id TEXT REFERENCES subjects(id) ON DELETE CASCADE,
-  s_no INTEGER, number INTEGER, name TEXT, marks INTEGER
-);
-CREATE TABLE IF NOT EXISTS syllabus_chapters (
-  id TEXT PRIMARY KEY, unit_id TEXT REFERENCES syllabus_units(id) ON DELETE CASCADE,
-  s_no INTEGER, number INTEGER, name TEXT
-);
-CREATE TABLE IF NOT EXISTS syllabus_topics (
-  id TEXT PRIMARY KEY, chapter_id TEXT REFERENCES syllabus_chapters(id) ON DELETE CASCADE,
-  s_no INTEGER, title TEXT
-);
-CREATE TABLE IF NOT EXISTS lesson_plans (
-  id TEXT PRIMARY KEY, topic TEXT, class_label TEXT, section TEXT, subject TEXT,
-  curriculum_subject_id TEXT, duration_minutes INTEGER, standards TEXT,
-  objective TEXT, materials TEXT, warmup TEXT, instruction TEXT, activity TEXT,
-  assessment TEXT, homework TEXT, created_at TEXT
-);
-CREATE TABLE IF NOT EXISTS class_sections (
-  id TEXT PRIMARY KEY, subject_id TEXT REFERENCES subjects(id) ON DELETE CASCADE,
-  section TEXT, teacher TEXT, created_at TEXT, UNIQUE(subject_id, section)
-);
-CREATE TABLE IF NOT EXISTS section_topic_progress (
-  id TEXT PRIMARY KEY, section_id TEXT REFERENCES class_sections(id) ON DELETE CASCADE,
-  topic_id TEXT REFERENCES syllabus_topics(id) ON DELETE CASCADE,
-  taught_on TEXT, UNIQUE(section_id, topic_id)
-);
-CREATE TABLE IF NOT EXISTS clerk_students (
-  id TEXT PRIMARY KEY, name TEXT NOT NULL, xp INTEGER NOT NULL DEFAULT 0,
-  streak INTEGER NOT NULL DEFAULT 0, last_activity TEXT  -- ISO date YYYY-MM-DD
-);
-CREATE TABLE IF NOT EXISTS clerk_student_mistakes (
-  id TEXT PRIMARY KEY, student_id TEXT NOT NULL REFERENCES clerk_students(id) ON DELETE CASCADE,
-  topic_id TEXT, chapter TEXT NOT NULL, question TEXT NOT NULL,
-  your_answer TEXT NOT NULL, correct_answer TEXT NOT NULL,
-  solution TEXT NOT NULL, created_at TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS clerk_student_flags (
-  id TEXT PRIMARY KEY, student_id TEXT NOT NULL REFERENCES clerk_students(id) ON DELETE CASCADE,
-  context TEXT NOT NULL, created_at TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS clerk_quizzes (
-  id TEXT PRIMARY KEY, topic_id TEXT NOT NULL REFERENCES syllabus_topics(id) ON DELETE CASCADE,
-  questions TEXT NOT NULL  -- JSON array [{q, opts:[str], ans:int, exp:str}]
-);
-CREATE TABLE IF NOT EXISTS clerk_student_wiki_pages (
-  id TEXT PRIMARY KEY, student_id TEXT NOT NULL UNIQUE, slug TEXT NOT NULL UNIQUE,
-  title TEXT NOT NULL, content_markdown TEXT NOT NULL DEFAULT '',
-  created_at TEXT NOT NULL, updated_at TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS clerk_student_chapter_notes (
-  id TEXT PRIMARY KEY, student_id TEXT NOT NULL,
-  chapter_number INTEGER, chapter_name TEXT NOT NULL,
-  note_text TEXT NOT NULL, created_at TEXT NOT NULL
-);
-"""
-
-# Seed: 2026–27 CBSE Class 10 with the two subjects whose textbook chapters
-# live in the OKF bundle, so the LessonPlanner dropdowns work on first boot.
-SEED_SYLLABUS = {
-    ("041", "Mathematics", 100): [
-        ("Number Systems", 6, [(1, "Real Numbers", ["Euclid's Division Lemma", "Fundamental Theorem of Arithmetic", "Irrational Numbers"])]),
-        ("Algebra", 20, [
-            (2, "Polynomials", ["Zeros of a Polynomial", "Relationship between Zeros and Coefficients"]),
-            (3, "Pair of Linear Equations in Two Variables", ["Graphical Solution", "Substitution Method", "Elimination Method"]),
-            (4, "Quadratic Equations", ["Solution by Factorisation", "Quadratic Formula", "Nature of Roots"]),
-            (5, "Arithmetic Progressions", ["nth Term of an AP", "Sum of First n Terms"]),
-        ]),
-        ("Coordinate Geometry", 6, [(7, "Coordinate Geometry", ["Distance Formula", "Section Formula"])]),
-        ("Geometry", 15, [(6, "Triangles", ["Similar Triangles", "Basic Proportionality Theorem", "Pythagoras Theorem"])]),
-    ],
-    ("086", "Science", 100): [
-        ("Chemical Substances — Nature and Behaviour", 25, [
-            (1, "Chemical Reactions and Equations", ["Balancing Chemical Equations", "Types of Reactions", "Oxidation and Reduction"]),
-            (2, "Acids, Bases and Salts", ["Properties of Acids and Bases", "pH Scale", "Common Salts"]),
-            (3, "Metals and Non-metals", ["Physical Properties", "Reactivity Series", "Corrosion"]),
-            (4, "Carbon and its Compounds", ["Covalent Bonding", "Homologous Series", "Ethanol and Ethanoic Acid"]),
-        ]),
-        ("World of Living", 25, [
-            (5, "Life Processes", ["Nutrition", "Respiration", "Transportation", "Excretion"]),
-            (6, "Control and Coordination", ["Nervous System", "Hormones in Animals", "Coordination in Plants"]),
-            (7, "How do Organisms Reproduce", ["Modes of Reproduction", "Sexual Reproduction in Plants", "Reproductive Health"]),
-            (8, "Heredity", ["Mendel's Laws", "Sex Determination"]),
-        ]),
-        ("Natural Phenomena", 12, [
-            (9, "Light — Reflection and Refraction", ["Laws of Reflection", "Spherical Mirrors", "Refraction and Lenses"]),
-            (10, "The Human Eye and the Colourful World", ["Defects of Vision", "Dispersion of Light", "Atmospheric Refraction"]),
-        ]),
-        ("Effects of Current", 13, [
-            (11, "Electricity", ["Ohm's Law", "Series and Parallel Circuits", "Heating Effect of Current"]),
-        ]),
-    ],
-}
-
-
-def seed(conn: PgWrapper):
-    if conn.execute("SELECT COUNT(*) FROM academic_years").fetchone()[0]:
-        return
-    conn.execute("INSERT INTO academic_years (id, s_no, year_label) VALUES (?, 1, ?)",
-                 (new_id("ay"), "2026–27"))
-    cur_id = new_id("cur")
-    conn.execute(
-        "INSERT INTO curriculums (id, year_label, board, class_label, updated_at) VALUES (?,?,?,?,?)",
-        (cur_id, "2026–27", "CBSE", "Class 10", now_iso()))
-    for s_no, ((code, name, marks), units) in enumerate(SEED_SYLLABUS.items(), start=1):
-        subj_id = new_id("sub")
-        conn.execute(
-            "INSERT INTO subjects (id, curriculum_id, s_no, subject_code, subject_name, subject_type,"
-            " credits, total_marks, total_chapters, syllabus_json) VALUES (?,?,?,?,?,?,?,?,?,?)",
-            (subj_id, cur_id, s_no, code, name, "Core", 0, marks,
-             sum(len(chs) for _, _, chs in units),
-             json.dumps({uname: umarks for uname, umarks, _ in units})))
-        for u_no, (uname, umarks, chapters) in enumerate(units, start=1):
-            unit_id = new_id("unit")
-            conn.execute(
-                "INSERT INTO syllabus_units (id, subject_id, s_no, number, name, marks) VALUES (?,?,?,?,?,?)",
-                (unit_id, subj_id, u_no, u_no, uname, umarks))
-            for c_no, (number, cname, topics) in enumerate(chapters, start=1):
-                ch_id = new_id("ch")
-                conn.execute(
-                    "INSERT INTO syllabus_chapters (id, unit_id, s_no, number, name) VALUES (?,?,?,?,?)",
-                    (ch_id, unit_id, c_no, number, cname))
-                for t_no, title in enumerate(topics, start=1):
-                    conn.execute(
-                        "INSERT INTO syllabus_topics (id, chapter_id, s_no, title) VALUES (?,?,?,?)",
-                        (new_id("top"), ch_id, t_no, title))
-
-
-# Gamification seed is separate from the one-shot syllabus seed() above:
-# clerk.db already exists in the wild, so seed()'s academic_years count guard
-# skips — this runs on every boot, idempotently (INSERT OR IGNORE, fixed ids).
 SEED_QUIZ_QUESTIONS = [
     {"q": "What is the law of reflection?", "opts": ["i = r", "i > r", "i < r"], "ans": 0,
      "exp": "Angle of incidence equals angle of reflection"},
@@ -283,15 +140,14 @@ SEED_QUIZ_QUESTIONS = [
      "exp": "i = r so 45°"},
 ]
 
-
 def seed_gamification(conn: PgWrapper):
     conn.execute(
         "INSERT INTO clerk_students (id, name, xp, streak, last_activity)"
-        " VALUES ('stu_demo', 'Aarav Sharma', 1240, 7, NULL)")
+        " VALUES ('stu_demo', 'Aarav Sharma', 1240, 7, NULL) ON CONFLICT (id) DO NOTHING")
     conn.execute(
-        "INSERT OR IGNORE INTO student_mistakes"
+        "INSERT INTO clerk_student_mistakes"
         " (id, student_id, topic_id, chapter, question, your_answer, correct_answer, solution, created_at)"
-        " VALUES ('mis_seed_reflection', 'stu_demo', NULL, ?, ?, ?, ?, ?, '2026-07-24') ON CONFLICT (id) DO NOTHING",
+        " VALUES ('mis_seed_reflection', 'stu_demo', NULL, %s, %s, %s, %s, %s, '2026-07-24') ON CONFLICT (id) DO NOTHING",
         ("Light — Reflection and Refraction", "Angle of incidence = ?", "30°", "45°",
          "Use law: i = r. Mirror angle was 45°"))
     # Resolve the quiz topic at seed time: 'Laws of Reflection' under the
@@ -300,26 +156,17 @@ def seed_gamification(conn: PgWrapper):
         "SELECT t.id FROM syllabus_topics t"
         " JOIN syllabus_chapters c ON t.chapter_id = c.id"
         " JOIN syllabus_units u ON c.unit_id = u.id"
-        " JOIN subjects s ON u.subject_id = s.id"
+        " JOIN curriculum_subjects s ON u.curriculum_subject_id = s.id"
         " WHERE t.title = 'Laws of Reflection' AND c.number = 9"
         " AND c.name = 'Light — Reflection and Refraction' AND s.subject_name = 'Science'"
     ).fetchone()
     if topic:
         conn.execute(
-            "INSERT INTO clerk_quizzes (id, topic_id, questions) VALUES ('quiz_seed_reflection', ?, ?) ON CONFLICT (id) DO NOTHING",
+            "INSERT INTO clerk_quizzes (id, topic_id, questions) VALUES ('quiz_seed_reflection', %s, %s) ON CONFLICT (id) DO NOTHING",
             (topic["id"], json.dumps(SEED_QUIZ_QUESTIONS)))
 
 
-def _ensure_column(conn: PgWrapper, table: str, col: str, coltype: str):
-    cols = [r[1] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()]
-    if col not in cols:
-        conn.execute(f"ALTER TABLE {table} ADD COLUMN {col} {coltype}")
-
-
 with db() as _conn:
-    _conn.executescript(SCHEMA)
-    _ensure_column(_conn, "syllabus_units", "number", "INTEGER")
-    seed(_conn)
     seed_gamification(_conn)
 
 
@@ -342,16 +189,16 @@ def mistake_row(r: dict) -> dict:
 # so a caller that doesn't have one (an id typed by hand, say) still 404s on
 # an unknown id rather than silently minting blank students.
 def _get_or_create_student(conn: PgWrapper, student_id: str, name: Optional[str]) -> dict:
-    stu = conn.execute("SELECT * FROM clerk_students WHERE id=?", (student_id,)).fetchone()
+    stu = conn.execute("SELECT * FROM clerk_students WHERE id=%s", (student_id,)).fetchone()
     if stu:
         return stu
     if name is None:
         raise HTTPException(status_code=404, detail="student not found")
     conn.execute(
-        "INSERT INTO clerk_students (id, name, xp, streak, last_activity) VALUES (?, ?, 0, 0, NULL) ON CONFLICT (id) DO NOTHING",
+        "INSERT INTO clerk_students (id, name, xp, streak, last_activity) VALUES (%s, %s, 0, 0, NULL) ON CONFLICT (id) DO NOTHING",
         (student_id, name),
     )
-    return conn.execute("SELECT * FROM clerk_students WHERE id=?", (student_id,)).fetchone()
+    return conn.execute("SELECT * FROM clerk_students WHERE id=%s", (student_id,)).fetchone()
 
 
 @app.get("/api/students/{student_id}/gamification")
@@ -359,7 +206,7 @@ def get_gamification(student_id: str, name: Optional[str] = None):
     with db() as conn:
         stu = _get_or_create_student(conn, student_id, name)
         rows = conn.execute(
-            "SELECT * FROM clerk_student_mistakes WHERE student_id=?"
+            "SELECT * FROM clerk_student_mistakes WHERE student_id=%s"
             " ORDER BY created_at DESC, id DESC", (student_id,)).fetchall()
         return {"student_id": stu["id"], "xp": stu["xp"], "streak": stu["streak"],
                 "mistakes": [mistake_row(r) for r in rows]}
@@ -374,7 +221,7 @@ def add_xp(student_id: str, body: XpIn):
     """Add XP and roll the daily streak: same day -> unchanged, yesterday ->
     +1, anything else (gap or first activity) -> reset to 1."""
     with db() as conn:
-        stu = conn.execute("SELECT * FROM clerk_students WHERE id=?", (student_id,)).fetchone()
+        stu = conn.execute("SELECT * FROM clerk_students WHERE id=%s", (student_id,)).fetchone()
         if not stu:
             raise HTTPException(status_code=404, detail="student not found")
         today = date.today().isoformat()
@@ -385,7 +232,7 @@ def add_xp(student_id: str, body: XpIn):
         else:
             streak = 1
         xp = stu["xp"] + body.delta
-        conn.execute("UPDATE clerk_students SET xp=?, streak=?, last_activity=? WHERE id=?",
+        conn.execute("UPDATE clerk_students SET xp=%s, streak=%s, last_activity=%s WHERE id=%s",
                      (xp, streak, today, student_id))
         return {"xp": xp, "streak": streak}
 
@@ -402,18 +249,18 @@ class MistakeIn(BaseModel):
 @app.post("/api/students/{student_id}/mistakes")
 def add_mistake(student_id: str, body: MistakeIn):
     with db() as conn:
-        stu = conn.execute("SELECT 1 FROM clerk_students WHERE id=?", (student_id,)).fetchone()
+        stu = conn.execute("SELECT 1 FROM clerk_students WHERE id=%s", (student_id,)).fetchone()
         if not stu:
             raise HTTPException(status_code=404, detail="student not found")
         mid = new_id("mis")
         conn.execute(
-            "INSERT INTO student_mistakes"
+            "INSERT INTO clerk_student_mistakes"
             " (id, student_id, topic_id, chapter, question, your_answer, correct_answer, solution, created_at)"
-            " VALUES (?,?,?,?,?,?,?,?,?)",
+            " VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
             (mid, student_id, body.topic_id, body.chapter, body.q, body.yourAns,
              body.correct, body.solution, date.today().isoformat()))
         return mistake_row(
-            conn.execute("SELECT * FROM clerk_student_mistakes WHERE id=?", (mid,)).fetchone())
+            conn.execute("SELECT * FROM clerk_student_mistakes WHERE id=%s", (mid,)).fetchone())
 
 
 class FlagIn(BaseModel):
@@ -423,11 +270,11 @@ class FlagIn(BaseModel):
 @app.post("/api/students/{student_id}/flags")
 def add_flag(student_id: str, body: FlagIn):
     with db() as conn:
-        stu = conn.execute("SELECT 1 FROM clerk_students WHERE id=?", (student_id,)).fetchone()
+        stu = conn.execute("SELECT 1 FROM clerk_students WHERE id=%s", (student_id,)).fetchone()
         if not stu:
             raise HTTPException(status_code=404, detail="student not found")
         conn.execute(
-            "INSERT INTO clerk_student_flags (id, student_id, context, created_at) VALUES (?,?,?,?)",
+            "INSERT INTO clerk_student_flags (id, student_id, context, created_at) VALUES (%s,%s,%s,%s)",
             (new_id("flg"), student_id, body.context, now_iso()))
         return {"status": "ok"}
 
@@ -437,7 +284,7 @@ def get_quiz(topic_id: str):
     """Quiz questions for a topic; empty list (not 404) when no quiz is
     seeded — the frontend hides the quiz on empty."""
     with db() as conn:
-        row = conn.execute("SELECT * FROM clerk_quizzes WHERE topic_id=?", (topic_id,)).fetchone()
+        row = conn.execute("SELECT * FROM clerk_quizzes WHERE topic_id=%s", (topic_id,)).fetchone()
         return {"topic_id": topic_id,
                 "questions": json.loads(row["questions"]) if row else []}
 
@@ -468,19 +315,19 @@ def wiki_row(r: dict, truncated: Optional[bool] = None) -> dict:
 
 def _get_or_create_wiki(conn: PgWrapper, student_id: str, student_name: str) -> dict:
     row = conn.execute(
-        "SELECT * FROM clerk_student_wiki_pages WHERE student_id=?", (student_id,)).fetchone()
+        "SELECT * FROM clerk_student_wiki_pages WHERE student_id=%s", (student_id,)).fetchone()
     if row:
         return row
     ts = now_iso()
     conn.execute(
-        "INSERT INTO student_wiki_pages"
+        "INSERT INTO clerk_student_wiki_pages"
         " (id, student_id, slug, title, content_markdown, created_at, updated_at)"
-        " VALUES (?,?,?,?,?,?,?)"
+        " VALUES (%s,%s,%s,%s,%s,%s,%s)"
         " ON CONFLICT (student_id) DO NOTHING",
         (new_id("wiki"), student_id, f"student-{student_id}",
          f"{student_name}'s Learning Wiki", "", ts, ts))
     return conn.execute(
-        "SELECT * FROM clerk_student_wiki_pages WHERE student_id=?", (student_id,)).fetchone()
+        "SELECT * FROM clerk_student_wiki_pages WHERE student_id=%s", (student_id,)).fetchone()
 
 
 @app.get("/api/students/{student_id}/wiki")
@@ -504,27 +351,27 @@ def add_wiki_note(student_id: str, body: WikiNoteIn):
     truncated = len(text) > MAX_NOTE_CHARS
     text = text[:MAX_NOTE_CHARS]
     with db() as conn:
-        stu = conn.execute("SELECT * FROM clerk_students WHERE id=?", (student_id,)).fetchone()
+        stu = conn.execute("SELECT * FROM clerk_students WHERE id=%s", (student_id,)).fetchone()
         if not stu:
             raise HTTPException(status_code=404, detail="student not found")
         _get_or_create_wiki(conn, student_id, stu["name"])
         nid = new_id("note")
         created = now_iso()
         conn.execute(
-            "INSERT INTO student_chapter_notes"
+            "INSERT INTO clerk_student_chapter_notes"
             " (id, student_id, chapter_number, chapter_name, note_text, created_at)"
-            " VALUES (?,?,?,?,?,?)",
+            " VALUES (%s,%s,%s,%s,%s,%s)",
             (nid, student_id, body.chapter_number, body.chapter_name, text, created))
         chapter_label = (f"Ch-{body.chapter_number} {body.chapter_name}"
                          if body.chapter_number is not None else body.chapter_name)
         block = (f"\n\n### [{datetime.now(IST).strftime('%d-%m-%Y')}] {chapter_label}\n"
                  f"{text}\n")
         conn.execute(
-            "UPDATE clerk_student_wiki_pages SET content_markdown = content_markdown || ?,"
-            " updated_at = ? WHERE student_id = ?",
+            "UPDATE clerk_student_wiki_pages SET content_markdown = content_markdown || %s,"
+            " updated_at = %s WHERE student_id = %s",
             (block, created, student_id))
         row = conn.execute(
-            "SELECT * FROM clerk_student_wiki_pages WHERE student_id=?", (student_id,)).fetchone()
+            "SELECT * FROM clerk_student_wiki_pages WHERE student_id=%s", (student_id,)).fetchone()
         return wiki_row(row, truncated=truncated)
 
 
@@ -580,7 +427,7 @@ def _okf_subject(subject: str) -> str:
 def _okf_chapter_id(chapter: str) -> str:
     """'sci10-ch05' / 'Chapter 5' / 'ch5' -> bare 'ch5' (ingest qualifies it
     with the subject); anything without a chapter number passes through."""
-    m = re.search(r"ch(?:apter)?[\s_\-]*0*(\d+)$", (chapter or "").lower())
+    m = re.search(r"ch(%s:apter)%s[\s_\-]*0*(\d+)$", (chapter or "").lower())
     if m:
         return f"ch{int(m.group(1))}"
     return _clean_segment(chapter).lower().replace(" ", "-") or "general"
@@ -600,7 +447,7 @@ def _chapter_name(subject_slug: str, chapter_id: str, fallback: str) -> str:
             "SELECT c.name FROM syllabus_chapters c"
             " JOIN syllabus_units u ON c.unit_id = u.id"
             " JOIN subjects s ON u.subject_id = s.id"
-            " WHERE s.subject_name = ? AND c.number = ?",
+            " WHERE s.subject_name = %s AND c.number = %s",
             (subject_name, int(m.group(1)))).fetchone()
     return row["name"] if row else fallback
 

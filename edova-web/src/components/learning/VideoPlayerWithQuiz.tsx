@@ -124,7 +124,13 @@ export function VideoPlayerWithQuiz({ questions, chapter, videoUrl, addXP, onMis
         )}
         <CardContent className="flex items-center justify-between p-4">
           <span className="text-sm text-text-secondary">
-            {ended ? "Watched ✓" : "Watch the video to unlock the quiz"}
+            {quiz.length > 0
+              ? ended
+                ? "Watched ✓"
+                : "Watch the video to unlock the quiz"
+              : ended
+                ? "Watched ✓"
+                : "Watch the lesson video"}
           </span>
         </CardContent>
       </Card>

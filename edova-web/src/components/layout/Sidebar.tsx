@@ -50,10 +50,14 @@ export function Sidebar() {
               </button>
               {isOpen && (
                 <div className="mb-3">
-                  {group.items.map((item) => (
+                  {group.items.map((item) => {
+                    const toPath = item.key === "wiki" && role === "student" && session?.user?.id 
+                      ? `/wiki/student-${session.user.id}` 
+                      : item.path;
+                    return (
                     <NavLink
                       key={item.key}
-                      to={item.path}
+                      to={toPath}
                       className="mb-0.5 flex cursor-pointer items-center gap-2.5 rounded-[8px] px-3 py-2.5 pl-8 text-[15.5px] transition-colors"
                       style={({ isActive }) => ({
                         fontWeight: isActive ? 700 : 500,
@@ -66,7 +70,8 @@ export function Sidebar() {
                     >
                       <span className="flex-1">{item.label}</span>
                     </NavLink>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
