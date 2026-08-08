@@ -314,29 +314,37 @@ export default function AssignmentEvaluate() {
                     </div>
 
                     <div className="mt-6 space-y-5 text-[13px] leading-relaxed">
-                      {assignment.type === "mcq" && assignment.sections && assignment.sections.length > 0 ? (
+                      {(assignment.sections?.length ?? 0) > 0 ? (
                         <div className="space-y-4">
-                          {assignment.sections.flatMap(sec => sec.questions).map((q, idx) => {
+                          {assignment.sections!.flatMap(sec => sec.questions).map((q, idx) => {
                             const ansObj = selected?.answers?.find(a => a.question_id === q.id)
                             const ans = ansObj?.selected || "No answer"
-                            const correctAns = q.correctAnswer || q.options?.find(o => o.correct)?.text || q.options?.find(o => o.correct)?.label || ""
-                            const isCorrect = Boolean(ansObj) && (ans === correctAns || ans === q.options?.find(o => o.correct)?.label)
+                            const isMcq = q.options && q.options.length > 0
+                            const correctAns = isMcq ? (q.correctAnswer || q.options?.find(o => o.correct)?.text || q.options?.find(o => o.correct)?.label || "") : ""
+                            const isCorrect = isMcq && Boolean(ansObj) && (ans === correctAns || ans === q.options?.find(o => o.correct)?.label)
                             return (
                               <div key={q.id} className="rounded-[12px] border border-card-border bg-[#F9FAFB] p-4 text-left">
                                 <div className="font-semibold text-ink">Q{idx + 1}. {q.text}</div>
-                                <div className="mt-2 flex items-center gap-4 text-[12px]">
-                                  <div className="flex items-center gap-1.5">
-                                    <span className="text-text-secondary">Student Answer:</span>
-                                    <span className={`font-semibold ${isCorrect ? "text-[#059669]" : "text-[#DC2626]"}`}>{ans}</span>
-                                    {isCorrect ? <CheckCircle2 size={14} className="text-[#059669]" /> : <XCircle size={14} className="text-[#DC2626]" />}
-                                  </div>
-                                  {!isCorrect && (
+                                {isMcq ? (
+                                  <div className="mt-2 flex items-center gap-4 text-[12px]">
                                     <div className="flex items-center gap-1.5">
-                                      <span className="text-text-secondary">Correct Answer:</span>
-                                      <span className="font-semibold text-[#059669]">{correctAns}</span>
+                                      <span className="text-text-secondary">Student Answer:</span>
+                                      <span className={`font-semibold ${isCorrect ? "text-[#059669]" : "text-[#DC2626]"}`}>{ans}</span>
+                                      {isCorrect ? <CheckCircle2 size={14} className="text-[#059669]" /> : <XCircle size={14} className="text-[#DC2626]" />}
                                     </div>
-                                  )}
-                                </div>
+                                    {!isCorrect && (
+                                      <div className="flex items-center gap-1.5">
+                                        <span className="text-text-secondary">Correct Answer:</span>
+                                        <span className="font-semibold text-[#059669]">{correctAns}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <div className="mt-3">
+                                    <div className="text-[12px] text-text-secondary mb-1">Student Answer:</div>
+                                    <div className="rounded-[8px] bg-white p-3 text-[13px] border border-[#E5E7EB] whitespace-pre-wrap">{ans}</div>
+                                  </div>
+                                )}
                               </div>
                             )
                           })}

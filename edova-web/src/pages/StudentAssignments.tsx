@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useCallback } from "react"
 import { PageHeader } from "@/components/common/PageHeader"
-import { McqQuiz } from "@/components/student/McqQuiz"
+import { QuizViewer } from "@/components/student/QuizViewer"
 import { submissionStatusStyle, SUBMISSION_LABEL } from "@/lib/styles"
 import { getMyAssignments, submitMyAssignment, type MyAssignment } from "@/lib/student-api"
 import { useAppStore } from "@/store/app-store"
@@ -417,8 +417,8 @@ export default function StudentAssignments() {
                             </div>
                           )}
 
-                          {a.submission_type === "mcq" && (a.sections?.length ?? 0) > 0 ? (
-                            <McqQuiz assignment={a} onSubmitted={loadAssignments} />
+                          {(a.sections?.length ?? 0) > 0 ? (
+                            <QuizViewer assignment={a} onSubmitted={loadAssignments} />
                           ) : (
                             <>
                               <textarea

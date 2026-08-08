@@ -533,7 +533,7 @@ export default function AssessmentBuilder() {
       publishedToStudents: true,
       createdOn: "Just now",
       submissions,
-      type: entry.sections.some((s) => s.type === "multiple_choice") ? "mcq" : "written",
+      type: entry.sections.some((s) => s.type === "multiple_choice" || (s.type === "okf_import" && s.questions.some(q => q.options && q.options.length > 0))) ? "mcq" : "written",
       sections: entry.sections,
       topicLabel: entry.topicLabel,
     }
