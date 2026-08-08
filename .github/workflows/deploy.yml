@@ -41,7 +41,7 @@ jobs:
             echo "Building frontend..."
             cd edova-web
             npm install
-            echo -e 'VITE_API_URL=/clerk\nVITE_BACKEND_API_URL=/backend\nVITE_RAG_API_URL=/rag\n' > .env
+            echo -e 'VITE_API_URL=/clerk\nVITE_BACKEND_API_URL=/backend\nVITE_RAG_API_URL=/rag\nVITE_S3_BUCKET_URL=https://innuxai-edova-coteacher.s3.ap-south-1.amazonaws.com/\n' > .env
             npm run build
             
             echo "Deployment complete!"
