@@ -256,6 +256,7 @@ class RosterSubmissionOut(BaseModel):
     submitted_at: Optional[str]
     is_late: bool
     text_response: str
+    answers: Optional[List[dict]] = None
 
 
 @router.get("/api/assignments/{assignment_id}/submissions", response_model=List[RosterSubmissionOut])
@@ -270,6 +271,7 @@ def list_submissions(assignment_id: str):
                     submitted_at=r["submitted_at"].isoformat() if r["submitted_at"] else None,
                     is_late=r["is_late"],
                     text_response=r["text_response"] or "",
+                    answers=r["answers"] or [],
                 )
                 for r in AssignmentRepo.list_submissions(cur, assignment_id)
             ]

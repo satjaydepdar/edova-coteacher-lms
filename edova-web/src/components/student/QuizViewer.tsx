@@ -17,18 +17,16 @@ interface GradableQuestion {
 
 function gradableQuestions(a: MyAssignment): GradableQuestion[] {
   return (a.sections ?? []).flatMap((sec) =>
-    (sec.questions ?? [])
-      .filter((q) => (q.options?.length ?? 0) > 0)
-      .map((q) => ({
-        id: q.id,
-        text: q.text,
-        points: q.marks ?? sec.pointsPer ?? 1,
-        options: q.options!.map((o) => ({ label: o.label, text: o.text, correct: o.correct })),
-      })),
+    (sec.questions ?? []).map((q) => ({
+      id: q.id,
+      text: q.text,
+      points: q.marks ?? sec.pointsPer ?? 1,
+      options: q.options ? q.options.map((o) => ({ label: o.label, text: o.text, correct: o.correct })) : [],
+    })),
   )
 }
 
-export function McqQuiz({ assignment, onSubmitted }: { assignment: MyAssignment; onSubmitted: () => void }) {
+export function QuizViewer({ assignment, onSubmitted }: { assignment: MyAssignment; onSubmitted: () => void }) {
   const questions = useMemo(() => gradableQuestions(assignment), [assignment])
   const [selections, setSelections] = useState<Record<string, string>>({})
   const [result, setResult] = useState<QuizSubmitResult | null>(null)
@@ -96,10 +94,11 @@ export function McqQuiz({ assignment, onSubmitted }: { assignment: MyAssignment;
       <div className="space-y-4">
         {questions.map((q, qi) => {
           const selected = showReview ? reviewSelections[q.id] : selections[q.id]
+          const isMcq = q.options && q.options.length > 0
           // After a fresh submit the server's per-question results drive the
           // review; on a later visit, correctness is re-derived from the
           // stored answers + the correct flags in the question data.
-          const selOpt = q.options.find((o) => o.label === selected || o.text === selected)
+          const selOpt = isMcq ? q.options.find((o) => o.label === selected || o.text === selected) : null
           const review = resultByQid.get(q.id) ?? (showReview && selOpt
             ? { correct: selOpt.correct, correct_answer: q.options.find((o) => o.correct)?.text ?? "", explanation: "" }
             : undefined)
@@ -108,14 +107,14 @@ export function McqQuiz({ assignment, onSubmitted }: { assignment: MyAssignment;
               <div className="mb-2 text-[14.5px] font-semibold text-ink">
                 {qi + 1}. {q.text}
                 <span className="ml-2 text-[12px] font-semibold text-text-muted">{q.points} pts</span>
-                {showReview && (
+                {showReview && isMcq && (
                   <span className="ml-2 text-[12px] font-bold" style={{ color: review ? (review.correct ? "#16A34A" : "#DC2626") : "#6B7280" }}>
                     {review ? (review.correct ? "✓ Correct" : "✗ Wrong") : ""}
                   </span>
                 )}
               </div>
               <div className="grid gap-2">
-                {q.options.map((o) => {
+                {isMcq ? q.options.map((o) => {
                   const isSelected = selected === o.label || selected === o.text
                   let style: React.CSSProperties = { border: "1px solid #E5E1D2", background: "#fff" }
                   if (showReview && o.correct) {
@@ -147,7 +146,16 @@ export function McqQuiz({ assignment, onSubmitted }: { assignment: MyAssignment;
                       {showReview && o.correct && <span className="ml-auto text-[12px] font-bold text-[#16A34A]">Right answer</span>}
                     </button>
                   )
-                })}
+                }) : (
+                  <textarea
+                    value={selected || ""}
+                    onChange={(e) => setSelections((s) => ({ ...s, [q.id]: e.target.value }))}
+                    disabled={showReview}
+                    placeholder="Type your answer here…"
+                    rows={4}
+                    className="w-full resize-none rounded-[10px] border border-[#E8E2D5] bg-[#FBF9F4] p-3 text-[14px] outline-none transition-all focus:border-[#C17D3A] focus:bg-white disabled:opacity-80"
+                  />
+                )}
               </div>
               {showReview && review?.explanation && (
                 <div className="mt-2 rounded-[8px] bg-[#F5F1E6] px-3.5 py-2.5 text-[13px] text-text-secondary">
@@ -168,7 +176,7 @@ export function McqQuiz({ assignment, onSubmitted }: { assignment: MyAssignment;
             className="cursor-pointer rounded-[8px] px-5 py-2.5 text-[14px] font-semibold text-white disabled:opacity-50"
             style={{ background: "#16332B" }}
           >
-            {submitting ? "Scoring…" : "Submit Quiz"}
+            {submitting ? "Submitting…" : "Submit Answers"}
           </button>
         </div>
       )}
