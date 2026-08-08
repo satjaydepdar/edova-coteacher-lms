@@ -1,0 +1,47 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/edova-coteacher-lms
+            git pull origin master
+            
+            echo "Updating backend dependencies..."
+            sed -i '/psycopg2/d' edova-backend/requirements.txt
+            ./venv-backend/bin/pip install -r edova-backend/requirements.txt
+            sed -i '/psycopg2/d' ncert_rag/requirements.txt
+            sed -i '/pydantic/d' ncert_rag/requirements.txt
+            sed -i '/numpy/d' ncert_rag/requirements.txt
+            sed -i '/asyncpg/d' ncert_rag/requirements.txt
+            ./venv-rag/bin/pip install -r ncert_rag/requirements.txt
+            
+            echo "Restarting backend services..."
+            sudo systemctl restart edova-backend ncert-rag ncert-clerk
+            
+            echo "Running database migrations..."
+            cd db
+            npm install
+            NODE_TLS_REJECT_UNAUTHORIZED=0 DATABASE_URL='postgresql://postgres:Innuxai9806@database-1.c1w066susxg7.ap-south-1.rds.amazonaws.com:5432/postgres?sslmode=require' npm run migrate:up
+            cd ..
+            
+            echo "Building frontend..."
+            cd edova-web
+            npm install
+            echo -e 'VITE_API_URL=/clerk\nVITE_BACKEND_API_URL=/backend\nVITE_RAG_API_URL=/rag\n' > .env
+            npm run build
+            
+            echo "Deployment complete!"
